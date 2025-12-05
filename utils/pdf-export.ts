@@ -1,9 +1,9 @@
 // PDF Export utility with beautiful design
 
+import { format } from 'date-fns';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import { HistoryEntry, RedirectItem, ChainScore } from '../types/redirect';
-import { format } from 'date-fns';
+import { ChainScore, HistoryEntry, RedirectItem } from '../types/redirect';
 
 interface PDFExportOptions {
   title?: string;
@@ -13,22 +13,55 @@ interface PDFExportOptions {
 }
 
 const COLORS = {
-  primary: [59, 130, 246] as [number, number, number],      // Blue
-  success: [34, 197, 94] as [number, number, number],       // Green
-  warning: [245, 158, 11] as [number, number, number],      // Amber
-  error: [239, 68, 68] as [number, number, number],         // Red
-  dark: [30, 41, 59] as [number, number, number],           // Slate-800
-  light: [241, 245, 249] as [number, number, number],       // Slate-100
+  primary: [59, 130, 246] as [number, number, number], // Blue
+  success: [34, 197, 94] as [number, number, number], // Green
+  warning: [245, 158, 11] as [number, number, number], // Amber
+  error: [239, 68, 68] as [number, number, number], // Red
+  dark: [30, 41, 59] as [number, number, number], // Slate-800
+  light: [241, 245, 249] as [number, number, number], // Slate-100
   white: [255, 255, 255] as [number, number, number],
 };
 
+// Load logo as base64 for PDF embedding
+async function loadLogoAsBase64(): Promise<string | null> {
+  try {
+    const logoUrl = chrome.runtime.getURL('icons/icon-128.png');
+    const response = await fetch(logoUrl);
+    const blob = await response.blob();
+    return new Promise(resolve => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.onerror = () => resolve(null);
+      reader.readAsDataURL(blob);
+    });
+  } catch {
+    return null;
+  }
+}
+
+// Draw a simple logo as fallback when PNG fails to load
+function drawFallbackLogo(doc: jsPDF): void {
+  doc.setFillColor(255, 255, 255);
+  doc.roundedRect(15, 10, 25, 25, 3, 3, 'F');
+  doc.setDrawColor(59, 130, 246);
+  doc.setLineWidth(1.5);
+  doc.line(21, 29, 33, 17); // Diagonal line
+  doc.line(33, 17, 25, 17); // Top horizontal
+  doc.line(33, 17, 33, 25); // Right vertical
+}
+
 function getGradeColor(grade: ChainScore['grade']): [number, number, number] {
   switch (grade) {
-    case 'A': return COLORS.success;
-    case 'B': return [132, 204, 22]; // Lime
-    case 'C': return COLORS.warning;
-    case 'D': return [249, 115, 22]; // Orange
-    case 'F': return COLORS.error;
+    case 'A':
+      return COLORS.success;
+    case 'B':
+      return [132, 204, 22]; // Lime
+    case 'C':
+      return COLORS.warning;
+    case 'D':
+      return [249, 115, 22]; // Orange
+    case 'F':
+      return COLORS.error;
   }
 }
 
@@ -54,6 +87,9 @@ export async function exportToPDF(
   const pageWidth = doc.internal.pageSize.getWidth();
   let yPos = 20;
 
+  // Load logo
+  const logoBase64 = await loadLogoAsBase64();
+
   // Helper to add new page if needed
   const checkNewPage = (requiredSpace: number) => {
     if (yPos + requiredSpace > 270) {
@@ -65,28 +101,34 @@ export async function exportToPDF(
   // ========== HEADER ==========
   doc.setFillColor(...COLORS.primary);
   doc.rect(0, 0, pageWidth, 45, 'F');
-  
-  // Logo area
-  doc.setFillColor(255, 255, 255);
-  doc.roundedRect(15, 10, 25, 25, 3, 3, 'F');
-  doc.setTextColor(...COLORS.primary);
-  doc.setFontSize(20);
-  doc.setFont('helvetica', 'bold');
-  doc.text('↗', 22, 27);
+
+  // Logo - use PNG logo from extension
+  if (logoBase64) {
+    try {
+      doc.addImage(logoBase64, 'PNG', 15, 10, 25, 25);
+    } catch {
+      // Fallback to drawn logo
+      drawFallbackLogo(doc);
+    }
+  } else {
+    drawFallbackLogo(doc);
+  }
 
   // Title
   doc.setTextColor(...COLORS.white);
-  doc.setFontSize(22);
+  doc.setFontSize(24);
   doc.setFont('helvetica', 'bold');
   doc.text('RedirectWise', 48, 22);
-  
-  doc.setFontSize(10);
+
+  doc.setFontSize(12);
   doc.setFont('helvetica', 'normal');
   doc.text(title, 48, 32);
 
   // Date
-  doc.setFontSize(9);
-  doc.text(format(entry.timestamp, 'MMMM d, yyyy \'at\' h:mm a'), pageWidth - 15, 22, { align: 'right' });
+  doc.setFontSize(10);
+  doc.text(format(entry.timestamp, "MMMM d, yyyy 'at' h:mm a"), pageWidth - 15, 22, {
+    align: 'right',
+  });
   doc.text(`Report ID: ${entry.id.substring(0, 8)}`, pageWidth - 15, 32, { align: 'right' });
 
   yPos = 55;
@@ -99,56 +141,56 @@ export async function exportToPDF(
   const scoreX = 45;
   const scoreY = yPos + 25;
   const gradeColor = getGradeColor(entry.chainScore.grade);
-  
+
   doc.setFillColor(...gradeColor);
   doc.circle(scoreX, scoreY, 18, 'F');
-  
+
   doc.setTextColor(...COLORS.white);
-  doc.setFontSize(20);
+  doc.setFontSize(24);
   doc.setFont('helvetica', 'bold');
   doc.text(entry.chainScore.grade, scoreX, scoreY + 2, { align: 'center' });
-  
+
   doc.setTextColor(...COLORS.dark);
-  doc.setFontSize(10);
+  doc.setFontSize(11);
   doc.text(`Score: ${entry.chainScore.score}/100`, scoreX, scoreY + 28, { align: 'center' });
 
   // Summary stats
   const statsX = 85;
   const maxTextWidth = pageWidth - statsX - 55; // Leave room for right side stats
-  
-  doc.setFontSize(9);
+
+  doc.setFontSize(10);
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(100, 116, 139);
   doc.text('ORIGINAL URL', statsX, yPos + 12);
   doc.setTextColor(...COLORS.dark);
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(8);
+  doc.setFontSize(9);
   const originalLines = doc.splitTextToSize(entry.originalUrl, maxTextWidth);
   doc.text(originalLines.slice(0, 2).join('\n'), statsX, yPos + 19);
 
-  doc.setFontSize(9);
+  doc.setFontSize(10);
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(100, 116, 139);
   doc.text('FINAL URL', statsX, yPos + 32);
   doc.setTextColor(...COLORS.dark);
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(8);
+  doc.setFontSize(9);
   const finalLines = doc.splitTextToSize(entry.finalUrl, maxTextWidth);
   doc.text(finalLines.slice(0, 2).join('\n'), statsX, yPos + 39);
 
   // Right side stats
   const rightX = pageWidth - 45;
-  doc.setFontSize(16);
+  doc.setFontSize(18);
   doc.setTextColor(...COLORS.dark);
   doc.text(`${entry.redirectCount}`, rightX, yPos + 20, { align: 'center' });
-  doc.setFontSize(8);
+  doc.setFontSize(10);
   doc.setTextColor(100, 116, 139);
   doc.text('Redirects', rightX, yPos + 28, { align: 'center' });
 
-  doc.setFontSize(16);
+  doc.setFontSize(18);
   doc.setTextColor(...COLORS.dark);
   doc.text(`${entry.path.length}`, rightX, yPos + 42, { align: 'center' });
-  doc.setFontSize(8);
+  doc.setFontSize(10);
   doc.setTextColor(100, 116, 139);
   doc.text('Total Hops', rightX, yPos + 50, { align: 'center' });
 
@@ -158,11 +200,11 @@ export async function exportToPDF(
   checkNewPage(60);
   yPos += 10;
 
-  doc.setFontSize(14);
+  doc.setFontSize(16);
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(...COLORS.dark);
   doc.text('Redirect Chain Details', 15, yPos);
-  yPos += 8;
+  yPos += 10;
 
   const tableData = entry.path.map((item, idx) => {
     const statusLabel = getStatusLabel(item);
@@ -186,18 +228,22 @@ export async function exportToPDF(
       fillColor: COLORS.primary,
       textColor: COLORS.white,
       fontStyle: 'bold',
-      fontSize: 9,
+      fontSize: 11,
     },
     bodyStyles: {
-      fontSize: 7,
+      fontSize: 9,
       textColor: COLORS.dark,
-      cellPadding: 3,
+      cellPadding: 4,
     },
     columnStyles: {
       0: { cellWidth: 8, halign: 'center' },
       1: { cellWidth: 14, halign: 'center' },
       2: { cellWidth: 22 },
-      3: { cellWidth: 'auto', overflow: 'linebreak', cellPadding: { top: 3, right: 2, bottom: 3, left: 2 } }, // Full URL with word wrap
+      3: {
+        cellWidth: 'auto',
+        overflow: 'linebreak',
+        cellPadding: { top: 3, right: 2, bottom: 3, left: 2 },
+      }, // Full URL with word wrap
       4: { cellWidth: 25 },
       5: { cellWidth: 16, halign: 'right' },
     },
@@ -205,7 +251,7 @@ export async function exportToPDF(
       overflow: 'linebreak',
       cellWidth: 'wrap',
     },
-    didParseCell: (data) => {
+    didParseCell: data => {
       // Color status codes
       if (data.section === 'body' && data.column.index === 1) {
         const statusCode = parseInt(data.cell.raw as string);
@@ -222,32 +268,35 @@ export async function exportToPDF(
   if (includeScore && entry.chainScore.issues.length > 0) {
     checkNewPage(50);
 
-    doc.setFontSize(14);
+    doc.setFontSize(16);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(...COLORS.dark);
     doc.text('Analysis & Issues', 15, yPos);
-    yPos += 10;
+    yPos += 12;
 
-    entry.chainScore.issues.forEach((issue) => {
-      checkNewPage(15);
-      
-      const iconColor = issue.type === 'error' ? COLORS.error 
-        : issue.type === 'warning' ? COLORS.warning 
-        : COLORS.success;
-      
+    entry.chainScore.issues.forEach(issue => {
+      checkNewPage(18);
+
+      const iconColor =
+        issue.type === 'error'
+          ? COLORS.error
+          : issue.type === 'warning'
+          ? COLORS.warning
+          : COLORS.success;
+
       doc.setFillColor(...iconColor);
-      doc.circle(20, yPos - 2, 3, 'F');
-      
-      doc.setFontSize(9);
+      doc.circle(20, yPos - 2, 4, 'F');
+
+      doc.setFontSize(11);
       doc.setFont('helvetica', 'normal');
       doc.setTextColor(...COLORS.dark);
-      doc.text(issue.message, 28, yPos);
-      
-      doc.setFontSize(7);
+      doc.text(issue.message, 30, yPos);
+
+      doc.setFontSize(9);
       doc.setTextColor(100, 116, 139);
-      doc.text(`Impact: ${issue.impact.toUpperCase()}`, 28, yPos + 5);
-      
-      yPos += 14;
+      doc.text(`Impact: ${issue.impact.toUpperCase()}`, 30, yPos + 6);
+
+      yPos += 16;
     });
   }
 
@@ -255,27 +304,27 @@ export async function exportToPDF(
     checkNewPage(50);
     yPos += 5;
 
-    doc.setFontSize(14);
+    doc.setFontSize(16);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(...COLORS.dark);
     doc.text('Recommendations', 15, yPos);
-    yPos += 10;
+    yPos += 12;
 
     entry.chainScore.recommendations.forEach((rec, idx) => {
-      checkNewPage(12);
-      
+      checkNewPage(14);
+
       doc.setFillColor(...COLORS.primary);
-      doc.circle(20, yPos - 2, 3, 'F');
+      doc.circle(20, yPos - 2, 4, 'F');
       doc.setTextColor(...COLORS.white);
-      doc.setFontSize(7);
-      doc.text((idx + 1).toString(), 20, yPos - 0.5, { align: 'center' });
-      
       doc.setFontSize(9);
+      doc.text((idx + 1).toString(), 20, yPos - 0.5, { align: 'center' });
+
+      doc.setFontSize(11);
       doc.setFont('helvetica', 'normal');
       doc.setTextColor(...COLORS.dark);
-      doc.text(rec, 28, yPos);
-      
-      yPos += 10;
+      doc.text(rec, 30, yPos);
+
+      yPos += 12;
     });
   }
 
@@ -285,15 +334,18 @@ export async function exportToPDF(
     doc.setPage(i);
     doc.setFillColor(...COLORS.light);
     doc.rect(0, 282, pageWidth, 15, 'F');
-    
-    doc.setFontSize(8);
+
+    doc.setFontSize(10);
     doc.setTextColor(100, 116, 139);
     doc.text('Generated by RedirectWise - Redirect Path Analyzer', 15, 290);
     doc.text(`Page ${i} of ${pageCount}`, pageWidth - 15, 290, { align: 'right' });
   }
 
   // Save the PDF
-  const filename = `redirectwise-${entry.id.substring(0, 8)}-${format(entry.timestamp, 'yyyy-MM-dd')}.pdf`;
+  const filename = `redirectwise-${entry.id.substring(0, 8)}-${format(
+    entry.timestamp,
+    'yyyy-MM-dd'
+  )}.pdf`;
   doc.save(filename);
 }
 
@@ -320,13 +372,13 @@ export async function exportHistoryToPDF(entries: HistoryEntry[]): Promise<void>
   // Header
   doc.setFillColor(...COLORS.primary);
   doc.rect(0, 0, pageWidth, 35, 'F');
-  
+
   doc.setTextColor(...COLORS.white);
-  doc.setFontSize(20);
+  doc.setFontSize(22);
   doc.setFont('helvetica', 'bold');
   doc.text('RedirectWise History Report', 15, 22);
-  
-  doc.setFontSize(10);
+
+  doc.setFontSize(12);
   doc.text(`${entries.length} entries • Generated ${format(new Date(), 'MMMM d, yyyy')}`, 15, 30);
 
   // Stats summary
@@ -335,20 +387,20 @@ export async function exportHistoryToPDF(entries: HistoryEntry[]): Promise<void>
 
   doc.setFillColor(...COLORS.light);
   doc.roundedRect(15, 45, pageWidth - 30, 25, 3, 3, 'F');
-  
+
   doc.setTextColor(...COLORS.dark);
-  doc.setFontSize(12);
+  doc.setFontSize(13);
   doc.text(`Average Score: ${Math.round(avgScore)}`, 25, 60);
   doc.text(`Total Redirects: ${totalRedirects}`, 100, 60);
   doc.text(`Entries: ${entries.length}`, pageWidth - 50, 60);
 
   // Table
-  const tableData = entries.map((entry) => [
+  const tableData = entries.map(entry => [
     format(entry.timestamp, 'MM/dd/yy HH:mm'),
     entry.chainScore.grade,
     entry.redirectCount.toString(),
     entry.originalUrl, // Full URL
-    entry.finalUrl,    // Full URL
+    entry.finalUrl, // Full URL
   ]);
 
   autoTable(doc, {
@@ -360,12 +412,12 @@ export async function exportHistoryToPDF(entries: HistoryEntry[]): Promise<void>
       fillColor: COLORS.primary,
       textColor: COLORS.white,
       fontStyle: 'bold',
-      fontSize: 9,
+      fontSize: 11,
     },
     bodyStyles: {
-      fontSize: 7,
+      fontSize: 9,
       textColor: COLORS.dark,
-      cellPadding: 2,
+      cellPadding: 3,
     },
     styles: {
       overflow: 'linebreak',
@@ -378,7 +430,7 @@ export async function exportHistoryToPDF(entries: HistoryEntry[]): Promise<void>
       3: { cellWidth: 'auto', overflow: 'linebreak' }, // Full URL with wrap
       4: { cellWidth: 'auto', overflow: 'linebreak' }, // Full URL with wrap
     },
-    didParseCell: (data) => {
+    didParseCell: data => {
       if (data.section === 'body' && data.column.index === 1) {
         const grade = data.cell.raw as string;
         data.cell.styles.textColor = getGradeColor(grade as ChainScore['grade']);
@@ -392,7 +444,7 @@ export async function exportHistoryToPDF(entries: HistoryEntry[]): Promise<void>
   const pageCount = doc.getNumberOfPages();
   for (let i = 1; i <= pageCount; i++) {
     doc.setPage(i);
-    doc.setFontSize(8);
+    doc.setFontSize(10);
     doc.setTextColor(100, 116, 139);
     doc.text('Generated by RedirectWise', 15, 290);
     doc.text(`Page ${i} of ${pageCount}`, pageWidth - 15, 290, { align: 'right' });
