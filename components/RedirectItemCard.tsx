@@ -1,5 +1,13 @@
 import clsx from 'clsx';
-import { ArrowRight, ChevronDown, ChevronRight, Clock, ExternalLink } from 'lucide-react';
+import {
+  ArrowRight,
+  ChevronDown,
+  ChevronRight,
+  Clock,
+  ExternalLink,
+  Shield,
+  Zap,
+} from 'lucide-react';
 import { RedirectItem } from '../types/redirect';
 import HeadersList from './HeadersList';
 
@@ -108,6 +116,36 @@ export default function RedirectItemCard({
     return url.substring(0, maxLength) + '...';
   };
 
+  // Quick status indicators
+  const getQuickIndicators = () => {
+    const indicators: { icon: React.ReactNode; label: string; color: string }[] = [];
+
+    // HTTPS indicator
+    const isHttps = item.url.startsWith('https://');
+    if (isHttps) {
+      indicators.push({
+        icon: <Shield className="w-3 h-3" />,
+        label: 'HTTPS',
+        color: darkMode ? 'text-green-400' : 'text-green-600',
+      });
+    }
+
+    // Compression indicator
+    const encoding = item.headers.find(h => h.name.toLowerCase() === 'content-encoding')?.value;
+    if (encoding) {
+      const label = encoding === 'br' ? 'Brotli' : encoding === 'gzip' ? 'Gzip' : encoding;
+      indicators.push({
+        icon: <Zap className="w-3 h-3" />,
+        label,
+        color: darkMode ? 'text-purple-400' : 'text-purple-600',
+      });
+    }
+
+    return indicators;
+  };
+
+  const quickIndicators = getQuickIndicators();
+
   return (
     <div
       className={clsx(
@@ -161,6 +199,16 @@ export default function RedirectItemCard({
                 {item.timing.duration}ms
               </span>
             )}
+            {/* Quick indicators */}
+            {quickIndicators.map((indicator, i) => (
+              <span
+                key={i}
+                className={clsx('flex items-center gap-0.5 text-xs', indicator.color)}
+                title={indicator.label}
+              >
+                {indicator.icon}
+              </span>
+            ))}
           </div>
 
           <p

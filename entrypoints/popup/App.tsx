@@ -191,31 +191,35 @@ export default function App() {
   return (
     <div
       className={clsx(
-        'flex flex-col min-h-[200px] max-h-[600px] transition-colors',
+        'flex flex-col h-[600px] transition-colors',
         darkMode ? 'bg-slate-900' : 'bg-slate-50'
       )}
     >
-      <Header
-        onRefresh={handleRefresh}
-        onClear={handleClear}
-        onToggleDarkMode={handleToggleDarkMode}
-        onOpenDashboard={handleOpenDashboard}
-        onOpenSidepanel={handleOpenSidepanel}
-        hasPath={redirectPath.length > 0}
-        darkMode={darkMode}
-      />
-
-      {chainScore && <ChainScoreCard score={chainScore} darkMode={darkMode} />}
-
-      {redirectPath.length > 0 && (
-        <CopyButtons
-          redirectPath={redirectPath}
+      {/* Fixed header section */}
+      <div className="shrink-0">
+        <Header
+          onRefresh={handleRefresh}
+          onClear={handleClear}
+          onToggleDarkMode={handleToggleDarkMode}
+          onOpenDashboard={handleOpenDashboard}
+          onOpenSidepanel={handleOpenSidepanel}
+          hasPath={redirectPath.length > 0}
           darkMode={darkMode}
-          onExportPDF={handleExportPDF}
         />
-      )}
 
-      <main className="flex-1 overflow-y-auto p-3">
+        {chainScore && <ChainScoreCard score={chainScore} darkMode={darkMode} />}
+
+        {redirectPath.length > 0 && (
+          <CopyButtons
+            redirectPath={redirectPath}
+            darkMode={darkMode}
+            onExportPDF={handleExportPDF}
+          />
+        )}
+      </div>
+
+      {/* Scrollable content area */}
+      <main className="flex-1 overflow-y-auto p-3 min-h-0">
         {loading ? (
           <div className="flex items-center justify-center h-32">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>

@@ -138,12 +138,38 @@ export default defineBackground(() => {
     });
   }
 
+  // Store IP addresses from onResponseStarted (more reliable for IP)
+  const requestIPs: Map<string, string> = new Map();
+
   // Listen for request start to track timing
   chrome.webRequest.onBeforeRequest.addListener(
     details => {
       if (details.type !== 'main_frame') return;
       const requestKey = `${details.tabId}-${details.url}`;
       requestTimings.set(requestKey, Date.now());
+    },
+    { urls: ['<all_urls>'] }
+  );
+
+  // Listen for response started - this is where we reliably get the IP address
+  chrome.webRequest.onResponseStarted.addListener(
+    details => {
+      if (details.type !== 'main_frame') return;
+      if (details.ip) {
+        const requestKey = `${details.tabId}-${details.url}`;
+        requestIPs.set(requestKey, details.ip);
+        console.log('[RedirectWise] Captured IP for', details.url, ':', details.ip);
+
+        // Also update the existing path item if it exists with Unknown IP
+        const tabPath = tabPaths.get(details.tabId);
+        if (tabPath) {
+          const item = tabPath.path.find(p => p.url === details.url && p.ip === 'Unknown');
+          if (item) {
+            item.ip = details.ip;
+            console.log('[RedirectWise] Updated IP for existing item:', details.url);
+          }
+        }
+      }
     },
     { urls: ['<all_urls>'] }
   );
@@ -202,19 +228,46 @@ export default defineBackground(() => {
       const isRedirect = details.statusCode >= 300 && details.statusCode < 400;
       const redirectUrl = isRedirect ? getLocationHeader(headers) : undefined;
 
+      // Try to get IP from details, or from our stored IPs map
+      const requestKey = `${details.tabId}-${details.url}`;
+      const ip = details.ip || requestIPs.get(requestKey) || 'Unknown';
+
       addRedirectItem(details.tabId, {
         url: details.url,
         status_code: details.statusCode,
         status_line: details.statusLine,
-        ip: details.ip || 'Unknown',
+        ip,
         type: isRedirect ? 'server_redirect' : 'navigation',
         redirect_type: isRedirect ? getRedirectType(details.statusCode, headers) : undefined,
         redirect_url: redirectUrl,
         headers,
       });
+
+      // Clean up the IP from our map after using it
+      requestIPs.delete(requestKey);
     },
     { urls: ['<all_urls>'] },
     ['responseHeaders', 'extraHeaders']
+  );
+
+  // Also listen to webRequest.onCompleted for additional IP capture
+  chrome.webRequest.onCompleted.addListener(
+    details => {
+      if (details.type !== 'main_frame') return;
+
+      // Update IP if we got one and the item exists with Unknown IP
+      if (details.ip) {
+        const tabPath = tabPaths.get(details.tabId);
+        if (tabPath) {
+          const item = tabPath.path.find(p => p.url === details.url && p.ip === 'Unknown');
+          if (item) {
+            item.ip = details.ip;
+            console.log('[RedirectWise] Updated IP from onCompleted:', details.url, details.ip);
+          }
+        }
+      }
+    },
+    { urls: ['<all_urls>'] }
   );
 
   // Save to history when navigation completes
