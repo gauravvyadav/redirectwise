@@ -59,10 +59,10 @@ export default function RedirectItemCard({
 
   const getStatusBgColor = () => {
     if (darkMode) {
-      if (item.statusObject.isSuccess) return 'bg-green-900/30 border-green-800';
-      if (item.statusObject.isRedirect) return 'bg-amber-900/30 border-amber-800';
-      if (item.statusObject.isClientError) return 'bg-red-900/30 border-red-800';
-      if (item.statusObject.isServerError) return 'bg-red-900/30 border-red-800';
+      if (item.statusObject.isSuccess) return 'bg-slate-800 border-green-800';
+      if (item.statusObject.isRedirect) return 'bg-slate-800 border-amber-800';
+      if (item.statusObject.isClientError) return 'bg-slate-800 border-red-800';
+      if (item.statusObject.isServerError) return 'bg-slate-800 border-red-800';
       return 'bg-slate-800 border-slate-700';
     }
     if (item.statusObject.isSuccess) return 'bg-green-50 border-green-200';
