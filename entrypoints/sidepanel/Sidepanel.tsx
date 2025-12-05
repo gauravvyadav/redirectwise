@@ -16,6 +16,7 @@ import {
   XCircle,
 } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import HeadersList from '../../components/HeadersList';
 import Logo from '../../components/Logo';
 import { ChainScore, RedirectItem, calculateChainScore } from '../../types/redirect';
 import { getSettings, saveSettings } from '../../utils/storage';
@@ -607,6 +608,13 @@ export default function Sidepanel() {
                     <div className="flex items-start gap-2">
                       <span className="text-gray-500 w-14 shrink-0">To:</span>
                       <span className="text-blue-500 break-all">{item.redirect_url}</span>
+                    </div>
+                  )}
+
+                  {/* Enhanced Headers Details */}
+                  {item.headers && item.headers.length > 0 && (
+                    <div className="mt-3 pt-3 border-t border-slate-200 dark:border-slate-700">
+                      <HeadersList headers={item.headers} ip={item.ip} darkMode={darkMode} />
                     </div>
                   )}
                 </div>
