@@ -20,7 +20,11 @@ export default function RedirectPath({ items, darkMode = false }: RedirectPathPr
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between mb-3">
-        <span className={`text-xs font-medium uppercase tracking-wide ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
+        <span
+          className={`text-xs font-medium uppercase tracking-wide ${
+            darkMode ? 'text-slate-400' : 'text-slate-500'
+          }`}
+        >
           Redirect Path ({items.length} {items.length === 1 ? 'step' : 'steps'})
         </span>
         {totalTime > 0 && (
@@ -29,13 +33,17 @@ export default function RedirectPath({ items, darkMode = false }: RedirectPathPr
           </span>
         )}
       </div>
-      
+
       <div className="relative">
         {/* Vertical line connecting items */}
         {items.length > 1 && (
-          <div className={`absolute left-4 top-6 bottom-6 w-0.5 z-0 ${darkMode ? 'bg-slate-700' : 'bg-slate-200'}`} />
+          <div
+            className={`absolute left-[27px] top-6 bottom-6 w-0.5 z-0 ${
+              darkMode ? 'bg-slate-700' : 'bg-slate-200'
+            }`}
+          />
         )}
-        
+
         <div className="space-y-2 relative z-10">
           {items.map((item, index) => (
             <RedirectItemCard

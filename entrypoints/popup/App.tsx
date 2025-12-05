@@ -191,7 +191,7 @@ export default function App() {
   return (
     <div
       className={clsx(
-        'flex flex-col min-h-[200px] max-h-[600px] transition-colors',
+        'flex flex-col w-full min-h-[200px] max-h-[600px] transition-colors',
         darkMode ? 'bg-slate-900' : 'bg-slate-50'
       )}
     >

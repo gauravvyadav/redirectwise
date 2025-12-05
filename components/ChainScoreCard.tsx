@@ -79,8 +79,8 @@ export default function ChainScoreCard({ score, darkMode = false }: ChainScoreCa
         </div>
       </div>
 
-      {/* Issues */}
-      {score.issues.length > 0 && (
+      {/* Issues - only show warnings and errors, not info messages */}
+      {score.issues.filter(issue => issue.type !== 'info').length > 0 && (
         <div
           className={clsx(
             'border-t px-3 py-2',
@@ -88,17 +88,20 @@ export default function ChainScoreCard({ score, darkMode = false }: ChainScoreCa
           )}
         >
           <div className="space-y-1.5">
-            {score.issues.slice(0, 3).map((issue, idx) => (
-              <div key={idx} className="flex items-start gap-2">
-                {getIssueIcon(issue.type)}
-                <span className={clsx('text-xs', darkMode ? 'text-slate-300' : 'text-slate-700')}>
-                  {issue.message}
-                </span>
-              </div>
-            ))}
-            {score.issues.length > 3 && (
+            {score.issues
+              .filter(issue => issue.type !== 'info')
+              .slice(0, 3)
+              .map((issue, idx) => (
+                <div key={idx} className="flex items-start gap-2">
+                  {getIssueIcon(issue.type)}
+                  <span className={clsx('text-xs', darkMode ? 'text-slate-300' : 'text-slate-700')}>
+                    {issue.message}
+                  </span>
+                </div>
+              ))}
+            {score.issues.filter(issue => issue.type !== 'info').length > 3 && (
               <p className={clsx('text-xs', darkMode ? 'text-slate-500' : 'text-slate-400')}>
-                +{score.issues.length - 3} more issues
+                +{score.issues.filter(issue => issue.type !== 'info').length - 3} more issues
               </p>
             )}
           </div>
