@@ -22,6 +22,7 @@ import {
   Zap,
 } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import HeadersList from '../../components/HeadersList';
 import Logo from '../../components/Logo';
 import { ChainScore, HistoryEntry } from '../../types/redirect';
 import { exportHistoryToPDF, exportToPDF } from '../../utils/pdf-export';
@@ -637,6 +638,20 @@ function DetailPanel({
   onDelete: () => void;
   onBack: () => void;
 }) {
+  const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
+
+  const toggleExpanded = (id: string) => {
+    setExpandedItems(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(id)) {
+        newSet.delete(id);
+      } else {
+        newSet.add(id);
+      }
+      return newSet;
+    });
+  };
+
   const getGradeBgColor = (grade: ChainScore['grade']) => {
     switch (grade) {
       case 'A':
@@ -900,85 +915,96 @@ function DetailPanel({
 
                 {/* Content */}
                 <div
-                  className={clsx(
-                    'flex-1 min-w-0 pb-4 pt-1',
-                    idx < entry.path.length - 1 ? 'pb-4' : 'pb-0'
-                  )}
+                  className={clsx('flex-1 min-w-0', idx < entry.path.length - 1 ? 'pb-4' : 'pb-0')}
                 >
-                  <div className="flex items-start gap-2">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1 flex-wrap">
-                        <span
-                          className={clsx(
-                            'px-2 py-0.5 rounded text-xs font-medium',
-                            item.statusObject?.isSuccess &&
-                              'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
-                            item.statusObject?.isRedirect &&
-                              'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
-                            (item.statusObject?.isClientError ||
-                              item.statusObject?.isServerError) &&
-                              'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+                  {/* Clickable header */}
+                  <button onClick={() => toggleExpanded(item.id)} className="w-full text-left">
+                    <div className="flex items-start gap-2">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1 flex-wrap">
+                          <span
+                            className={clsx(
+                              'px-2 py-0.5 rounded text-xs font-medium',
+                              item.statusObject?.isSuccess &&
+                                'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
+                              item.statusObject?.isRedirect &&
+                                'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
+                              (item.statusObject?.isClientError ||
+                                item.statusObject?.isServerError) &&
+                                'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+                            )}
+                          >
+                            {item.status_code} {item.status_line}
+                          </span>
+                          {item.type === 'server_redirect' && item.redirect_type && (
+                            <span
+                              className={clsx(
+                                'px-2 py-0.5 rounded text-xs',
+                                darkMode ? 'bg-slate-700' : 'bg-slate-200'
+                              )}
+                            >
+                              {item.redirect_type}
+                            </span>
                           )}
-                        >
-                          {item.status_code} {item.status_line}
-                        </span>
-                        {item.type === 'server_redirect' && item.redirect_type && (
-                          <span
-                            className={clsx(
-                              'px-2 py-0.5 rounded text-xs',
-                              darkMode ? 'bg-slate-700' : 'bg-slate-200'
-                            )}
-                          >
-                            {item.redirect_type}
-                          </span>
-                        )}
-                        {item.timing?.duration && (
-                          <span
-                            className={clsx(
-                              'text-xs flex items-center gap-1',
-                              darkMode ? 'text-slate-500' : 'text-slate-400'
-                            )}
-                          >
-                            <Zap className="w-3 h-3" />
-                            {item.timing.duration}ms
-                          </span>
-                        )}
-                      </div>
-                      <p
-                        className={clsx(
-                          'text-sm break-all',
-                          darkMode ? 'text-slate-300' : 'text-slate-700'
-                        )}
-                      >
-                        {item.url}
-                      </p>
-                      {item.ip && (
+                          {item.timing?.duration && (
+                            <span
+                              className={clsx(
+                                'text-xs flex items-center gap-1',
+                                darkMode ? 'text-slate-500' : 'text-slate-400'
+                              )}
+                            >
+                              <Zap className="w-3 h-3" />
+                              {item.timing.duration}ms
+                            </span>
+                          )}
+                          {/* Expand indicator */}
+                          {expandedItems.has(item.id) ? (
+                            <ChevronUp className="w-4 h-4 text-slate-400 ml-auto" />
+                          ) : (
+                            <ChevronDown className="w-4 h-4 text-slate-400 ml-auto" />
+                          )}
+                        </div>
                         <p
                           className={clsx(
-                            'text-xs mt-1',
-                            darkMode ? 'text-slate-500' : 'text-slate-400'
+                            'text-sm break-all',
+                            darkMode ? 'text-slate-300' : 'text-slate-700'
                           )}
                         >
-                          IP: {item.ip}
+                          {item.url}
                         </p>
-                      )}
-                    </div>
+                      </div>
 
-                    {/* External Link */}
-                    <a
-                      href={item.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                      {/* External Link */}
+                      <a
+                        href={item.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={e => e.stopPropagation()}
+                        className={clsx(
+                          'p-1 rounded transition-colors shrink-0',
+                          darkMode
+                            ? 'text-slate-500 hover:text-slate-300'
+                            : 'text-slate-400 hover:text-slate-600'
+                        )}
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                      </a>
+                    </div>
+                  </button>
+
+                  {/* Expanded Details */}
+                  {expandedItems.has(item.id) && (
+                    <div
                       className={clsx(
-                        'p-1 rounded transition-colors shrink-0',
+                        'mt-3 p-3 rounded-lg border',
                         darkMode
-                          ? 'text-slate-500 hover:text-slate-300'
-                          : 'text-slate-400 hover:text-slate-600'
+                          ? 'bg-slate-700/50 border-slate-600'
+                          : 'bg-slate-50 border-slate-200'
                       )}
                     >
-                      <ExternalLink className="w-4 h-4" />
-                    </a>
-                  </div>
+                      <HeadersList headers={item.headers} ip={item.ip} darkMode={darkMode} />
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
