@@ -31,6 +31,35 @@ function broadcastMessage(message: Record<string, unknown>): void {
   });
 }
 
+// Update extension badge with status code
+function updateBadge(tabId: number, statusCode: number, redirectCount: number): void {
+  // Determine badge color based on status
+  let color: string;
+  if (statusCode >= 200 && statusCode < 300) {
+    color = '#22c55e'; // green
+  } else if (statusCode >= 300 && statusCode < 400) {
+    color = '#f59e0b'; // amber
+  } else if (statusCode >= 400 && statusCode < 500) {
+    color = '#ef4444'; // red
+  } else if (statusCode >= 500) {
+    color = '#dc2626'; // dark red
+  } else {
+    color = '#6b7280'; // gray
+  }
+
+  // Show redirect count if there are redirects, otherwise show final status
+  const badgeText = redirectCount > 0 ? `${redirectCount}→` : `${statusCode}`;
+
+  chrome.action.setBadgeBackgroundColor({ color, tabId });
+  chrome.action.setBadgeText({ text: badgeText, tabId });
+  chrome.action.setBadgeTextColor({ color: '#ffffff', tabId });
+}
+
+// Clear badge for a tab
+function clearBadge(tabId: number): void {
+  chrome.action.setBadgeText({ text: '', tabId });
+}
+
 // Helper to get or create a tab path
 function getOrCreateTabPath(tabId: number): TabRedirectPath {
   if (!tabPaths.has(tabId)) {
@@ -138,6 +167,25 @@ export default defineBackground(() => {
     });
   }
 
+  // Update badge when tab is activated (switched to)
+  chrome.tabs.onActivated.addListener(activeInfo => {
+    const tabPath = tabPaths.get(activeInfo.tabId);
+    if (tabPath && tabPath.path.length > 0) {
+      const lastItem = tabPath.path[tabPath.path.length - 1];
+      const redirectCount = tabPath.path.filter(
+        p => p.type === 'server_redirect' || p.type === 'client_redirect'
+      ).length;
+      updateBadge(activeInfo.tabId, lastItem.status_code, redirectCount);
+    } else {
+      clearBadge(activeInfo.tabId);
+    }
+  });
+
+  // Clean up when tab is closed
+  chrome.tabs.onRemoved.addListener(tabId => {
+    tabPaths.delete(tabId);
+  });
+
   // Store IP addresses from onResponseStarted (more reliable for IP)
   const requestIPs: Map<string, string> = new Map();
 
@@ -192,6 +240,7 @@ export default defineBackground(() => {
     if (isNewNavigation) {
       console.log('[RedirectWise] New navigation started:', details.url);
       clearTabPath(details.tabId);
+      clearBadge(details.tabId);
       pendingNavigations.set(details.tabId, details.url);
     } else {
       console.log('[RedirectWise] Continuing redirect chain:', details.url);
@@ -292,6 +341,16 @@ export default defineBackground(() => {
       });
     }
 
+    // Update badge with final status
+    const updatedTabPath = tabPaths.get(details.tabId);
+    if (updatedTabPath && updatedTabPath.path.length > 0) {
+      const lastItem = updatedTabPath.path[updatedTabPath.path.length - 1];
+      const redirectCount = updatedTabPath.path.filter(
+        p => p.type === 'server_redirect' || p.type === 'client_redirect'
+      ).length;
+      updateBadge(details.tabId, lastItem.status_code, redirectCount);
+    }
+
     // Broadcast navigation complete
     broadcastMessage({
       name: 'navigationComplete',
@@ -302,7 +361,6 @@ export default defineBackground(() => {
     const settings = await getSettings();
     if (!settings.autoSaveHistory) return;
 
-    const updatedTabPath = tabPaths.get(details.tabId);
     if (updatedTabPath && updatedTabPath.path.length > 0) {
       await saveHistoryEntry(updatedTabPath.path);
       console.log('[RedirectWise] Saved to history');
