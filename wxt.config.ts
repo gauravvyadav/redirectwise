@@ -8,7 +8,7 @@ export default defineConfig({
     name: 'RedirectWise',
     description: 'Track and analyze HTTP redirect chains for any URL',
     version: '1.0.0',
-    permissions: ['webRequest', 'webNavigation', 'tabs', 'activeTab', 'storage', 'sidePanel'],
+    permissions: ['webRequest', 'webNavigation', 'tabs', 'storage', 'sidePanel'],
     host_permissions: ['<all_urls>'],
     icons: {
       '16': 'icons/icon-16.png',
