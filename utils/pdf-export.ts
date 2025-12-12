@@ -1,8 +1,6 @@
-// PDF Export utility with beautiful design
-
+// PDF Export utility using pdf-lib (Pure TypeScript, no external deps)
 import { format } from 'date-fns';
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
+import { Color, PDFDocument, PDFFont, StandardFonts, rgb } from 'pdf-lib';
 import { ChainScore, HistoryEntry, RedirectItem } from '../types/redirect';
 
 interface PDFExportOptions {
@@ -13,340 +11,53 @@ interface PDFExportOptions {
 }
 
 const COLORS = {
-  primary: [59, 130, 246] as [number, number, number], // Blue
-  success: [34, 197, 94] as [number, number, number], // Green
-  warning: [245, 158, 11] as [number, number, number], // Amber
-  error: [239, 68, 68] as [number, number, number], // Red
-  dark: [30, 41, 59] as [number, number, number], // Slate-800
-  light: [241, 245, 249] as [number, number, number], // Slate-100
-  white: [255, 255, 255] as [number, number, number],
+  primary: rgb(59 / 255, 130 / 255, 246 / 255), // #3B82F6
+  success: rgb(34 / 255, 197 / 255, 94 / 255), // #22C55E
+  warning: rgb(245 / 255, 158 / 255, 11 / 255), // #F59E0B
+  error: rgb(239 / 255, 68 / 255, 68 / 255), // #EF4444
+  dark: rgb(30 / 255, 41 / 255, 59 / 255), // #1E293B
+  light: rgb(241 / 255, 245 / 255, 249 / 255), // #F1F5F9
+  white: rgb(1, 1, 1),
+  textSecondary: rgb(100 / 255, 116 / 255, 139 / 255), // #64748B
 };
 
-// Load logo as base64 for PDF embedding
-async function loadLogoAsBase64(): Promise<string | null> {
+const PAGE_WIDTH = 595.28;
+const PAGE_HEIGHT = 841.89;
+const MARGIN = 40;
+const CONTENT_WIDTH = PAGE_WIDTH - MARGIN * 2;
+
+async function loadLogo(): Promise<ArrayBuffer | null> {
   try {
     const logoUrl = chrome.runtime.getURL('icons/icon-128.png');
     const response = await fetch(logoUrl);
-    const blob = await response.blob();
-    return new Promise(resolve => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result as string);
-      reader.onerror = () => resolve(null);
-      reader.readAsDataURL(blob);
-    });
+    return await response.arrayBuffer();
   } catch {
     return null;
   }
 }
 
-// Draw a simple logo as fallback when PNG fails to load
-function drawFallbackLogo(doc: jsPDF): void {
-  doc.setFillColor(255, 255, 255);
-  doc.roundedRect(15, 10, 25, 25, 3, 3, 'F');
-  doc.setDrawColor(59, 130, 246);
-  doc.setLineWidth(1.5);
-  doc.line(21, 29, 33, 17); // Diagonal line
-  doc.line(33, 17, 25, 17); // Top horizontal
-  doc.line(33, 17, 33, 25); // Right vertical
-}
-
-function getGradeColor(grade: ChainScore['grade']): [number, number, number] {
+function getGradeColor(grade: ChainScore['grade']): Color {
   switch (grade) {
     case 'A':
       return COLORS.success;
     case 'B':
-      return [132, 204, 22]; // Lime
+      return rgb(132 / 255, 204 / 255, 22 / 255); // Lime
     case 'C':
       return COLORS.warning;
     case 'D':
-      return [249, 115, 22]; // Orange
+      return rgb(249 / 255, 115 / 255, 22 / 255); // Orange
     case 'F':
       return COLORS.error;
+    default:
+      return COLORS.dark;
   }
 }
 
-function getStatusColor(statusCode: number): [number, number, number] {
+function getStatusColor(statusCode: number): Color {
   if (statusCode >= 200 && statusCode < 300) return COLORS.success;
   if (statusCode >= 300 && statusCode < 400) return COLORS.warning;
   if (statusCode >= 400) return COLORS.error;
   return COLORS.dark;
-}
-
-export async function exportToPDF(
-  entry: HistoryEntry,
-  options: PDFExportOptions = {}
-): Promise<void> {
-  const {
-    title = 'Redirect Chain Analysis',
-    includeHeaders = true,
-    includeScore = true,
-    includeRecommendations = true,
-  } = options;
-
-  const doc = new jsPDF();
-  const pageWidth = doc.internal.pageSize.getWidth();
-  let yPos = 20;
-
-  // Load logo
-  const logoBase64 = await loadLogoAsBase64();
-
-  // Helper to add new page if needed
-  const checkNewPage = (requiredSpace: number) => {
-    if (yPos + requiredSpace > 270) {
-      doc.addPage();
-      yPos = 20;
-    }
-  };
-
-  // ========== HEADER ==========
-  doc.setFillColor(...COLORS.primary);
-  doc.rect(0, 0, pageWidth, 45, 'F');
-
-  // Logo - use PNG logo from extension
-  if (logoBase64) {
-    try {
-      doc.addImage(logoBase64, 'PNG', 15, 10, 25, 25);
-    } catch {
-      // Fallback to drawn logo
-      drawFallbackLogo(doc);
-    }
-  } else {
-    drawFallbackLogo(doc);
-  }
-
-  // Title
-  doc.setTextColor(...COLORS.white);
-  doc.setFontSize(24);
-  doc.setFont('helvetica', 'bold');
-  doc.text('RedirectWise', 48, 22);
-
-  doc.setFontSize(12);
-  doc.setFont('helvetica', 'normal');
-  doc.text(title, 48, 32);
-
-  // Date
-  doc.setFontSize(10);
-  doc.text(format(entry.timestamp, "MMMM d, yyyy 'at' h:mm a"), pageWidth - 15, 22, {
-    align: 'right',
-  });
-  doc.text(`Report ID: ${entry.id.substring(0, 8)}`, pageWidth - 15, 32, { align: 'right' });
-
-  yPos = 55;
-
-  // ========== SUMMARY BOX ==========
-  doc.setFillColor(...COLORS.light);
-  doc.roundedRect(15, yPos, pageWidth - 30, 50, 3, 3, 'F');
-
-  // Chain Score Circle
-  const scoreX = 45;
-  const scoreY = yPos + 25;
-  const gradeColor = getGradeColor(entry.chainScore.grade);
-
-  doc.setFillColor(...gradeColor);
-  doc.circle(scoreX, scoreY, 18, 'F');
-
-  doc.setTextColor(...COLORS.white);
-  doc.setFontSize(24);
-  doc.setFont('helvetica', 'bold');
-  doc.text(entry.chainScore.grade, scoreX, scoreY + 2, { align: 'center' });
-
-  doc.setTextColor(...COLORS.dark);
-  doc.setFontSize(11);
-  doc.text(`Score: ${entry.chainScore.score}/100`, scoreX, scoreY + 28, { align: 'center' });
-
-  // Summary stats
-  const statsX = 85;
-  const maxTextWidth = pageWidth - statsX - 55; // Leave room for right side stats
-
-  doc.setFontSize(10);
-  doc.setFont('helvetica', 'normal');
-  doc.setTextColor(100, 116, 139);
-  doc.text('ORIGINAL URL', statsX, yPos + 12);
-  doc.setTextColor(...COLORS.dark);
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(9);
-  const originalLines = doc.splitTextToSize(entry.originalUrl, maxTextWidth);
-  doc.text(originalLines.slice(0, 2).join('\n'), statsX, yPos + 19);
-
-  doc.setFontSize(10);
-  doc.setFont('helvetica', 'normal');
-  doc.setTextColor(100, 116, 139);
-  doc.text('FINAL URL', statsX, yPos + 32);
-  doc.setTextColor(...COLORS.dark);
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(9);
-  const finalLines = doc.splitTextToSize(entry.finalUrl, maxTextWidth);
-  doc.text(finalLines.slice(0, 2).join('\n'), statsX, yPos + 39);
-
-  // Right side stats
-  const rightX = pageWidth - 45;
-  doc.setFontSize(18);
-  doc.setTextColor(...COLORS.dark);
-  doc.text(`${entry.redirectCount}`, rightX, yPos + 20, { align: 'center' });
-  doc.setFontSize(10);
-  doc.setTextColor(100, 116, 139);
-  doc.text('Redirects', rightX, yPos + 28, { align: 'center' });
-
-  doc.setFontSize(18);
-  doc.setTextColor(...COLORS.dark);
-  doc.text(`${entry.path.length}`, rightX, yPos + 42, { align: 'center' });
-  doc.setFontSize(10);
-  doc.setTextColor(100, 116, 139);
-  doc.text('Total Hops', rightX, yPos + 50, { align: 'center' });
-
-  yPos += 60;
-
-  // ========== REDIRECT PATH TABLE ==========
-  checkNewPage(60);
-  yPos += 10;
-
-  doc.setFontSize(16);
-  doc.setFont('helvetica', 'bold');
-  doc.setTextColor(...COLORS.dark);
-  doc.text('Redirect Chain Details', 15, yPos);
-  yPos += 10;
-
-  const tableData = entry.path.map((item, idx) => {
-    const statusLabel = getStatusLabel(item);
-    const timing = item.timing?.duration ? `${item.timing.duration}ms` : '-';
-    return [
-      (idx + 1).toString(),
-      item.status_code.toString(),
-      statusLabel,
-      item.url, // Full URL - autoTable will handle wrapping
-      item.ip || '-',
-      timing,
-    ];
-  });
-
-  autoTable(doc, {
-    startY: yPos,
-    head: [['#', 'Status', 'Type', 'URL', 'IP', 'Time']],
-    body: tableData,
-    theme: 'striped',
-    headStyles: {
-      fillColor: COLORS.primary,
-      textColor: COLORS.white,
-      fontStyle: 'bold',
-      fontSize: 11,
-    },
-    bodyStyles: {
-      fontSize: 9,
-      textColor: COLORS.dark,
-      cellPadding: 4,
-    },
-    columnStyles: {
-      0: { cellWidth: 8, halign: 'center' },
-      1: { cellWidth: 14, halign: 'center' },
-      2: { cellWidth: 22 },
-      3: {
-        cellWidth: 'auto',
-        overflow: 'linebreak',
-        cellPadding: { top: 3, right: 2, bottom: 3, left: 2 },
-      }, // Full URL with word wrap
-      4: { cellWidth: 25 },
-      5: { cellWidth: 16, halign: 'right' },
-    },
-    styles: {
-      overflow: 'linebreak',
-      cellWidth: 'wrap',
-    },
-    didParseCell: data => {
-      // Color status codes
-      if (data.section === 'body' && data.column.index === 1) {
-        const statusCode = parseInt(data.cell.raw as string);
-        data.cell.styles.textColor = getStatusColor(statusCode);
-        data.cell.styles.fontStyle = 'bold';
-      }
-    },
-    margin: { left: 15, right: 15 },
-  });
-
-  yPos = (doc as any).lastAutoTable.finalY + 15;
-
-  // ========== ISSUES & RECOMMENDATIONS ==========
-  if (includeScore && entry.chainScore.issues.length > 0) {
-    checkNewPage(50);
-
-    doc.setFontSize(16);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(...COLORS.dark);
-    doc.text('Analysis & Issues', 15, yPos);
-    yPos += 12;
-
-    entry.chainScore.issues.forEach(issue => {
-      checkNewPage(18);
-
-      const iconColor =
-        issue.type === 'error'
-          ? COLORS.error
-          : issue.type === 'warning'
-          ? COLORS.warning
-          : COLORS.success;
-
-      doc.setFillColor(...iconColor);
-      doc.circle(20, yPos - 2, 4, 'F');
-
-      doc.setFontSize(11);
-      doc.setFont('helvetica', 'normal');
-      doc.setTextColor(...COLORS.dark);
-      doc.text(issue.message, 30, yPos);
-
-      doc.setFontSize(9);
-      doc.setTextColor(100, 116, 139);
-      doc.text(`Impact: ${issue.impact.toUpperCase()}`, 30, yPos + 6);
-
-      yPos += 16;
-    });
-  }
-
-  if (includeRecommendations && entry.chainScore.recommendations.length > 0) {
-    checkNewPage(50);
-    yPos += 5;
-
-    doc.setFontSize(16);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(...COLORS.dark);
-    doc.text('Recommendations', 15, yPos);
-    yPos += 12;
-
-    entry.chainScore.recommendations.forEach((rec, idx) => {
-      checkNewPage(14);
-
-      doc.setFillColor(...COLORS.primary);
-      doc.circle(20, yPos - 2, 4, 'F');
-      doc.setTextColor(...COLORS.white);
-      doc.setFontSize(9);
-      doc.text((idx + 1).toString(), 20, yPos - 0.5, { align: 'center' });
-
-      doc.setFontSize(11);
-      doc.setFont('helvetica', 'normal');
-      doc.setTextColor(...COLORS.dark);
-      doc.text(rec, 30, yPos);
-
-      yPos += 12;
-    });
-  }
-
-  // ========== FOOTER ==========
-  const pageCount = doc.getNumberOfPages();
-  for (let i = 1; i <= pageCount; i++) {
-    doc.setPage(i);
-    doc.setFillColor(...COLORS.light);
-    doc.rect(0, 282, pageWidth, 15, 'F');
-
-    doc.setFontSize(10);
-    doc.setTextColor(100, 116, 139);
-    doc.text('Generated by RedirectWise - Redirect Path Analyzer', 15, 290);
-    doc.text(`Page ${i} of ${pageCount}`, pageWidth - 15, 290, { align: 'right' });
-  }
-
-  // Save the PDF
-  const filename = `redirectwise-${entry.id.substring(0, 8)}-${format(
-    entry.timestamp,
-    'yyyy-MM-dd'
-  )}.pdf`;
-  doc.save(filename);
 }
 
 function getStatusLabel(item: RedirectItem): string {
@@ -364,91 +75,657 @@ function getStatusLabel(item: RedirectItem): string {
   return 'Navigation';
 }
 
-// Export multiple entries to PDF
+// Helper to wrap text (handling both spaces and long strings like URLs/IPs)
+function wrapText(text: string, maxWidth: number, font: PDFFont, fontSize: number): string[] {
+  const paragraphs = text.split(/\r?\n/);
+  const lines: string[] = [];
+
+  for (const paragraph of paragraphs) {
+    if (paragraph === '') {
+      lines.push('');
+      continue;
+    }
+
+    const words = paragraph.split(' ');
+    let currentLine = '';
+
+    for (let i = 0; i < words.length; i++) {
+      const word = words[i];
+
+      const wordWidth = font.widthOfTextAtSize(word, fontSize);
+
+      if (wordWidth > maxWidth) {
+        if (currentLine) {
+          lines.push(currentLine);
+          currentLine = '';
+        }
+
+        let remaining = word;
+        while (remaining.length > 0) {
+          let fitIndex = 0;
+          let w = '';
+          for (let k = 0; k < remaining.length; k++) {
+            const char = remaining[k];
+            const newW = w + char;
+            if (font.widthOfTextAtSize(newW, fontSize) > maxWidth) {
+              break;
+            }
+            w = newW;
+            fitIndex = k + 1;
+          }
+
+          if (fitIndex === 0) fitIndex = 1;
+
+          lines.push(remaining.substring(0, fitIndex));
+          remaining = remaining.substring(fitIndex);
+        }
+      } else {
+        const testLine = currentLine ? `${currentLine} ${word}` : word;
+        const testWidth = font.widthOfTextAtSize(testLine, fontSize);
+
+        if (testWidth <= maxWidth) {
+          currentLine = testLine;
+        } else {
+          lines.push(currentLine);
+          currentLine = word;
+        }
+      }
+    }
+    if (currentLine) {
+      lines.push(currentLine);
+    }
+  }
+  return lines.length > 0 ? lines : [text];
+}
+
+export async function exportToPDF(
+  entry: HistoryEntry,
+  options: PDFExportOptions = {}
+): Promise<void> {
+  const {
+    title = 'Redirect Chain Analysis',
+    includeScore = true,
+    includeRecommendations = true,
+  } = options;
+
+  const pdfDoc = await PDFDocument.create();
+  const fontNormal = await pdfDoc.embedFont(StandardFonts.Helvetica);
+  const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+
+  let page = pdfDoc.addPage([PAGE_WIDTH, PAGE_HEIGHT]);
+  let yPos = PAGE_HEIGHT - 20;
+
+  const checkPageBreak = (neededHeight: number) => {
+    if (yPos - neededHeight < MARGIN) {
+      page = pdfDoc.addPage([PAGE_WIDTH, PAGE_HEIGHT]);
+      yPos = PAGE_HEIGHT - MARGIN;
+    }
+  };
+
+  // ========== HEADER ==========
+  page.drawRectangle({
+    x: 0,
+    y: PAGE_HEIGHT - 55,
+    width: PAGE_WIDTH,
+    height: 55,
+    color: COLORS.primary,
+  });
+
+  // Logo
+  const logoBuffer = await loadLogo();
+  if (logoBuffer) {
+    const logoImage = await pdfDoc.embedPng(logoBuffer);
+    page.drawImage(logoImage, {
+      x: 15,
+      y: PAGE_HEIGHT - 45,
+      width: 35,
+      height: 35,
+    });
+  }
+
+  page.drawText('RedirectWise', {
+    x: 60,
+    y: PAGE_HEIGHT - 32,
+    size: 24,
+    font: fontBold,
+    color: COLORS.white,
+  });
+
+  page.drawText(title, {
+    x: 60,
+    y: PAGE_HEIGHT - 48,
+    size: 12,
+    font: fontNormal,
+    color: COLORS.white,
+  });
+
+  // Date
+  const dateText = format(entry.timestamp, "MMMM d, yyyy 'at' h:mm a");
+  const dateWidth = fontNormal.widthOfTextAtSize(dateText, 10);
+  page.drawText(dateText, {
+    x: PAGE_WIDTH - dateWidth - 15,
+    y: PAGE_HEIGHT - 30,
+    size: 10,
+    font: fontNormal,
+    color: COLORS.white,
+  });
+
+  const idText = `Report ID: ${entry.id.substring(0, 8)}`;
+  const idWidth = fontNormal.widthOfTextAtSize(idText, 10);
+  page.drawText(idText, {
+    x: PAGE_WIDTH - idWidth - 15,
+    y: PAGE_HEIGHT - 45,
+    size: 10,
+    font: fontNormal,
+    color: COLORS.white,
+  });
+
+  yPos = PAGE_HEIGHT - 80;
+
+  // ========== SUMMARY BOX ==========
+  const summaryBoxHeight = 60;
+
+  page.drawRectangle({
+    x: 15,
+    y: yPos - summaryBoxHeight,
+    width: PAGE_WIDTH - 30,
+    height: summaryBoxHeight,
+    color: COLORS.light,
+  });
+
+  // Grade Circle
+  const scoreX = 50;
+  const scoreY = yPos - summaryBoxHeight / 2 + 5;
+  const gradeColor = getGradeColor(entry.chainScore.grade);
+
+  page.drawCircle({
+    x: scoreX,
+    y: scoreY - 2,
+    size: 20,
+    color: gradeColor,
+  });
+
+  const gradeWidth = fontBold.widthOfTextAtSize(entry.chainScore.grade, 24);
+  page.drawText(entry.chainScore.grade, {
+    x: scoreX - gradeWidth / 2,
+    y: scoreY - 10,
+    size: 24,
+    font: fontBold,
+    color: COLORS.white,
+  });
+
+  const scoreText = `Score: ${entry.chainScore.score}/100`;
+  const scoreWidth = fontBold.widthOfTextAtSize(scoreText, 10);
+  page.drawText(scoreText, {
+    x: scoreX - scoreWidth / 2,
+    y: scoreY - 35,
+    size: 10,
+    font: fontBold,
+    color: COLORS.dark,
+  });
+
+  // Summary URL Stats
+  const statsX = 100;
+  const maxUrlWidth = PAGE_WIDTH - 250;
+
+  page.drawText('ORIGINAL URL', {
+    x: statsX,
+    y: yPos - 15,
+    size: 9,
+    font: fontNormal,
+    color: COLORS.textSecondary,
+  });
+  let origUrl = entry.originalUrl;
+  if (fontBold.widthOfTextAtSize(origUrl, 9) > maxUrlWidth) {
+    origUrl = origUrl.substring(0, 50) + '...';
+  }
+  page.drawText(origUrl, { x: statsX, y: yPos - 27, size: 9, font: fontBold, color: COLORS.dark });
+
+  page.drawText('FINAL URL', {
+    x: statsX,
+    y: yPos - 42,
+    size: 9,
+    font: fontNormal,
+    color: COLORS.textSecondary,
+  });
+  let finalUrl = entry.finalUrl;
+  if (fontBold.widthOfTextAtSize(finalUrl, 9) > maxUrlWidth) {
+    finalUrl = finalUrl.substring(0, 50) + '...';
+  }
+  page.drawText(finalUrl, { x: statsX, y: yPos - 54, size: 9, font: fontBold, color: COLORS.dark });
+
+  // Right Stats
+  const rightX = PAGE_WIDTH - 60;
+
+  const redirectCountText = entry.redirectCount.toString();
+  const rcWidth = fontBold.widthOfTextAtSize(redirectCountText, 18);
+  page.drawText(redirectCountText, {
+    x: rightX - rcWidth / 2,
+    y: yPos - 20,
+    size: 18,
+    font: fontBold,
+    color: COLORS.dark,
+  });
+
+  const rLabel = 'Redirects';
+  const rlWidth = fontNormal.widthOfTextAtSize(rLabel, 9);
+  page.drawText(rLabel, {
+    x: rightX - rlWidth / 2,
+    y: yPos - 30,
+    size: 9,
+    font: fontNormal,
+    color: COLORS.textSecondary,
+  });
+
+  const hopsText = entry.path.length.toString();
+  const hWidth = fontBold.widthOfTextAtSize(hopsText, 18);
+  page.drawText(hopsText, {
+    x: rightX - hWidth / 2,
+    y: yPos - 45,
+    size: 18,
+    font: fontBold,
+    color: COLORS.dark,
+  });
+
+  const hLabel = 'Total Hops';
+  const hlWidth = fontNormal.widthOfTextAtSize(hLabel, 9);
+  page.drawText(hLabel, {
+    x: rightX - hlWidth / 2,
+    y: yPos - 55,
+    size: 9,
+    font: fontNormal,
+    color: COLORS.textSecondary,
+  });
+
+  yPos -= summaryBoxHeight + 30;
+
+  // ========== TABLE ==========
+  page.drawText('Redirect Chain Details', {
+    x: 15,
+    y: yPos,
+    size: 16,
+    font: fontBold,
+    color: COLORS.dark,
+  });
+  yPos -= 20;
+
+  // Table Headers
+  const colWidths = [30, 40, 90, 210, 140, 40];
+  const cols = ['#', 'Status', 'Type', 'URL', 'IP', 'Time'];
+  let currentX = 15;
+
+  // Header Row Background
+  page.drawRectangle({
+    x: 15,
+    y: yPos - 5,
+    width: PAGE_WIDTH - 30,
+    height: 20,
+    color: COLORS.primary,
+  });
+
+  cols.forEach((col, i) => {
+    const xPos = i === cols.length - 1 ? currentX + 5 + colWidths[i] / 2 - 10 : currentX + 5;
+    page.drawText(col, { x: xPos, y: yPos, size: 10, font: fontBold, color: COLORS.white });
+    currentX += colWidths[i];
+  });
+
+  yPos -= 25;
+
+  // Table Body
+  for (let i = 0; i < entry.path.length; i++) {
+    const item = entry.path[i];
+    const statusLabel = getStatusLabel(item);
+    const timing = item.timing?.duration ? `${item.timing.duration}ms` : '-';
+    const statusColor = item.status_code ? getStatusColor(item.status_code) : COLORS.dark;
+
+    const urlLines = wrapText(item.url, colWidths[3] - 10, fontNormal, 9);
+    const ipLines = wrapText(item.ip || '-', colWidths[4] - 10, fontNormal, 9);
+
+    const maxLines = Math.max(urlLines.length, ipLines.length);
+    const rowHeight = Math.max(24, maxLines * 12 + 12);
+
+    checkPageBreak(rowHeight);
+
+    if (i % 2 === 0) {
+      page.drawRectangle({
+        x: 15,
+        y: yPos - rowHeight + 14,
+        width: PAGE_WIDTH - 30,
+        height: rowHeight,
+        color: COLORS.light,
+      });
+    }
+
+    const textY = yPos - 2;
+
+    page.drawText((i + 1).toString(), {
+      x: 15 + 5,
+      y: textY,
+      size: 9,
+      font: fontNormal,
+      color: COLORS.dark,
+    });
+
+    page.drawText(item.status_code.toString(), {
+      x: 15 + colWidths[0] + 5,
+      y: textY,
+      size: 9,
+      font: fontBold,
+      color: statusColor,
+    });
+
+    page.drawText(statusLabel, {
+      x: 15 + colWidths[0] + colWidths[1] + 5,
+      y: textY,
+      size: 9,
+      font: fontNormal,
+      color: COLORS.dark,
+    });
+
+    urlLines.forEach((line, lineIdx) => {
+      page.drawText(line, {
+        x: 15 + colWidths[0] + colWidths[1] + colWidths[2] + 5,
+        y: textY - lineIdx * 12,
+        size: 9,
+        font: fontNormal,
+        color: COLORS.dark,
+      });
+    });
+
+    ipLines.forEach((line, lineIdx) => {
+      page.drawText(line, {
+        x: 15 + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 5,
+        y: textY - lineIdx * 12,
+        size: 9,
+        font: fontNormal,
+        color: COLORS.dark,
+      });
+    });
+
+    const timeWidth = fontNormal.widthOfTextAtSize(timing, 9);
+    const timeX =
+      15 +
+      colWidths[0] +
+      colWidths[1] +
+      colWidths[2] +
+      colWidths[3] +
+      colWidths[4] +
+      5 +
+      colWidths[5] / 2 -
+      timeWidth / 2;
+    page.drawText(timing, { x: timeX, y: textY, size: 9, font: fontNormal, color: COLORS.dark });
+
+    yPos -= rowHeight;
+  }
+
+  yPos -= 30;
+
+  // ========== ANALYTICS & RECOMMENDATIONS ==========
+  if (includeScore && entry.chainScore.issues.length > 0) {
+    checkPageBreak(50);
+    page.drawText('Analysis & Issues', {
+      x: 15,
+      y: yPos,
+      size: 16,
+      font: fontBold,
+      color: COLORS.dark,
+    });
+    yPos -= 20;
+
+    entry.chainScore.issues.forEach(issue => {
+      checkPageBreak(30);
+      const iconColor =
+        issue.type === 'error'
+          ? COLORS.error
+          : issue.type === 'warning'
+          ? COLORS.warning
+          : COLORS.success;
+
+      page.drawCircle({ x: 20, y: yPos + 3, size: 4, color: iconColor });
+      page.drawText(issue.message, {
+        x: 30,
+        y: yPos,
+        size: 11,
+        font: fontNormal,
+        color: COLORS.dark,
+      });
+      page.drawText(`Impact: ${issue.impact.toUpperCase()}`, {
+        x: 30,
+        y: yPos - 12,
+        size: 9,
+        font: fontNormal,
+        color: COLORS.textSecondary,
+      });
+
+      yPos -= 30;
+    });
+    yPos -= 10;
+  }
+
+  if (includeRecommendations && entry.chainScore.recommendations.length > 0) {
+    checkPageBreak(50);
+    page.drawText('Recommendations', {
+      x: 15,
+      y: yPos,
+      size: 16,
+      font: fontBold,
+      color: COLORS.dark,
+    });
+    yPos -= 20;
+
+    entry.chainScore.recommendations.forEach((rec, idx) => {
+      const recLines = wrapText(rec, PAGE_WIDTH - 60, fontNormal, 11);
+      const height = recLines.length * 14 + 10;
+      checkPageBreak(height);
+
+      page.drawCircle({ x: 20, y: yPos + 4, size: 8, color: COLORS.primary });
+      page.drawText((idx + 1).toString(), {
+        x: 17.5,
+        y: yPos + 1,
+        size: 9,
+        font: fontBold,
+        color: COLORS.white,
+      });
+
+      recLines.forEach((line, lIdx) => {
+        page.drawText(line, {
+          x: 35,
+          y: yPos - lIdx * 14,
+          size: 11,
+          font: fontNormal,
+          color: COLORS.dark,
+        });
+      });
+
+      yPos -= height;
+    });
+  }
+
+  // Add Page Numbers
+  const pageCount = pdfDoc.getPageCount();
+  const pages = pdfDoc.getPages();
+  pages.forEach((p, i) => {
+    p.drawRectangle({ x: 0, y: 0, width: PAGE_WIDTH, height: 20, color: COLORS.light });
+    p.drawText('Generated by RedirectWise', {
+      x: 15,
+      y: 7,
+      size: 8,
+      font: fontNormal,
+      color: COLORS.textSecondary,
+    });
+    p.drawText(`Page ${i + 1} of ${pageCount}`, {
+      x: PAGE_WIDTH - 80,
+      y: 7,
+      size: 8,
+      font: fontNormal,
+      color: COLORS.textSecondary,
+    });
+  });
+
+  const pdfBytes = await pdfDoc.save();
+  downloadPDF(
+    pdfBytes,
+    `redirectwise-${entry.id.substring(0, 8)}-${format(entry.timestamp, 'yyyy-MM-dd')}.pdf`
+  );
+}
+
+// Export History
 export async function exportHistoryToPDF(entries: HistoryEntry[]): Promise<void> {
-  const doc = new jsPDF();
-  const pageWidth = doc.internal.pageSize.getWidth();
+  const pdfDoc = await PDFDocument.create();
+  const fontNormal = await pdfDoc.embedFont(StandardFonts.Helvetica);
+  const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+
+  let page = pdfDoc.addPage([PAGE_WIDTH, PAGE_HEIGHT]);
+  let yPos = PAGE_HEIGHT - MARGIN;
 
   // Header
-  doc.setFillColor(...COLORS.primary);
-  doc.rect(0, 0, pageWidth, 35, 'F');
+  page.drawRectangle({
+    x: 0,
+    y: PAGE_HEIGHT - 50,
+    width: PAGE_WIDTH,
+    height: 50,
+    color: COLORS.primary,
+  });
+  page.drawText('RedirectWise History Report', {
+    x: 15,
+    y: PAGE_HEIGHT - 30,
+    size: 22,
+    font: fontBold,
+    color: COLORS.white,
+  });
+  page.drawText(`${entries.length} entries • Generated ${format(new Date(), 'MMMM d, yyyy')}`, {
+    x: 15,
+    y: PAGE_HEIGHT - 42,
+    size: 10,
+    font: fontNormal,
+    color: COLORS.white,
+  });
 
-  doc.setTextColor(...COLORS.white);
-  doc.setFontSize(22);
-  doc.setFont('helvetica', 'bold');
-  doc.text('RedirectWise History Report', 15, 22);
+  yPos = PAGE_HEIGHT - 70;
 
-  doc.setFontSize(12);
-  doc.text(`${entries.length} entries • Generated ${format(new Date(), 'MMMM d, yyyy')}`, 15, 30);
-
-  // Stats summary
+  // Summary
   const avgScore = entries.reduce((acc, e) => acc + e.chainScore.score, 0) / entries.length;
   const totalRedirects = entries.reduce((acc, e) => acc + e.redirectCount, 0);
 
-  doc.setFillColor(...COLORS.light);
-  doc.roundedRect(15, 45, pageWidth - 30, 25, 3, 3, 'F');
-
-  doc.setTextColor(...COLORS.dark);
-  doc.setFontSize(13);
-  doc.text(`Average Score: ${Math.round(avgScore)}`, 25, 60);
-  doc.text(`Total Redirects: ${totalRedirects}`, 100, 60);
-  doc.text(`Entries: ${entries.length}`, pageWidth - 50, 60);
-
-  // Table
-  const tableData = entries.map(entry => [
-    format(entry.timestamp, 'MM/dd/yy HH:mm'),
-    entry.chainScore.grade,
-    entry.redirectCount.toString(),
-    entry.originalUrl, // Full URL
-    entry.finalUrl, // Full URL
-  ]);
-
-  autoTable(doc, {
-    startY: 80,
-    head: [['Date', 'Grade', 'Redirects', 'Original URL', 'Final URL']],
-    body: tableData,
-    theme: 'striped',
-    headStyles: {
-      fillColor: COLORS.primary,
-      textColor: COLORS.white,
-      fontStyle: 'bold',
-      fontSize: 11,
-    },
-    bodyStyles: {
-      fontSize: 9,
-      textColor: COLORS.dark,
-      cellPadding: 3,
-    },
-    styles: {
-      overflow: 'linebreak',
-      cellWidth: 'wrap',
-    },
-    columnStyles: {
-      0: { cellWidth: 24 },
-      1: { cellWidth: 12, halign: 'center' },
-      2: { cellWidth: 16, halign: 'center' },
-      3: { cellWidth: 'auto', overflow: 'linebreak' }, // Full URL with wrap
-      4: { cellWidth: 'auto', overflow: 'linebreak' }, // Full URL with wrap
-    },
-    didParseCell: data => {
-      if (data.section === 'body' && data.column.index === 1) {
-        const grade = data.cell.raw as string;
-        data.cell.styles.textColor = getGradeColor(grade as ChainScore['grade']);
-        data.cell.styles.fontStyle = 'bold';
-      }
-    },
-    margin: { left: 15, right: 15 },
+  page.drawRectangle({
+    x: 15,
+    y: yPos - 30,
+    width: PAGE_WIDTH - 30,
+    height: 30,
+    color: COLORS.light,
+  });
+  page.drawText(`Average Score: ${Math.round(avgScore)}`, {
+    x: 25,
+    y: yPos - 20,
+    size: 12,
+    font: fontBold,
+    color: COLORS.dark,
+  });
+  page.drawText(`Total Redirects: ${totalRedirects}`, {
+    x: 200,
+    y: yPos - 20,
+    size: 12,
+    font: fontBold,
+    color: COLORS.dark,
+  });
+  page.drawText(`Entries: ${entries.length}`, {
+    x: 400,
+    y: yPos - 20,
+    size: 12,
+    font: fontBold,
+    color: COLORS.dark,
   });
 
-  // Footer
-  const pageCount = doc.getNumberOfPages();
-  for (let i = 1; i <= pageCount; i++) {
-    doc.setPage(i);
-    doc.setFontSize(10);
-    doc.setTextColor(100, 116, 139);
-    doc.text('Generated by RedirectWise', 15, 290);
-    doc.text(`Page ${i} of ${pageCount}`, pageWidth - 15, 290, { align: 'right' });
+  yPos -= 50;
+
+  // Table Headers
+  const colWidths = [100, 50, 50, 150, 150];
+  const cols = ['Date', 'Grade', 'Redir', 'Original URL', 'Final URL'];
+  let currentX = 15;
+
+  page.drawRectangle({
+    x: 15,
+    y: yPos - 5,
+    width: PAGE_WIDTH - 30,
+    height: 20,
+    color: COLORS.primary,
+  });
+  cols.forEach((col, i) => {
+    page.drawText(col, { x: currentX + 5, y: yPos, size: 10, font: fontBold, color: COLORS.white });
+    currentX += colWidths[i];
+  });
+
+  yPos -= 25;
+
+  // Table Body
+  for (let i = 0; i < entries.length; i++) {
+    const entry = entries[i];
+
+    if (yPos < MARGIN + 20) {
+      page = pdfDoc.addPage([PAGE_WIDTH, PAGE_HEIGHT]);
+      yPos = PAGE_HEIGHT - MARGIN;
+    }
+
+    if (i % 2 === 0) {
+      page.drawRectangle({
+        x: 15,
+        y: yPos - 12 + 2,
+        width: PAGE_WIDTH - 30,
+        height: 16,
+        color: COLORS.light,
+      });
+    }
+
+    const dateStr = format(entry.timestamp, 'MM/dd/yy HH:mm');
+    const gradeColor = getGradeColor(entry.chainScore.grade);
+
+    let cx = 15;
+    page.drawText(dateStr, { x: cx + 2, y: yPos, size: 9, font: fontNormal, color: COLORS.dark });
+    cx += colWidths[0];
+
+    page.drawText(entry.chainScore.grade, {
+      x: cx + 15,
+      y: yPos,
+      size: 9,
+      font: fontBold,
+      color: gradeColor,
+    });
+    cx += colWidths[1];
+
+    page.drawText(entry.redirectCount.toString(), {
+      x: cx + 15,
+      y: yPos,
+      size: 9,
+      font: fontNormal,
+      color: COLORS.dark,
+    });
+    cx += colWidths[2];
+
+    // Truncate URLs
+    let orig =
+      entry.originalUrl.length > 30
+        ? entry.originalUrl.substring(0, 30) + '...'
+        : entry.originalUrl;
+    page.drawText(orig, { x: cx + 2, y: yPos, size: 9, font: fontNormal, color: COLORS.dark });
+    cx += colWidths[3];
+
+    let final =
+      entry.finalUrl.length > 30 ? entry.finalUrl.substring(0, 30) + '...' : entry.finalUrl;
+    page.drawText(final, { x: cx + 2, y: yPos, size: 9, font: fontNormal, color: COLORS.dark });
+
+    yPos -= 16;
   }
 
-  doc.save(`redirectwise-history-${format(new Date(), 'yyyy-MM-dd')}.pdf`);
+  const pdfBytes = await pdfDoc.save();
+  downloadPDF(pdfBytes, `redirectwise-history-${format(new Date(), 'yyyy-MM-dd')}.pdf`);
+}
+
+function downloadPDF(bytes: Uint8Array, filename: string) {
+  const blob = new Blob([bytes as any], { type: 'application/pdf' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 }
