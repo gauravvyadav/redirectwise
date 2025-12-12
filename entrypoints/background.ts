@@ -32,7 +32,7 @@ function broadcastMessage(message: Record<string, unknown>): void {
 }
 
 // Update extension badge with status code
-function updateBadge(tabId: number, statusCode: number, redirectCount: number): void {
+function updateBadge(tabId: number, statusCode: number): void {
   // Determine badge color based on status
   let color: string;
   if (statusCode >= 200 && statusCode < 300) {
@@ -47,8 +47,8 @@ function updateBadge(tabId: number, statusCode: number, redirectCount: number): 
     color = '#6b7280'; // gray
   }
 
-  // Show redirect count if there are redirects, otherwise show final status
-  const badgeText = redirectCount > 0 ? `${redirectCount}→` : `${statusCode}`;
+  // Always show the status code
+  const badgeText = `${statusCode}`;
 
   chrome.action.setBadgeBackgroundColor({ color, tabId });
   chrome.action.setBadgeText({ text: badgeText, tabId });
@@ -171,11 +171,8 @@ export default defineBackground(() => {
   chrome.tabs.onActivated.addListener(activeInfo => {
     const tabPath = tabPaths.get(activeInfo.tabId);
     if (tabPath && tabPath.path.length > 0) {
-      const lastItem = tabPath.path[tabPath.path.length - 1];
-      const redirectCount = tabPath.path.filter(
-        p => p.type === 'server_redirect' || p.type === 'client_redirect'
-      ).length;
-      updateBadge(activeInfo.tabId, lastItem.status_code, redirectCount);
+      const firstItem = tabPath.path[0];
+      updateBadge(activeInfo.tabId, firstItem.status_code);
     } else {
       clearBadge(activeInfo.tabId);
     }
@@ -279,7 +276,10 @@ export default defineBackground(() => {
 
       // Try to get IP from details, or from our stored IPs map
       const requestKey = `${details.tabId}-${details.url}`;
-      const ip = details.ip || requestIPs.get(requestKey) || 'Unknown';
+      const detailsWithIP = details as chrome.webRequest.WebResponseHeadersDetails & {
+        ip?: string;
+      };
+      const ip = detailsWithIP.ip || requestIPs.get(requestKey) || 'Unknown';
 
       addRedirectItem(details.tabId, {
         url: details.url,
@@ -344,11 +344,8 @@ export default defineBackground(() => {
     // Update badge with final status
     const updatedTabPath = tabPaths.get(details.tabId);
     if (updatedTabPath && updatedTabPath.path.length > 0) {
-      const lastItem = updatedTabPath.path[updatedTabPath.path.length - 1];
-      const redirectCount = updatedTabPath.path.filter(
-        p => p.type === 'server_redirect' || p.type === 'client_redirect'
-      ).length;
-      updateBadge(details.tabId, lastItem.status_code, redirectCount);
+      const firstItem = updatedTabPath.path[0];
+      updateBadge(details.tabId, firstItem.status_code);
     }
 
     // Broadcast navigation complete
