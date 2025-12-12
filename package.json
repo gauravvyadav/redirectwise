@@ -2,8 +2,8 @@
   "name": "redirectwise",
   "description": "Track and analyze HTTP redirect chains for any URL",
   "private": true,
-  "license": "UNLICENSED",
-  "version": "1.0.0",
+  "license": "MIT",
+  "version": "1.0.1",
   "type": "module",
   "scripts": {
     "dev": "wxt",
