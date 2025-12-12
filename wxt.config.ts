@@ -6,7 +6,7 @@ export default defineConfig({
   manifest: {
     name: 'RedirectWise',
     description: 'Track and analyze HTTP redirect chains for any URL',
-    version: '1.0.0',
+    version: '1.0.1',
     permissions: ['webRequest', 'webNavigation', 'tabs', 'storage', 'sidePanel'],
     host_permissions: ['<all_urls>'],
     icons: {
