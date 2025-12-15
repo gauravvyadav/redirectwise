@@ -1,6 +1,6 @@
 # RedirectWise
 
-A modern Chrome extension to track and analyze HTTP redirect chains for any URL.
+A modern, open-source Chrome extension to track and analyze HTTP redirect chains for any URL.
 
 ## ✨ Features
 
@@ -11,7 +11,7 @@ A modern Chrome extension to track and analyze HTTP redirect chains for any URL.
 - 📋 **Export Options** - Copy redirect path as plain text or CSV
 - 🔍 **Header Inspection** - View full response headers for each redirect
 - 🛡️ **HSTS Detection** - Identifies browser-cached HSTS redirects
-- 🌐 **Cross-browser** - Works on Chrome, Edge, Firefox (with WXT)
+- 🌐 **Cross-browser** - Works on Chrome, Edge (with WXT)
 
 ### Advanced Features (Unique to RedirectWise!)
 
@@ -64,9 +64,6 @@ This will:
 # Build for Chrome (also works for Brave, Opera, Vivaldi)
 npm run build
 
-# Build for Firefox
-npm run build:firefox
-
 # Build for Microsoft Edge
 npm run build:edge
 
@@ -80,9 +77,6 @@ npm run build:all
 # Package for Chrome Web Store (also works for Brave, Opera, Vivaldi)
 npm run zip
 
-# Package for Firefox Add-ons
-npm run zip:firefox
-
 # Package for Microsoft Edge Add-ons
 npm run zip:edge
 
@@ -92,14 +86,13 @@ npm run zip:all
 
 ### Browser Compatibility
 
-| Browser        | Build Command           | Store              |
-| -------------- | ----------------------- | ------------------ |
-| Chrome         | `npm run build`         | Chrome Web Store   |
-| Microsoft Edge | `npm run build:edge`    | Edge Add-ons       |
-| Firefox        | `npm run build:firefox` | Firefox Add-ons    |
-| Brave          | `npm run build`         | Chrome Web Store\* |
-| Opera          | `npm run build`         | Chrome Web Store\* |
-| Vivaldi        | `npm run build`         | Chrome Web Store\* |
+| Browser        | Build Command        | Store              |
+| -------------- | -------------------- | ------------------ |
+| Chrome         | `npm run build`      | Chrome Web Store   |
+| Microsoft Edge | `npm run build:edge` | Edge Add-ons       |
+| Brave          | `npm run build`      | Chrome Web Store\* |
+| Opera          | `npm run build`      | Chrome Web Store\* |
+| Vivaldi        | `npm run build`      | Chrome Web Store\* |
 
 \*Chromium-based browsers use the same build as Chrome.
 
@@ -162,3 +155,7 @@ redirectwise/
    - Search, filter, and sort entries
    - Export individual or bulk PDFs
    - Dark mode support
+
+## 📄 License
+
+Distributed under the MIT License. See `LICENSE` for more information.
