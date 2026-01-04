@@ -102,63 +102,97 @@ export function generateId(): string {
   return Math.random().toString(36).substring(2, 15);
 }
 
-// Calculate chain score based on redirect path
 export function calculateChainScore(path: RedirectItem[]): ChainScore {
   const issues: ChainIssue[] = [];
   const recommendations: string[] = [];
   let score = 100;
 
-  const redirectCount = path.filter(
-    p => p.type === 'server_redirect' || p.type === 'client_redirect'
-  ).length;
+  const TRACKING_DOMAINS = [
+    'bit.ly',
+    't.co',
+    'goo.gl',
+    'rb.gy',
+    'tinyurl.com',
+    'ow.ly',
+    'buff.ly',
+    'is.gd',
+    'cutt.ly',
+    'shorturl.at',
+    'tiny.cc',
+    'lnkd.in',
+    'fb.me',
+    'youtu.be',
+    'amzn.to',
+    'g.co',
+  ];
 
-  // Deduct points for each redirect (SEO impact ~15% per hop)
-  if (redirectCount > 0) {
-    score -= redirectCount * 10;
+  const isTrackingDomain = (url: string): boolean => {
+    try {
+      const hostname = new URL(url).hostname.toLowerCase();
+      return TRACKING_DOMAINS.some(d => hostname === d || hostname.endsWith('.' + d));
+    } catch {
+      return false;
+    }
+  };
+
+  const redirects = path.filter(p => p.type === 'server_redirect' || p.type === 'client_redirect');
+  const redirectCount = redirects.length;
+  const trackingRedirectCount = redirects.filter(r => isTrackingDomain(r.url)).length;
+  const regularRedirectCount = redirectCount - trackingRedirectCount;
+
+  const totalTime = path.reduce((sum, p) => sum + (p.timing?.duration || 0), 0);
+  const slowRedirects = path.filter(p => (p.timing?.duration || 0) > 1000);
+
+  if (regularRedirectCount > 0) {
+    score -= regularRedirectCount * 5;
+  }
+  if (trackingRedirectCount > 0) {
+    score -= trackingRedirectCount * 2;
+    issues.push({
+      type: 'info',
+      message: `${trackingRedirectCount} tracking redirect(s) detected (expected for ads/analytics).`,
+      impact: 'low',
+    });
   }
 
-  // Check for too many redirects
   if (redirectCount > 3) {
     issues.push({
       type: 'error',
-      message: `Too many redirects (${redirectCount}). Each redirect loses ~15% link equity.`,
+      message: `Long chain: ${redirectCount} redirects. Each hop loses ~5% link equity.`,
       impact: 'high',
     });
-    recommendations.push('Reduce redirect chain to maximum 2 hops');
-    score -= 15;
+    recommendations.push('Reduce redirect chain to 2-3 hops maximum');
+    score -= 10;
   } else if (redirectCount > 1) {
     issues.push({
       type: 'warning',
-      message: `${redirectCount} redirects in chain. Consider reducing.`,
+      message: `${redirectCount} redirects in chain.`,
       impact: 'medium',
     });
   }
 
-  // Check for 302 (temporary) redirects that should be 301
   const tempRedirects = path.filter(p => p.status_code === 302 || p.status_code === 307);
   if (tempRedirects.length > 0) {
     issues.push({
       type: 'warning',
-      message: `${tempRedirects.length} temporary redirect(s) found. Consider using 301 for permanent moves.`,
+      message: `${tempRedirects.length} temporary redirect(s). Use 301 for permanent moves.`,
       impact: 'medium',
     });
-    recommendations.push('Change 302 redirects to 301 if the move is permanent');
-    score -= tempRedirects.length * 5;
+    recommendations.push('Change 302/307 to 301/308 if the move is permanent');
+    score -= tempRedirects.length * 3;
   }
 
-  // Check for client-side redirects
   const clientRedirects = path.filter(p => p.type === 'client_redirect');
   if (clientRedirects.length > 0) {
     issues.push({
       type: 'error',
-      message: `${clientRedirects.length} client-side redirect(s) detected. These are bad for SEO.`,
+      message: `${clientRedirects.length} client-side redirect(s). Bad for SEO and slow.`,
       impact: 'high',
     });
-    recommendations.push('Replace JavaScript/meta redirects with server-side 301 redirects');
-    score -= clientRedirects.length * 15;
+    recommendations.push('Replace meta/JavaScript redirects with server-side 301');
+    score -= clientRedirects.length * 10;
   }
 
-  // Check for 4xx or 5xx errors
   const errors = path.filter(p => p.status_code >= 400);
   if (errors.length > 0) {
     issues.push({
@@ -169,42 +203,53 @@ export function calculateChainScore(path: RedirectItem[]): ChainScore {
     score -= errors.length * 20;
   }
 
-  // Check for HTTPS
   const hasHttp = path.some(p => p.url.startsWith('http://'));
   if (hasHttp) {
     issues.push({
       type: 'warning',
-      message: 'Non-HTTPS URL detected in chain.',
+      message: 'Non-HTTPS URL detected.',
       impact: 'medium',
     });
     recommendations.push('Ensure all URLs use HTTPS');
     score -= 10;
   }
 
-  // Perfect chain bonus
-  if (redirectCount === 0 && issues.length === 0) {
+  if (totalTime > 0 && totalTime < 500 && redirectCount > 0) {
+    score += 5;
+    issues.push({
+      type: 'info',
+      message: `Fast chain: ${totalTime}ms total.`,
+      impact: 'low',
+    });
+  }
+  if (slowRedirects.length > 0) {
+    issues.push({
+      type: 'warning',
+      message: `${slowRedirects.length} slow redirect(s) (>1000ms each).`,
+      impact: 'medium',
+    });
+    score -= slowRedirects.length * 5;
+  }
+
+  if (redirectCount === 0 && issues.filter(i => i.type !== 'info').length === 0) {
     issues.push({
       type: 'info',
       message: 'Perfect! Direct access with no redirects.',
       impact: 'low',
     });
   } else if (redirectCount === 1) {
-    const redirectItem = path.find(
-      p => p.type === 'server_redirect' || p.type === 'client_redirect'
-    );
+    const redirectItem = redirects[0];
     if (redirectItem?.status_code === 301 || redirectItem?.status_code === 308) {
       issues.push({
         type: 'info',
-        message: 'Good! Single permanent redirect.',
+        message: 'Single permanent redirect (minimal SEO impact).',
         impact: 'low',
       });
     }
   }
 
-  // Clamp score
   score = Math.max(0, Math.min(100, score));
 
-  // Determine grade
   let grade: ChainScore['grade'];
   if (score >= 90) grade = 'A';
   else if (score >= 75) grade = 'B';

@@ -3,42 +3,15 @@ import {
   ArrowRight,
   ChevronDown,
   ChevronRight,
-  Clock,
+  Copy,
   ExternalLink,
+  Info,
   Shield,
   Zap,
 } from 'lucide-react';
+import { useState } from 'react';
 import { RedirectItem } from '../types/redirect';
 import HeadersList from './HeadersList';
-
-// Static badge config - defined outside component to avoid recreation
-const REDIRECT_BADGES: Record<string, { label: string; color: string; darkColor: string }> = {
-  permanent: {
-    label: '301',
-    color: 'bg-blue-100 text-blue-700',
-    darkColor: 'bg-blue-900/50 text-blue-300',
-  },
-  temporary: {
-    label: '302',
-    color: 'bg-amber-100 text-amber-700',
-    darkColor: 'bg-amber-900/50 text-amber-300',
-  },
-  hsts: {
-    label: 'HSTS',
-    color: 'bg-purple-100 text-purple-700',
-    darkColor: 'bg-purple-900/50 text-purple-300',
-  },
-  meta: {
-    label: 'META',
-    color: 'bg-pink-100 text-pink-700',
-    darkColor: 'bg-pink-900/50 text-pink-300',
-  },
-  javascript: {
-    label: 'JS',
-    color: 'bg-yellow-100 text-yellow-700',
-    darkColor: 'bg-yellow-900/50 text-yellow-300',
-  },
-};
 
 interface RedirectItemCardProps {
   item: RedirectItem;
@@ -57,6 +30,16 @@ export default function RedirectItemCard({
   onToggle,
   darkMode = false,
 }: RedirectItemCardProps) {
+  const [copied, setCopied] = useState(false);
+  const [showHeaders, setShowHeaders] = useState(false);
+
+  const copyUrl = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    await navigator.clipboard.writeText(item.url);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  };
+
   const getStatusColor = () => {
     if (item.statusObject.isSuccess) return 'bg-green-500';
     if (item.statusObject.isRedirect) return 'bg-amber-500';
@@ -88,39 +71,13 @@ export default function RedirectItemCard({
           : item.redirect_type === 'hsts'
           ? 'HSTS'
           : 'Temporary';
-      return `${item.status_code} ${redirectLabel} Redirect`;
+      return `${redirectLabel} Redirect`;
     }
-    return `${item.status_code} ${item.status_line}`;
+    return item.status_line;
   };
 
-  const getRedirectBadge = () => {
-    if (!item.redirect_type) return null;
-
-    const badge = REDIRECT_BADGES[item.redirect_type];
-    if (!badge) return null;
-
-    return (
-      <span
-        className={clsx(
-          'text-xs font-medium px-1.5 py-0.5 rounded',
-          darkMode ? badge.darkColor : badge.color
-        )}
-      >
-        {badge.label}
-      </span>
-    );
-  };
-
-  const truncateUrl = (url: string, maxLength = 50) => {
-    if (url.length <= maxLength) return url;
-    return url.substring(0, maxLength) + '...';
-  };
-
-  // Quick status indicators
   const getQuickIndicators = () => {
     const indicators: { icon: React.ReactNode; label: string; color: string }[] = [];
-
-    // HTTPS indicator
     const isHttps = item.url.startsWith('https://');
     if (isHttps) {
       indicators.push({
@@ -129,8 +86,6 @@ export default function RedirectItemCard({
         color: darkMode ? 'text-green-400' : 'text-green-600',
       });
     }
-
-    // Compression indicator
     const encoding = item.headers.find(h => h.name.toLowerCase() === 'content-encoding')?.value;
     if (encoding) {
       const label = encoding === 'br' ? 'Brotli' : encoding === 'gzip' ? 'Gzip' : encoding;
@@ -140,7 +95,6 @@ export default function RedirectItemCard({
         color: darkMode ? 'text-purple-400' : 'text-purple-600',
       });
     }
-
     return indicators;
   };
 
@@ -149,14 +103,12 @@ export default function RedirectItemCard({
   return (
     <div
       className={clsx(
-        'rounded-lg border transition-all duration-200',
+        'rounded-lg border transition-colors',
         getStatusBgColor(),
-        isExpanded ? 'shadow-md' : 'shadow-sm hover:shadow-md'
+        isExpanded && (darkMode ? 'border-slate-600' : 'border-slate-300')
       )}
     >
-      {/* Main clickable area */}
       <button onClick={onToggle} className="w-full text-left p-3 flex items-start gap-3">
-        {/* Step number with status indicator */}
         <div className="shrink-0 flex flex-col items-center">
           <div
             className={clsx(
@@ -176,7 +128,6 @@ export default function RedirectItemCard({
           )}
         </div>
 
-        {/* Content */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
             <span
@@ -187,19 +138,32 @@ export default function RedirectItemCard({
             >
               {getStatusLabel()}
             </span>
-            {getRedirectBadge()}
+            <span className="flex-1" />
+            <span
+              className={clsx(
+                'text-xs font-medium px-1.5 py-0.5 rounded',
+                item.statusObject.isSuccess &&
+                  (darkMode ? 'bg-green-900/50 text-green-300' : 'bg-green-100 text-green-700'),
+                item.statusObject.isRedirect &&
+                  (darkMode ? 'bg-amber-900/50 text-amber-300' : 'bg-amber-100 text-amber-700'),
+                item.statusObject.isClientError &&
+                  (darkMode ? 'bg-red-900/50 text-red-300' : 'bg-red-100 text-red-700'),
+                item.statusObject.isServerError &&
+                  (darkMode ? 'bg-red-900/50 text-red-300' : 'bg-red-100 text-red-700')
+              )}
+            >
+              {item.status_code}
+            </span>
             {item.timing?.duration && (
               <span
                 className={clsx(
-                  'flex items-center gap-0.5 text-xs',
-                  darkMode ? 'text-slate-500' : 'text-slate-400'
+                  'text-xs px-1.5 py-0.5 rounded',
+                  darkMode ? 'bg-slate-700 text-slate-300' : 'bg-slate-200 text-slate-600'
                 )}
               >
-                <Clock className="w-3 h-3" />
                 {item.timing.duration}ms
               </span>
             )}
-            {/* Quick indicators */}
             {quickIndicators.map((indicator, i) => (
               <span
                 key={i}
@@ -209,28 +173,32 @@ export default function RedirectItemCard({
                 {indicator.icon}
               </span>
             ))}
+            <button
+              onClick={copyUrl}
+              className={clsx(
+                'p-1 rounded cursor-pointer hover:bg-slate-200/50 transition-colors relative',
+                darkMode ? 'hover:bg-slate-700/50 text-slate-500' : 'text-slate-400',
+                copied && 'text-green-500'
+              )}
+              title="Copy URL"
+            >
+              <Copy className="w-3.5 h-3.5" />
+              {copied && (
+                <span
+                  className={clsx(
+                    'absolute -top-6 left-1/2 -translate-x-1/2 text-xs px-2 py-1 rounded whitespace-nowrap',
+                    darkMode ? 'bg-slate-700 text-green-400' : 'bg-slate-800 text-green-400'
+                  )}
+                >
+                  Copied!
+                </span>
+              )}
+            </button>
           </div>
 
-          <p
-            className={clsx('text-xs truncate', darkMode ? 'text-slate-400' : 'text-slate-600')}
-            title={item.url}
-          >
-            {truncateUrl(item.url, 45)}
+          <p className={clsx('text-xs break-all', darkMode ? 'text-slate-400' : 'text-slate-600')}>
+            {item.url}
           </p>
-
-          {item.redirect_url && (
-            <div
-              className={clsx(
-                'flex items-center gap-1 mt-1 text-xs',
-                darkMode ? 'text-slate-500' : 'text-slate-500'
-              )}
-            >
-              <ArrowRight className="w-3 h-3" />
-              <span className="truncate" title={item.redirect_url}>
-                {truncateUrl(item.redirect_url, 40)}
-              </span>
-            </div>
-          )}
 
           {item.ip && item.ip !== 'Unknown' && (
             <p className={clsx('text-xs mt-1', darkMode ? 'text-slate-600' : 'text-slate-400')}>
@@ -239,27 +207,37 @@ export default function RedirectItemCard({
           )}
         </div>
 
-        {/* Expand indicator */}
         <div className={clsx('shrink-0', darkMode ? 'text-slate-500' : 'text-slate-400')}>
           {isExpanded ? <ChevronDown className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
         </div>
       </button>
 
-      {/* Expanded headers section */}
       {isExpanded && (
         <div className="px-3 pb-3 pt-0">
           <div
             className={clsx('border-t pt-3', darkMode ? 'border-slate-700' : 'border-slate-200')}
           >
             <div className="flex items-center justify-between mb-2">
-              <span
+              <button
+                onClick={e => {
+                  e.stopPropagation();
+                  setShowHeaders(!showHeaders);
+                }}
                 className={clsx(
-                  'text-xs font-medium uppercase',
-                  darkMode ? 'text-slate-400' : 'text-slate-500'
+                  'text-xs font-medium flex items-center gap-1 px-2 py-1 rounded transition-colors',
+                  darkMode
+                    ? 'text-slate-400 hover:bg-slate-700/50'
+                    : 'text-slate-500 hover:bg-slate-200/50'
                 )}
               >
+                <Info className="w-3 h-3" />
                 Response Headers
-              </span>
+                {showHeaders ? (
+                  <ChevronDown className="w-3 h-3" />
+                ) : (
+                  <ChevronRight className="w-3 h-3" />
+                )}
+              </button>
               <a
                 href={item.url}
                 target="_blank"
@@ -273,10 +251,9 @@ export default function RedirectItemCard({
                 Open URL <ExternalLink className="w-3 h-3" />
               </a>
             </div>
-            <HeadersList headers={item.headers} ip={item.ip} darkMode={darkMode} />
+            {showHeaders && <HeadersList headers={item.headers} ip={item.ip} darkMode={darkMode} />}
           </div>
 
-          {/* HSTS Note */}
           {item.redirect_type === 'hsts' && (
             <div
               className={clsx(
@@ -286,9 +263,8 @@ export default function RedirectItemCard({
                   : 'bg-purple-50 border border-purple-200 text-purple-700'
               )}
             >
-              <strong>HSTS Redirect:</strong> This is an internal browser redirect. The server
-              previously indicated this domain should always use HTTPS. Chrome cached this and
-              redirected without contacting the server.
+              <strong>HSTS Redirect:</strong> Internal browser redirect. Server previously indicated
+              HTTPS requirement.
             </div>
           )}
         </div>

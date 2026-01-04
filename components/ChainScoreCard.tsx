@@ -1,5 +1,6 @@
 import clsx from 'clsx';
-import { AlertTriangle, CheckCircle, XCircle } from 'lucide-react';
+import { AlertTriangle, CheckCircle, ChevronDown, ChevronRight, XCircle } from 'lucide-react';
+import { useState } from 'react';
 import { ChainScore } from '../types/redirect';
 
 interface ChainScoreCardProps {
@@ -8,102 +9,137 @@ interface ChainScoreCardProps {
 }
 
 export default function ChainScoreCard({ score, darkMode = false }: ChainScoreCardProps) {
+  const [isExpanded, setIsExpanded] = useState(false);
+
   const getGradeColor = () => {
     switch (score.grade) {
       case 'A':
-        return 'from-green-500 to-green-600';
+        return 'text-green-500';
       case 'B':
-        return 'from-lime-500 to-lime-600';
+        return 'text-lime-500';
       case 'C':
-        return 'from-amber-500 to-amber-600';
+        return 'text-amber-500';
       case 'D':
-        return 'from-orange-500 to-orange-600';
+        return 'text-orange-500';
       case 'F':
-        return 'from-red-500 to-red-600';
-    }
-  };
-
-  const getGradeBgColor = () => {
-    switch (score.grade) {
-      case 'A':
-        return darkMode ? 'bg-green-900/30' : 'bg-green-50';
-      case 'B':
-        return darkMode ? 'bg-lime-900/30' : 'bg-lime-50';
-      case 'C':
-        return darkMode ? 'bg-amber-900/30' : 'bg-amber-50';
-      case 'D':
-        return darkMode ? 'bg-orange-900/30' : 'bg-orange-50';
-      case 'F':
-        return darkMode ? 'bg-red-900/30' : 'bg-red-50';
+        return 'text-red-500';
     }
   };
 
   const getIssueIcon = (type: 'error' | 'warning' | 'info') => {
     switch (type) {
       case 'error':
-        return <XCircle className="w-4 h-4 text-red-500 shrink-0" />;
+        return <XCircle className="w-3.5 h-3.5 text-red-500 shrink-0" />;
       case 'warning':
-        return <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0" />;
+        return <AlertTriangle className="w-3.5 h-3.5 text-amber-500 shrink-0" />;
       case 'info':
-        return <CheckCircle className="w-4 h-4 text-green-500 shrink-0" />;
+        return <CheckCircle className="w-3.5 h-3.5 text-green-500 shrink-0" />;
     }
   };
 
+  const getGradeDescription = () => {
+    switch (score.grade) {
+      case 'A':
+        return 'Excellent! Optimal redirect chain.';
+      case 'B':
+        return 'Good. Minor improvements possible.';
+      case 'C':
+        return 'Fair. Some issues to address.';
+      case 'D':
+        return 'Poor. Significant issues found.';
+      case 'F':
+        return 'Critical. Major problems detected.';
+    }
+  };
+
+  // Filter issues (exclude info for count display)
+  const filteredIssues = score.issues.filter(issue => issue.type !== 'info');
+  const hasIssues = filteredIssues.length > 0;
+
   return (
-    <div className={clsx('mx-3 mt-3 rounded-lg overflow-hidden', getGradeBgColor())}>
-      {/* Score Header */}
-      <div className="flex items-center gap-3 p-3">
-        <div
+    <div
+      className={clsx(
+        'mx-3 mt-3 rounded-lg overflow-hidden',
+        darkMode ? 'bg-slate-800/50' : 'bg-slate-100'
+      )}
+    >
+      {/* Compact One-liner Header */}
+      <button
+        onClick={() => hasIssues && setIsExpanded(!isExpanded)}
+        className={clsx(
+          'w-full flex items-center gap-2 px-3 py-2',
+          hasIssues && 'cursor-pointer hover:opacity-80 transition-opacity'
+        )}
+        disabled={!hasIssues}
+      >
+        {/* Grade Letter */}
+        <span className={clsx('text-lg font-bold', getGradeColor())}>{score.grade}</span>
+
+        <span className={clsx('text-xs', darkMode ? 'text-slate-600' : 'text-slate-400')}>-</span>
+
+        {/* Score */}
+        <span
+          className={clsx('text-sm font-medium', darkMode ? 'text-slate-300' : 'text-slate-700')}
+        >
+          {score.score}
+        </span>
+
+        <span className={clsx('text-xs', darkMode ? 'text-slate-600' : 'text-slate-400')}>-</span>
+
+        {/* Description (truncated) */}
+        <span
           className={clsx(
-            'w-14 h-14 rounded-xl bg-linear-to-br flex items-center justify-center text-white shadow-lg',
-            getGradeColor()
+            'text-xs flex-1 text-left truncate',
+            darkMode ? 'text-slate-400' : 'text-slate-600'
           )}
         >
-          <div className="text-center">
-            <div className="text-2xl font-bold leading-none">{score.grade}</div>
-            <div className="text-xs opacity-80">{score.score}</div>
+          {getGradeDescription()}
+        </span>
+
+        {/* Issue count tag + chevron */}
+        {hasIssues && (
+          <div className="flex items-center gap-1.5 shrink-0">
+            <span
+              className={clsx(
+                'text-xs px-2 py-0.5 rounded-full font-medium',
+                darkMode
+                  ? 'bg-slate-700/50 text-slate-300 border border-slate-600/50'
+                  : 'bg-slate-200/70 text-slate-600 border border-slate-300/50'
+              )}
+              title={filteredIssues.map(issue => `• ${issue.message}`).join('\n')}
+            >
+              {filteredIssues.length} {filteredIssues.length === 1 ? 'issue' : 'issues'}
+            </span>
+            {isExpanded ? (
+              <ChevronDown
+                className={clsx('w-4 h-4', darkMode ? 'text-slate-500' : 'text-slate-400')}
+              />
+            ) : (
+              <ChevronRight
+                className={clsx('w-4 h-4', darkMode ? 'text-slate-500' : 'text-slate-400')}
+              />
+            )}
           </div>
-        </div>
+        )}
+      </button>
 
-        <div className="flex-1">
-          <h3 className={clsx('font-semibold', darkMode ? 'text-slate-200' : 'text-slate-800')}>
-            Chain Health Score
-          </h3>
-          <p className={clsx('text-sm', darkMode ? 'text-slate-400' : 'text-slate-600')}>
-            {score.grade === 'A' && 'Excellent! Optimal redirect chain.'}
-            {score.grade === 'B' && 'Good. Minor improvements possible.'}
-            {score.grade === 'C' && 'Fair. Some issues to address.'}
-            {score.grade === 'D' && 'Poor. Significant issues found.'}
-            {score.grade === 'F' && 'Critical. Major problems detected.'}
-          </p>
-        </div>
-      </div>
-
-      {/* Issues - only show warnings and errors, not info messages */}
-      {score.issues.filter(issue => issue.type !== 'info').length > 0 && (
+      {/* Expandable Issues Section */}
+      {isExpanded && hasIssues && (
         <div
           className={clsx(
             'border-t px-3 py-2',
-            darkMode ? 'border-slate-700/50' : 'border-slate-200/50'
+            darkMode ? 'border-slate-700/50' : 'border-slate-200'
           )}
         >
           <div className="space-y-1.5">
-            {score.issues
-              .filter(issue => issue.type !== 'info')
-              .slice(0, 3)
-              .map((issue, idx) => (
-                <div key={idx} className="flex items-start gap-2">
-                  {getIssueIcon(issue.type)}
-                  <span className={clsx('text-xs', darkMode ? 'text-slate-300' : 'text-slate-700')}>
-                    {issue.message}
-                  </span>
-                </div>
-              ))}
-            {score.issues.filter(issue => issue.type !== 'info').length > 3 && (
-              <p className={clsx('text-xs', darkMode ? 'text-slate-500' : 'text-slate-400')}>
-                +{score.issues.filter(issue => issue.type !== 'info').length - 3} more issues
-              </p>
-            )}
+            {filteredIssues.map((issue, idx) => (
+              <div key={idx} className="flex items-start gap-2">
+                {getIssueIcon(issue.type)}
+                <span className={clsx('text-xs', darkMode ? 'text-slate-300' : 'text-slate-700')}>
+                  {issue.message}
+                </span>
+              </div>
+            ))}
           </div>
         </div>
       )}
