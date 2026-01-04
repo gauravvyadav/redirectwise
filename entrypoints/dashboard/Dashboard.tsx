@@ -812,7 +812,10 @@ function DetailPanel({
         {/* Issues Section */}
         {entry.chainScore.issues.length > 0 && (
           <section
-            className={clsx('rounded-xl p-4', darkMode ? 'bg-slate-800' : 'bg-white shadow-sm')}
+            className={clsx(
+              'rounded-xl p-4 border',
+              darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'
+            )}
           >
             <h3 className="font-medium mb-3 flex items-center gap-2">
               <AlertTriangle className="w-4 h-4 text-amber-500" />
@@ -857,7 +860,10 @@ function DetailPanel({
         {/* Recommendations Section */}
         {entry.chainScore.recommendations.length > 0 && (
           <section
-            className={clsx('rounded-xl p-4', darkMode ? 'bg-slate-800' : 'bg-white shadow-sm')}
+            className={clsx(
+              'rounded-xl p-4 border',
+              darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'
+            )}
           >
             <h3 className="font-medium mb-3 flex items-center gap-2">
               <Info className="w-4 h-4 text-blue-500" />
@@ -882,7 +888,10 @@ function DetailPanel({
 
         {/* Redirect Chain Section */}
         <section
-          className={clsx('rounded-xl p-4', darkMode ? 'bg-slate-800' : 'bg-white shadow-sm')}
+          className={clsx(
+            'rounded-xl p-4 border',
+            darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'
+          )}
         >
           <h3 className="font-medium mb-3 flex items-center gap-2">
             <ArrowRight className="w-4 h-4" />
@@ -918,24 +927,67 @@ function DetailPanel({
                   className={clsx('flex-1 min-w-0', idx < entry.path.length - 1 ? 'pb-4' : 'pb-0')}
                 >
                   {/* Clickable header */}
-                  <button onClick={() => toggleExpanded(item.id)} className="w-full text-left">
+                  <button
+                    onClick={() => toggleExpanded(item.id)}
+                    className={clsx(
+                      'w-full text-left p-2 -ml-2 rounded-lg transition-colors',
+                      darkMode ? 'hover:bg-slate-700/50' : 'hover:bg-slate-100'
+                    )}
+                  >
                     <div className="flex items-start gap-2">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1 flex-wrap">
                           <span
                             className={clsx(
-                              'px-2 py-0.5 rounded text-xs font-medium',
-                              item.statusObject?.isSuccess &&
-                                'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
-                              item.statusObject?.isRedirect &&
-                                'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
-                              (item.statusObject?.isClientError ||
-                                item.statusObject?.isServerError) &&
-                                'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+                              'font-medium text-sm',
+                              darkMode ? 'text-slate-200' : 'text-slate-800'
                             )}
                           >
-                            {item.status_code} {item.status_line}
+                            {item.type === 'server_redirect'
+                              ? `${
+                                  item.redirect_type === 'permanent'
+                                    ? 'Permanent'
+                                    : item.redirect_type === 'hsts'
+                                    ? 'HSTS'
+                                    : 'Temporary'
+                                } Redirect`
+                              : item.statusObject?.isSuccess
+                              ? 'Success'
+                              : item.status_line}
                           </span>
+                          <span className="flex-1" />
+                          <span
+                            className={clsx(
+                              'px-2 py-0.5 rounded text-xs font-medium',
+                              item.statusObject?.isSuccess &&
+                                (darkMode
+                                  ? 'bg-green-900/50 text-green-300'
+                                  : 'bg-green-100 text-green-700'),
+                              item.statusObject?.isRedirect &&
+                                (darkMode
+                                  ? 'bg-amber-900/50 text-amber-300'
+                                  : 'bg-amber-100 text-amber-700'),
+                              (item.statusObject?.isClientError ||
+                                item.statusObject?.isServerError) &&
+                                (darkMode
+                                  ? 'bg-red-900/50 text-red-300'
+                                  : 'bg-red-100 text-red-700')
+                            )}
+                          >
+                            {item.status_code}
+                          </span>
+                          {item.timing?.duration && (
+                            <span
+                              className={clsx(
+                                'px-2 py-0.5 rounded text-xs',
+                                darkMode
+                                  ? 'bg-slate-700 text-slate-300'
+                                  : 'bg-slate-200 text-slate-600'
+                              )}
+                            >
+                              {item.timing.duration}ms
+                            </span>
+                          )}
                           {item.type === 'server_redirect' && item.redirect_type && (
                             <span
                               className={clsx(
@@ -946,22 +998,10 @@ function DetailPanel({
                               {item.redirect_type}
                             </span>
                           )}
-                          {item.timing?.duration && (
-                            <span
-                              className={clsx(
-                                'text-xs flex items-center gap-1',
-                                darkMode ? 'text-slate-500' : 'text-slate-400'
-                              )}
-                            >
-                              <Zap className="w-3 h-3" />
-                              {item.timing.duration}ms
-                            </span>
-                          )}
-                          {/* Expand indicator */}
                           {expandedItems.has(item.id) ? (
-                            <ChevronUp className="w-4 h-4 text-slate-400 ml-auto" />
+                            <ChevronUp className="w-4 h-4 text-slate-400" />
                           ) : (
-                            <ChevronDown className="w-4 h-4 text-slate-400 ml-auto" />
+                            <ChevronDown className="w-4 h-4 text-slate-400" />
                           )}
                         </div>
                         <p

@@ -5,7 +5,7 @@ import { HistoryEntry, RedirectItem, calculateChainScore } from '../types/redire
 
 const HISTORY_STORAGE_KEY = 'redirectwise_history';
 const SETTINGS_STORAGE_KEY = 'redirectwise_settings';
-const MAX_HISTORY_ENTRIES = 500;
+const MAX_HISTORY_ENTRIES = 2000;
 
 export interface Settings {
   darkMode: boolean;

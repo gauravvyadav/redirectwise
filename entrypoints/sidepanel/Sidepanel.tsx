@@ -36,9 +36,9 @@ interface TabSession {
 
 const STATUS_COLORS = {
   success: 'bg-green-500',
-  redirect: 'bg-blue-500',
-  clientError: 'bg-yellow-500',
-  serverError: 'bg-red-500',
+  redirect: 'bg-amber-500',
+  clientError: 'bg-red-500',
+  serverError: 'bg-red-600',
 } as const;
 
 function getStatusColor(statusCode: number): string {
@@ -388,7 +388,7 @@ export default function Sidepanel() {
       {chainScore && (
         <div
           className={clsx(
-            'mx-3 mt-3 p-3 rounded-xl border shadow-sm',
+            'mx-3 mt-3 p-3 rounded-xl border',
             darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'
           )}
         >
@@ -396,7 +396,7 @@ export default function Sidepanel() {
             <div className="flex items-center gap-3">
               <div
                 className={clsx(
-                  'w-12 h-12 rounded-xl flex items-center justify-center font-bold text-xl text-white shadow-lg',
+                  'w-12 h-12 rounded-xl flex items-center justify-center font-bold text-xl text-white',
                   chainScore.grade === 'A' && 'bg-linear-to-br from-green-400 to-green-600',
                   chainScore.grade === 'B' && 'bg-linear-to-br from-lime-400 to-lime-600',
                   chainScore.grade === 'C' && 'bg-linear-to-br from-yellow-400 to-yellow-600',
@@ -407,7 +407,7 @@ export default function Sidepanel() {
                 {chainScore.grade}
               </div>
               <div>
-                <div className="text-base font-semibold">SEO Score: {chainScore.score}/100</div>
+                <div className="text-base font-semibold">Chain Score: {chainScore.score}/100</div>
                 <div className={clsx('text-xs', darkMode ? 'text-slate-400' : 'text-gray-500')}>
                   {activeSession?.path.length || 0} hop
                   {(activeSession?.path.length || 0) !== 1 ? 's' : ''} detected
@@ -462,11 +462,11 @@ export default function Sidepanel() {
             <div
               key={item.id}
               className={clsx(
-                'rounded-xl border shadow-sm transition-all duration-300',
+                'rounded-xl border transition-colors',
                 item.isNew && 'ring-2 ring-blue-500 ring-opacity-50',
                 darkMode
                   ? 'bg-slate-800 border-slate-700 hover:border-slate-600'
-                  : 'bg-white border-gray-200 hover:border-gray-300 hover:shadow-md'
+                  : 'bg-white border-gray-200 hover:border-gray-300'
               )}
             >
               {/* Compact View */}
@@ -474,7 +474,6 @@ export default function Sidepanel() {
                 onClick={() => toggleExpanded(item.id)}
                 className="w-full px-3 py-2 flex items-center gap-2 text-left"
               >
-                {/* Status Indicator */}
                 <div
                   className={clsx(
                     'w-2.5 h-2.5 rounded-full shrink-0',
@@ -482,7 +481,6 @@ export default function Sidepanel() {
                   )}
                 />
 
-                {/* Index */}
                 <span
                   className={clsx(
                     'text-xs font-mono w-5 h-5 rounded-full flex items-center justify-center',
@@ -492,7 +490,8 @@ export default function Sidepanel() {
                   {index + 1}
                 </span>
 
-                {/* Status Code */}
+                <span className="flex-1" />
+
                 <span
                   className={clsx(
                     'text-xs font-mono font-bold px-1.5 py-0.5 rounded',
@@ -501,23 +500,25 @@ export default function Sidepanel() {
                       'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
                     item.status_code >= 300 &&
                       item.status_code < 400 &&
-                      'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
+                      'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
                     item.status_code >= 400 &&
-                      item.status_code < 500 &&
-                      'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400',
-                    item.status_code >= 500 &&
                       'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
                   )}
                 >
                   {item.status_code}
                 </span>
 
-                {/* URL */}
-                <span className="flex-1 text-xs truncate font-mono">
-                  {truncateUrl(item.url, 35)}
-                </span>
+                {item.timing?.duration && (
+                  <span
+                    className={clsx(
+                      'text-[10px] shrink-0 px-1.5 py-0.5 rounded',
+                      darkMode ? 'bg-slate-700 text-slate-400' : 'bg-gray-100 text-gray-500'
+                    )}
+                  >
+                    {item.timing.duration}ms
+                  </span>
+                )}
 
-                {/* Timestamp */}
                 <span
                   className={clsx(
                     'text-[10px] shrink-0 px-1.5 py-0.5 rounded',
@@ -527,13 +528,21 @@ export default function Sidepanel() {
                   {formatTime(item.timestamp)}
                 </span>
 
-                {/* Expand Icon */}
                 {expandedItems.has(item.id) ? (
                   <ChevronDown className="w-4 h-4 text-gray-400" />
                 ) : (
                   <ChevronRight className="w-4 h-4 text-gray-400" />
                 )}
               </button>
+
+              <p
+                className={clsx(
+                  'px-3 pb-2 text-xs break-all font-mono',
+                  darkMode ? 'text-slate-400' : 'text-gray-600'
+                )}
+              >
+                {item.url}
+              </p>
 
               {/* Expanded Details */}
               {expandedItems.has(item.id) && (
@@ -565,7 +574,7 @@ export default function Sidepanel() {
                         <CheckCircle2 className="w-3 h-3 text-green-500" />
                       )}
                       {item.status_code >= 300 && item.status_code < 400 && (
-                        <ArrowRight className="w-3 h-3 text-blue-500" />
+                        <ArrowRight className="w-3 h-3 text-amber-500" />
                       )}
                       {item.status_code >= 400 && <XCircle className="w-3 h-3 text-red-500" />}
                       {item.status_line}
