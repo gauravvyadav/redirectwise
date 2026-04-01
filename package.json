@@ -3,7 +3,7 @@
   "description": "Track and analyze HTTP redirect chains for any URL",
   "private": true,
   "license": "MIT",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "type": "module",
   "scripts": {
     "dev": "wxt",

@@ -36,6 +36,16 @@
   --color-border-dark: #334155;
 
   --animate-pulse-live: pulse-live 2s ease-in-out infinite;
+  --animate-highlight: highlight 1s ease-out forwards;
+}
+
+@keyframes highlight {
+  0% {
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 0 0px rgba(59, 130, 246, 0);
+  }
 }
 
 @keyframes pulse-live {

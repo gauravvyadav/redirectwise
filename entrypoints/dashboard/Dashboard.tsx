@@ -15,6 +15,7 @@ import {
   Moon,
   RefreshCw,
   Search,
+  Settings,
   Star,
   StarOff,
   Sun,
@@ -27,6 +28,7 @@ import Logo from '../../components/Logo';
 import { ChainScore, HistoryEntry } from '../../types/redirect';
 import { exportHistoryToPDF, exportToPDF } from '../../utils/pdf-export';
 import {
+  Settings as AppSettings,
   clearHistory,
   deleteHistoryEntry,
   getHistory,
@@ -49,6 +51,11 @@ export default function Dashboard() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [darkMode, setDarkMode] = useState(false);
+  const [settings, setSettings] = useState<AppSettings | null>(null);
+  const [currentView, setCurrentView] = useState<'history' | 'settings'>('history');
+  const [settingsActiveTab, setSettingsActiveTab] = useState<'chainScore' | 'general' | 'ai'>(
+    'chainScore'
+  );
   const [loading, setLoading] = useState(true);
   const [selectedEntry, setSelectedEntry] = useState<HistoryEntry | null>(null);
   const [filter, setFilter] = useState<'all' | 'favorites' | ChainScore['grade']>('all');
@@ -66,8 +73,9 @@ export default function Dashboard() {
   };
 
   const loadSettings = async () => {
-    const settings = await getSettings();
-    setDarkMode(settings.darkMode);
+    const s = await getSettings();
+    setSettings(s);
+    setDarkMode(s.darkMode);
   };
 
   const filteredHistory = useMemo(() => {
@@ -180,6 +188,13 @@ export default function Dashboard() {
     await saveSettings({ darkMode: newMode });
   };
 
+  const handleToggleSetting = async (key: keyof AppSettings) => {
+    if (!settings) return;
+    const newSettings = { ...settings, [key]: !settings[key] };
+    setSettings(newSettings as AppSettings);
+    await saveSettings({ [key]: newSettings[key] });
+  };
+
   const getGradeColor = (grade: ChainScore['grade']) => {
     switch (grade) {
       case 'A':
@@ -258,6 +273,18 @@ export default function Dashboard() {
               </div>
             )}
             <button
+              onClick={() => setCurrentView(currentView === 'history' ? 'settings' : 'history')}
+              className={clsx(
+                'p-2 rounded-lg transition-colors',
+                currentView === 'settings' &&
+                  (darkMode ? 'bg-slate-700 text-blue-400' : 'bg-slate-200 text-blue-600'),
+                darkMode ? 'hover:bg-slate-700' : 'hover:bg-slate-100'
+              )}
+              title={currentView === 'history' ? 'Settings' : 'Back to History'}
+            >
+              <Settings className="w-5 h-5" />
+            </button>
+            <button
               onClick={handleToggleDarkMode}
               className={clsx(
                 'p-2 rounded-lg transition-colors',
@@ -281,217 +308,478 @@ export default function Dashboard() {
         </div>
       </header>
 
-      {/* Main Content - Sidebar + Panel */}
-      <div className="flex-1 flex overflow-hidden">
-        {/* Left Sidebar - History List */}
-        <aside
-          className={clsx(
-            'shrink-0 flex flex-col border-r overflow-hidden transition-all',
-            sidebarCollapsed ? 'w-0 lg:w-80' : 'w-full lg:w-80',
-            darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'
-          )}
-        >
-          {/* Filters & Search */}
-          <div
+      {/* Main Content Areas */}
+      {currentView === 'history' && (
+        <div className="flex-1 flex overflow-hidden">
+          {/* Left Sidebar - History List */}
+          <aside
             className={clsx(
-              'shrink-0 p-3 border-b space-y-3',
-              darkMode ? 'border-slate-700' : 'border-slate-200'
+              'shrink-0 flex flex-col border-r overflow-hidden transition-all',
+              sidebarCollapsed ? 'w-0 lg:w-80' : 'w-full lg:w-80',
+              darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'
             )}
           >
-            {/* Search */}
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-              <input
-                type="text"
-                placeholder="Search URLs..."
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-                className={clsx(
-                  'w-full pl-9 pr-3 py-2 rounded-lg border text-sm transition-colors',
-                  darkMode
-                    ? 'bg-slate-700 border-slate-600 focus:border-blue-500'
-                    : 'bg-slate-50 border-slate-200 focus:border-blue-500'
-                )}
-              />
-            </div>
-
-            {/* Filter Tabs */}
-            <div className="flex gap-1">
-              <button
-                onClick={() => setFilter('all')}
-                className={clsx(
-                  'flex-1 px-2 py-1.5 rounded-md text-xs font-medium transition-colors',
-                  filter === 'all'
-                    ? 'bg-blue-500 text-white'
-                    : darkMode
-                    ? 'bg-slate-700 hover:bg-slate-600'
-                    : 'bg-slate-100 hover:bg-slate-200'
-                )}
-              >
-                All
-              </button>
-              <button
-                onClick={() => setFilter('favorites')}
-                className={clsx(
-                  'flex-1 px-2 py-1.5 rounded-md text-xs font-medium transition-colors flex items-center justify-center gap-1',
-                  filter === 'favorites'
-                    ? 'bg-amber-500 text-white'
-                    : darkMode
-                    ? 'bg-slate-700 hover:bg-slate-600'
-                    : 'bg-slate-100 hover:bg-slate-200'
-                )}
-              >
-                <Star className="w-3 h-3" /> Fav
-              </button>
-              {(['A', 'B', 'C', 'D', 'F'] as const).map(grade => (
-                <button
-                  key={grade}
-                  onClick={() => setFilter(filter === grade ? 'all' : grade)}
+            {/* Filters & Search */}
+            <div
+              className={clsx(
+                'shrink-0 p-3 border-b space-y-3',
+                darkMode ? 'border-slate-700' : 'border-slate-200'
+              )}
+            >
+              {/* Search */}
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder="Search URLs..."
+                  value={searchQuery}
+                  onChange={e => setSearchQuery(e.target.value)}
                   className={clsx(
-                    'w-8 py-1.5 rounded-md text-xs font-bold transition-colors',
-                    filter === grade
-                      ? getGradeBgColor(grade) + ' text-white'
+                    'w-full pl-9 pr-3 py-2 rounded-lg border text-sm transition-colors',
+                    darkMode
+                      ? 'bg-slate-700 border-slate-600 focus:border-blue-500'
+                      : 'bg-slate-50 border-slate-200 focus:border-blue-500'
+                  )}
+                />
+              </div>
+
+              {/* Filter Tabs */}
+              <div className="flex gap-1">
+                <button
+                  onClick={() => setFilter('all')}
+                  className={clsx(
+                    'flex-1 px-2 py-1.5 rounded-md text-xs font-medium transition-colors',
+                    filter === 'all'
+                      ? 'bg-blue-500 text-white'
                       : darkMode
-                      ? 'bg-slate-700 hover:bg-slate-600'
-                      : 'bg-slate-100 hover:bg-slate-200'
+                        ? 'bg-slate-700 hover:bg-slate-600'
+                        : 'bg-slate-100 hover:bg-slate-200'
                   )}
                 >
-                  {grade}
+                  All
                 </button>
-              ))}
-            </div>
-
-            {/* Sort & Actions */}
-            <div className="flex items-center gap-2">
-              <select
-                value={sortBy}
-                onChange={e => setSortBy(e.target.value as typeof sortBy)}
-                className={clsx(
-                  'flex-1 px-2 py-1.5 rounded-md border text-xs',
-                  darkMode ? 'bg-slate-700 border-slate-600' : 'bg-slate-50 border-slate-200'
-                )}
-              >
-                <option value="date">Sort by Date</option>
-                <option value="score">Sort by Score</option>
-                <option value="redirects">Sort by Redirects</option>
-              </select>
-              <button
-                onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
-                className={clsx(
-                  'p-1.5 rounded-md transition-colors',
-                  darkMode ? 'bg-slate-700 hover:bg-slate-600' : 'bg-slate-100 hover:bg-slate-200'
-                )}
-              >
-                {sortOrder === 'desc' ? (
-                  <ChevronDown className="w-4 h-4" />
-                ) : (
-                  <ChevronUp className="w-4 h-4" />
-                )}
-              </button>
-              {filteredHistory.length > 0 && (
                 <button
-                  onClick={handleExportAllPDF}
-                  className="p-1.5 rounded-md bg-blue-500 text-white hover:bg-blue-600 transition-colors"
-                  title="Export All to PDF"
+                  onClick={() => setFilter('favorites')}
+                  className={clsx(
+                    'flex-1 px-2 py-1.5 rounded-md text-xs font-medium transition-colors flex items-center justify-center gap-1',
+                    filter === 'favorites'
+                      ? 'bg-amber-500 text-white'
+                      : darkMode
+                        ? 'bg-slate-700 hover:bg-slate-600'
+                        : 'bg-slate-100 hover:bg-slate-200'
+                  )}
                 >
-                  <Download className="w-4 h-4" />
+                  <Star className="w-3 h-3" /> Fav
                 </button>
-              )}
-              {history.length > 0 && (
-                <button
-                  onClick={handleClearAll}
-                  className="p-1.5 rounded-md bg-red-500 text-white hover:bg-red-600 transition-colors"
-                  title="Clear All History"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              )}
-            </div>
-          </div>
-
-          {/* Entry Count */}
-          <div
-            className={clsx(
-              'shrink-0 px-3 py-2 text-xs border-b',
-              darkMode
-                ? 'text-slate-400 border-slate-700 bg-slate-800/50'
-                : 'text-slate-500 border-slate-200 bg-slate-50'
-            )}
-          >
-            {filteredHistory.length} {filteredHistory.length === 1 ? 'entry' : 'entries'}
-            {searchQuery && ` matching "${searchQuery}"`}
-          </div>
-
-          {/* History List */}
-          <div className="flex-1 overflow-y-auto">
-            {loading ? (
-              <div className="flex items-center justify-center h-32">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-              </div>
-            ) : filteredHistory.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-32 text-center p-4">
-                <Clock className="w-10 h-10 mb-2 text-slate-300" />
-                <p className={clsx('text-sm', darkMode ? 'text-slate-400' : 'text-slate-500')}>
-                  {searchQuery || filter !== 'all' ? 'No matches' : 'No history yet'}
-                </p>
-              </div>
-            ) : (
-              <div className="divide-y divide-slate-200 dark:divide-slate-700">
-                {filteredHistory.map(entry => (
-                  <HistoryListItem
-                    key={entry.id}
-                    entry={entry}
-                    isSelected={selectedEntry?.id === entry.id}
-                    darkMode={darkMode}
-                    onClick={() => {
-                      setSelectedEntry(entry);
-                      if (window.innerWidth < 1024) {
-                        setSidebarCollapsed(true);
-                      }
-                    }}
-                    onToggleFavorite={() => handleToggleFavorite(entry)}
-                    onDelete={() => handleDelete(entry.id)}
-                  />
+                {(['A', 'B', 'C', 'D', 'F'] as const).map(grade => (
+                  <button
+                    key={grade}
+                    onClick={() => setFilter(filter === grade ? 'all' : grade)}
+                    className={clsx(
+                      'w-8 py-1.5 rounded-md text-xs font-bold transition-colors',
+                      filter === grade
+                        ? getGradeBgColor(grade) + ' text-white'
+                        : darkMode
+                          ? 'bg-slate-700 hover:bg-slate-600'
+                          : 'bg-slate-100 hover:bg-slate-200'
+                    )}
+                  >
+                    {grade}
+                  </button>
                 ))}
               </div>
-            )}
-          </div>
-        </aside>
 
-        {/* Right Panel - Details */}
-        <main
-          className={clsx('flex-1 overflow-hidden', darkMode ? 'bg-slate-900' : 'bg-slate-100')}
-        >
-          {selectedEntry ? (
-            <div ref={detailPanelRef} className="h-full">
-              <DetailPanel
-                entry={selectedEntry}
-                darkMode={darkMode}
-                onExportPDF={() => handleExportPDF(selectedEntry)}
-                onToggleFavorite={() => handleToggleFavorite(selectedEntry)}
-                onDelete={() => handleDelete(selectedEntry.id)}
-                onBack={() => setSidebarCollapsed(false)}
-              />
+              {/* Sort & Actions */}
+              <div className="flex items-center gap-2">
+                <select
+                  value={sortBy}
+                  onChange={e => setSortBy(e.target.value as typeof sortBy)}
+                  className={clsx(
+                    'flex-1 px-2 py-1.5 rounded-md border text-xs',
+                    darkMode ? 'bg-slate-700 border-slate-600' : 'bg-slate-50 border-slate-200'
+                  )}
+                >
+                  <option value="date">Sort by Date</option>
+                  <option value="score">Sort by Score</option>
+                  <option value="redirects">Sort by Redirects</option>
+                </select>
+                <button
+                  onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+                  className={clsx(
+                    'p-1.5 rounded-md transition-colors',
+                    darkMode ? 'bg-slate-700 hover:bg-slate-600' : 'bg-slate-100 hover:bg-slate-200'
+                  )}
+                >
+                  {sortOrder === 'desc' ? (
+                    <ChevronDown className="w-4 h-4" />
+                  ) : (
+                    <ChevronUp className="w-4 h-4" />
+                  )}
+                </button>
+                {filteredHistory.length > 0 && (
+                  <button
+                    onClick={handleExportAllPDF}
+                    className="p-1.5 rounded-md bg-blue-500 text-white hover:bg-blue-600 transition-colors"
+                    title="Export All to PDF"
+                  >
+                    <Download className="w-4 h-4" />
+                  </button>
+                )}
+                {history.length > 0 && (
+                  <button
+                    onClick={handleClearAll}
+                    className="p-1.5 rounded-md bg-red-500 text-white hover:bg-red-600 transition-colors"
+                    title="Clear All History"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
             </div>
-          ) : (
-            <div className="h-full flex flex-col items-center justify-center text-center p-8">
-              <div
+
+            {/* Entry Count */}
+            <div
+              className={clsx(
+                'shrink-0 px-3 py-2 text-xs border-b',
+                darkMode
+                  ? 'text-slate-400 border-slate-700 bg-slate-800/50'
+                  : 'text-slate-500 border-slate-200 bg-slate-50'
+              )}
+            >
+              {filteredHistory.length} {filteredHistory.length === 1 ? 'entry' : 'entries'}
+              {searchQuery && ` matching "${searchQuery}"`}
+            </div>
+
+            {/* History List */}
+            <div className="flex-1 overflow-y-auto">
+              {loading ? (
+                <div className="flex items-center justify-center h-32">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+                </div>
+              ) : filteredHistory.length === 0 ? (
+                <div className="flex flex-col items-center justify-center h-32 text-center p-4">
+                  <Clock className="w-10 h-10 mb-2 text-slate-300" />
+                  <p className={clsx('text-sm', darkMode ? 'text-slate-400' : 'text-slate-500')}>
+                    {searchQuery || filter !== 'all' ? 'No matches' : 'No history yet'}
+                  </p>
+                </div>
+              ) : (
+                <div className="divide-y divide-slate-200 dark:divide-slate-700">
+                  {filteredHistory.map(entry => (
+                    <HistoryListItem
+                      key={entry.id}
+                      entry={entry}
+                      isSelected={selectedEntry?.id === entry.id}
+                      darkMode={darkMode}
+                      settings={settings}
+                      onClick={() => {
+                        setSelectedEntry(entry);
+                        if (window.innerWidth < 1024) {
+                          setSidebarCollapsed(true);
+                        }
+                      }}
+                      onToggleFavorite={() => handleToggleFavorite(entry)}
+                      onDelete={() => handleDelete(entry.id)}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          </aside>
+
+          {/* Right Panel - Details */}
+          <main
+            className={clsx('flex-1 overflow-hidden', darkMode ? 'bg-slate-900' : 'bg-slate-100')}
+          >
+            {selectedEntry ? (
+              <div ref={detailPanelRef} className="h-full">
+                <DetailPanel
+                  entry={selectedEntry}
+                  darkMode={darkMode}
+                  settings={settings}
+                  onExportPDF={() => handleExportPDF(selectedEntry)}
+                  onToggleFavorite={() => handleToggleFavorite(selectedEntry)}
+                  onDelete={() => handleDelete(selectedEntry.id)}
+                  onBack={() => setSidebarCollapsed(false)}
+                />
+              </div>
+            ) : (
+              <div className="h-full flex flex-col items-center justify-center text-center p-8">
+                <div
+                  className={clsx(
+                    'w-20 h-20 rounded-2xl flex items-center justify-center mb-4',
+                    darkMode ? 'bg-slate-800' : 'bg-white'
+                  )}
+                >
+                  <Globe className="w-10 h-10 text-slate-300" />
+                </div>
+                <h3 className="text-lg font-medium mb-1">Select an Entry</h3>
+                <p className={clsx('text-sm', darkMode ? 'text-slate-400' : 'text-slate-500')}>
+                  Choose a redirect from the list to view details
+                </p>
+              </div>
+            )}
+          </main>
+        </div>
+      )}
+
+      {currentView === 'settings' && settings && (
+        <SettingsViewUI
+          settings={settings}
+          darkMode={darkMode}
+          activeTab={settingsActiveTab}
+          setActiveTab={setSettingsActiveTab}
+          onToggleSetting={handleToggleSetting}
+        />
+      )}
+    </div>
+  );
+}
+
+function SettingsViewUI({ settings, darkMode, activeTab, setActiveTab, onToggleSetting }: any) {
+  return (
+    <div className="flex-1 flex overflow-hidden">
+      <aside
+        className={clsx(
+          'shrink-0 flex flex-col w-64 border-r overflow-hidden',
+          darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'
+        )}
+      >
+        <div
+          className={clsx(
+            'p-4 border-b font-medium',
+            darkMode ? 'border-slate-700' : 'border-slate-200'
+          )}
+        >
+          Settings
+        </div>
+        <div className="flex-1 p-2 space-y-1">
+          <button
+            onClick={() => setActiveTab('general')}
+            className={clsx(
+              'w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors',
+              activeTab === 'general'
+                ? darkMode
+                  ? 'bg-blue-900/30 text-blue-400'
+                  : 'bg-blue-50 text-blue-600'
+                : darkMode
+                  ? 'hover:bg-slate-700 text-slate-300'
+                  : 'hover:bg-slate-100 text-slate-600'
+            )}
+          >
+            General
+          </button>
+          <button
+            onClick={() => setActiveTab('chainScore')}
+            className={clsx(
+              'w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors',
+              activeTab === 'chainScore'
+                ? darkMode
+                  ? 'bg-blue-900/30 text-blue-400'
+                  : 'bg-blue-50 text-blue-600'
+                : darkMode
+                  ? 'hover:bg-slate-700 text-slate-300'
+                  : 'hover:bg-slate-100 text-slate-600'
+            )}
+          >
+            Chain Score Analysis
+          </button>
+          <button
+            onClick={() => setActiveTab('ai')}
+            className={clsx(
+              'w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors flex justify-between tracking-tight',
+              activeTab === 'ai'
+                ? darkMode
+                  ? 'bg-purple-900/30 text-purple-400'
+                  : 'bg-purple-50 text-purple-600'
+                : darkMode
+                  ? 'hover:bg-slate-700 text-slate-300'
+                  : 'hover:bg-slate-100 text-slate-600'
+            )}
+          >
+            AI Integrations
+            <span
+              className={clsx(
+                'text-[10px] px-1.5 py-0.5 rounded-full uppercase',
+                darkMode ? 'bg-purple-900/50 text-purple-300' : 'bg-purple-100 text-purple-600'
+              )}
+            >
+              Soon
+            </span>
+          </button>
+        </div>
+      </aside>
+      <main
+        className={clsx(
+          'flex-1 overflow-y-auto p-6 md:p-10',
+          darkMode ? 'bg-slate-900' : 'bg-slate-50'
+        )}
+      >
+        {activeTab === 'general' && (
+          <div className="max-w-3xl">
+            <h2 className="text-2xl font-semibold mb-6">General Settings</h2>
+            <div
+              className={clsx(
+                'rounded-xl border p-6 flex items-center justify-between',
+                darkMode ? 'border-slate-700 bg-slate-800' : 'border-slate-200 bg-white'
+              )}
+            >
+              <div>
+                <h3 className="font-medium">Dark Mode Appearance</h3>
+                <p className={clsx('text-sm mt-1', darkMode ? 'text-slate-400' : 'text-slate-500')}>
+                  Toggle dark UI theme across the dashboard
+                </p>
+              </div>
+              <span
                 className={clsx(
-                  'w-20 h-20 rounded-2xl flex items-center justify-center mb-4',
-                  darkMode ? 'bg-slate-800' : 'bg-white'
+                  'px-3 py-1 rounded-full text-xs font-medium',
+                  darkMode ? 'bg-slate-700 text-slate-300' : 'bg-slate-100 text-slate-600'
                 )}
               >
-                <Globe className="w-10 h-10 text-slate-300" />
-              </div>
-              <h3 className="text-lg font-medium mb-1">Select an Entry</h3>
-              <p className={clsx('text-sm', darkMode ? 'text-slate-400' : 'text-slate-500')}>
-                Choose a redirect from the list to view details
-              </p>
+                Use Header Button
+              </span>
             </div>
-          )}
-        </main>
-      </div>
+          </div>
+        )}
+        {activeTab === 'chainScore' && (
+          <div className="max-w-3xl">
+            <h2 className="text-2xl font-semibold mb-2">Chain Score Visiblity</h2>
+            <p className={clsx('text-sm mb-6', darkMode ? 'text-slate-400' : 'text-slate-500')}>
+              Control where the rigorous redirect analysis metrics are displayed throughout the
+              extension.
+            </p>
+
+            <div className="space-y-4">
+              <div
+                className={clsx(
+                  'rounded-xl border p-6 flex flex-col justify-center',
+                  darkMode ? 'border-slate-700 bg-slate-800/50' : 'border-slate-200 bg-white'
+                )}
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <span className="font-medium text-base">Extension Popup</span>
+                    <p
+                      className={clsx(
+                        'text-sm mt-1 mb-2',
+                        darkMode ? 'text-slate-400' : 'text-slate-500'
+                      )}
+                    >
+                      Show the analysis card when clicking the extension icon in the toolbar,
+                      displaying grade and time.
+                    </p>
+                  </div>
+                  <ToggleSwitch
+                    checked={settings.showChainScoreInPopup}
+                    onChange={() => onToggleSetting('showChainScoreInPopup')}
+                    darkMode={darkMode}
+                  />
+                </div>
+              </div>
+
+              <div
+                className={clsx(
+                  'rounded-xl border p-6 flex flex-col justify-center',
+                  darkMode ? 'border-slate-700 bg-slate-800/50' : 'border-slate-200 bg-white'
+                )}
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <span className="font-medium text-base">Sidepanel Realtime Monitor</span>
+                    <p
+                      className={clsx(
+                        'text-sm mt-1 mb-2',
+                        darkMode ? 'text-slate-400' : 'text-slate-500'
+                      )}
+                    >
+                      Inject the score summary block at the top of the active monitoring pane.
+                    </p>
+                  </div>
+                  <ToggleSwitch
+                    checked={settings.showChainScoreInSidepanel}
+                    onChange={() => onToggleSetting('showChainScoreInSidepanel')}
+                    darkMode={darkMode}
+                  />
+                </div>
+              </div>
+
+              <div
+                className={clsx(
+                  'rounded-xl border p-6 flex flex-col justify-center',
+                  darkMode ? 'border-slate-700 bg-slate-800/50' : 'border-slate-200 bg-white'
+                )}
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <span className="font-medium text-base">Dashboard Center</span>
+                    <p
+                      className={clsx(
+                        'text-sm mt-1 mb-2',
+                        darkMode ? 'text-slate-400' : 'text-slate-500'
+                      )}
+                    >
+                      Render full visual score UI including colored badges, issues alerts, and
+                      actionable recommendations in the main portal.
+                    </p>
+                  </div>
+                  <ToggleSwitch
+                    checked={settings.showChainScoreInDashboard}
+                    onChange={() => onToggleSetting('showChainScoreInDashboard')}
+                    darkMode={darkMode}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+        {activeTab === 'ai' && (
+          <div className="max-w-3xl flex flex-col items-center justify-center h-64 text-center mx-auto">
+            <div
+              className={clsx(
+                'w-16 h-16 rounded-2xl flex items-center justify-center mb-4',
+                darkMode ? 'bg-purple-900/30' : 'bg-purple-100'
+              )}
+            >
+              <Zap className="w-8 h-8 text-purple-500" />
+            </div>
+            <h2 className="text-2xl font-bold mb-2">AI-Powered Insights</h2>
+            <p className={clsx('max-w-md', darkMode ? 'text-slate-400' : 'text-slate-500')}>
+              We are currently building localized LLM capabilities to analyze complex redirect
+              patterns and SEO risks automatically. Coming very soon.
+            </p>
+          </div>
+        )}
+      </main>
     </div>
+  );
+}
+
+function ToggleSwitch({
+  checked,
+  onChange,
+  darkMode,
+}: {
+  checked: boolean;
+  onChange: () => void;
+  darkMode: boolean;
+}) {
+  return (
+    <label className="flex items-center cursor-pointer shrink-0 ml-4">
+      <div
+        className={clsx(
+          'w-12 h-7 rounded-full transition-colors relative',
+          checked ? 'bg-blue-500' : darkMode ? 'bg-slate-700' : 'bg-slate-200'
+        )}
+      >
+        <div
+          className={clsx(
+            'absolute top-1 w-5 h-5 rounded-full bg-white transition-all shadow-sm',
+            checked ? 'left-6' : 'left-1'
+          )}
+        />
+      </div>
+      <input type="checkbox" className="sr-only" checked={checked} onChange={onChange} />
+    </label>
   );
 }
 
@@ -500,6 +788,7 @@ function HistoryListItem({
   entry,
   isSelected,
   darkMode,
+  settings,
   onClick,
   onToggleFavorite,
   onDelete,
@@ -507,6 +796,7 @@ function HistoryListItem({
   entry: HistoryEntry;
   isSelected: boolean;
   darkMode: boolean;
+  settings: AppSettings | null;
   onClick: () => void;
   onToggleFavorite: () => void;
   onDelete: () => void;
@@ -545,20 +835,22 @@ function HistoryListItem({
             ? 'bg-blue-900/30 border-l-2 border-blue-500'
             : 'bg-blue-50 border-l-2 border-blue-500'
           : darkMode
-          ? 'hover:bg-slate-700/50'
-          : 'hover:bg-slate-50'
+            ? 'hover:bg-slate-700/50'
+            : 'hover:bg-slate-50'
       )}
     >
       <div className="flex items-start gap-3">
         {/* Grade Badge */}
-        <div
-          className={clsx(
-            'w-9 h-9 rounded-lg flex items-center justify-center text-white font-bold text-sm shrink-0',
-            getGradeBgColor(entry.chainScore.grade)
-          )}
-        >
-          {entry.chainScore.grade}
-        </div>
+        {settings?.showChainScoreInDashboard !== false && (
+          <div
+            className={clsx(
+              'w-9 h-9 rounded-lg flex items-center justify-center text-white font-bold text-sm shrink-0',
+              getGradeBgColor(entry.chainScore.grade)
+            )}
+          >
+            {entry.chainScore.grade}
+          </div>
+        )}
 
         {/* Content */}
         <div className="flex-1 min-w-0">
@@ -597,8 +889,8 @@ function HistoryListItem({
               entry.isFavorite
                 ? 'text-amber-500'
                 : darkMode
-                ? 'text-slate-500 hover:text-slate-300'
-                : 'text-slate-400 hover:text-slate-600'
+                  ? 'text-slate-500 hover:text-slate-300'
+                  : 'text-slate-400 hover:text-slate-600'
             )}
           >
             {entry.isFavorite ? (
@@ -626,6 +918,7 @@ function HistoryListItem({
 function DetailPanel({
   entry,
   darkMode,
+  settings,
   onExportPDF,
   onToggleFavorite,
   onDelete,
@@ -633,6 +926,7 @@ function DetailPanel({
 }: {
   entry: HistoryEntry;
   darkMode: boolean;
+  settings: AppSettings | null;
   onExportPDF: () => void;
   onToggleFavorite: () => void;
   onDelete: () => void;
@@ -707,15 +1001,17 @@ function DetailPanel({
           </button>
 
           {/* Score Circle */}
-          <div
-            className={clsx(
-              'w-14 h-14 rounded-xl flex flex-col items-center justify-center text-white shrink-0',
-              getGradeBgColor(entry.chainScore.grade)
-            )}
-          >
-            <span className="text-2xl font-bold leading-none">{entry.chainScore.grade}</span>
-            <span className="text-xs opacity-80">{entry.chainScore.score}</span>
-          </div>
+          {settings?.showChainScoreInDashboard !== false && (
+            <div
+              className={clsx(
+                'w-14 h-14 rounded-xl flex flex-col items-center justify-center text-white shrink-0',
+                getGradeBgColor(entry.chainScore.grade)
+              )}
+            >
+              <span className="text-2xl font-bold leading-none">{entry.chainScore.grade}</span>
+              <span className="text-xs opacity-80">{entry.chainScore.score}</span>
+            </div>
+          )}
 
           {/* URL Info */}
           <div className="flex-1 min-w-0">
@@ -773,8 +1069,8 @@ function DetailPanel({
                 entry.isFavorite
                   ? 'text-amber-500'
                   : darkMode
-                  ? 'text-slate-400 hover:text-slate-200'
-                  : 'text-slate-400 hover:text-slate-600'
+                    ? 'text-slate-400 hover:text-slate-200'
+                    : 'text-slate-400 hover:text-slate-600'
               )}
               title={entry.isFavorite ? 'Remove from favorites' : 'Add to favorites'}
             >
@@ -810,7 +1106,7 @@ function DetailPanel({
       {/* Panel Content - Scrollable */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {/* Issues Section */}
-        {entry.chainScore.issues.length > 0 && (
+        {settings?.showChainScoreInDashboard !== false && entry.chainScore.issues.length > 0 && (
           <section
             className={clsx(
               'rounded-xl p-4 border',
@@ -858,33 +1154,34 @@ function DetailPanel({
         )}
 
         {/* Recommendations Section */}
-        {entry.chainScore.recommendations.length > 0 && (
-          <section
-            className={clsx(
-              'rounded-xl p-4 border',
-              darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'
-            )}
-          >
-            <h3 className="font-medium mb-3 flex items-center gap-2">
-              <Info className="w-4 h-4 text-blue-500" />
-              Recommendations
-            </h3>
-            <ul className="space-y-2">
-              {entry.chainScore.recommendations.map((rec, idx) => (
-                <li
-                  key={idx}
-                  className={clsx(
-                    'flex items-start gap-2 text-sm',
-                    darkMode ? 'text-slate-300' : 'text-slate-600'
-                  )}
-                >
-                  <span className="text-blue-500 mt-0.5">→</span>
-                  {rec}
-                </li>
-              ))}
-            </ul>
-          </section>
-        )}
+        {settings?.showChainScoreInDashboard !== false &&
+          entry.chainScore.recommendations.length > 0 && (
+            <section
+              className={clsx(
+                'rounded-xl p-4 border',
+                darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'
+              )}
+            >
+              <h3 className="font-medium mb-3 flex items-center gap-2">
+                <Info className="w-4 h-4 text-blue-500" />
+                Recommendations
+              </h3>
+              <ul className="space-y-2">
+                {entry.chainScore.recommendations.map((rec, idx) => (
+                  <li
+                    key={idx}
+                    className={clsx(
+                      'flex items-start gap-2 text-sm',
+                      darkMode ? 'text-slate-300' : 'text-slate-600'
+                    )}
+                  >
+                    <span className="text-blue-500 mt-0.5">→</span>
+                    {rec}
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
 
         {/* Redirect Chain Section */}
         <section
@@ -948,12 +1245,12 @@ function DetailPanel({
                                   item.redirect_type === 'permanent'
                                     ? 'Permanent'
                                     : item.redirect_type === 'hsts'
-                                    ? 'HSTS'
-                                    : 'Temporary'
+                                      ? 'HSTS'
+                                      : 'Temporary'
                                 } Redirect`
                               : item.statusObject?.isSuccess
-                              ? 'Success'
-                              : item.status_line}
+                                ? 'Success'
+                                : item.status_line}
                           </span>
                           <span className="flex-1" />
                           <span

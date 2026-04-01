@@ -219,29 +219,10 @@ export default defineBackground(() => {
     { urls: ['<all_urls>'] }
   );
 
-  // Track pending navigations to detect new navigation vs same-page events
-  const pendingNavigations: Map<number, string> = new Map();
-
-  // Listen for new navigations - clear the path only for new navigations
+  // Listen for new navigations to broadcast starting events
   chrome.webNavigation.onBeforeNavigate.addListener(async details => {
     // Only track main frame navigations
     if (details.frameId !== 0) return;
-
-    const currentPath = tabPaths.get(details.tabId);
-    const isNewNavigation =
-      !currentPath ||
-      currentPath.path.length === 0 ||
-      !details.url.startsWith(currentPath.path[0]?.url?.split('?')[0] || '');
-
-    // Only clear if this is a genuinely new navigation (not a redirect in chain)
-    if (isNewNavigation) {
-      console.log('[RedirectWise] New navigation started:', details.url);
-      clearTabPath(details.tabId);
-      clearBadge(details.tabId);
-      pendingNavigations.set(details.tabId, details.url);
-    } else {
-      console.log('[RedirectWise] Continuing redirect chain:', details.url);
-    }
 
     // Get tab info for title
     try {
@@ -322,9 +303,6 @@ export default defineBackground(() => {
   // Save to history when navigation completes
   chrome.webNavigation.onCompleted.addListener(async details => {
     if (details.frameId !== 0) return;
-
-    // Clear pending navigation
-    pendingNavigations.delete(details.tabId);
 
     const tabPath = tabPaths.get(details.tabId);
 

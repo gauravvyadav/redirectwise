@@ -11,12 +11,18 @@ export interface Settings {
   darkMode: boolean;
   autoSaveHistory: boolean;
   maxHistoryEntries: number;
+  showChainScoreInPopup: boolean;
+  showChainScoreInSidepanel: boolean;
+  showChainScoreInDashboard: boolean;
 }
 
 const defaultSettings: Settings = {
   darkMode: false,
   autoSaveHistory: true,
   maxHistoryEntries: MAX_HISTORY_ENTRIES,
+  showChainScoreInPopup: true,
+  showChainScoreInSidepanel: true,
+  showChainScoreInDashboard: true,
 };
 
 // Get all history entries

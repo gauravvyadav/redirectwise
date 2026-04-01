@@ -1,4 +1,6 @@
-import { useState } from 'react';
+import clsx from 'clsx';
+import { Clock } from 'lucide-react';
+import { Fragment, useState } from 'react';
 import { RedirectItem } from '../types/redirect';
 import RedirectItemCard from './RedirectItemCard';
 
@@ -29,7 +31,7 @@ export default function RedirectPath({ items, darkMode = false }: RedirectPathPr
         </span>
         {totalTime > 0 && (
           <span className={`text-xs ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>
-            Total: {totalTime}ms
+            Total Request Time: {totalTime}ms
           </span>
         )}
       </div>
@@ -44,18 +46,47 @@ export default function RedirectPath({ items, darkMode = false }: RedirectPathPr
           />
         )}
 
-        <div className="space-y-2 relative z-10">
-          {items.map((item, index) => (
-            <RedirectItemCard
-              key={item.id}
-              item={item}
-              index={index}
-              isLast={index === items.length - 1}
-              isExpanded={expandedId === item.id}
-              onToggle={() => handleToggle(item.id)}
-              darkMode={darkMode}
-            />
-          ))}
+        <div className="flex flex-col gap-3 relative z-10">
+          {items.map((item, index) => {
+            let delayMs = 0;
+            if (index > 0) {
+              const prevItem = items[index - 1];
+              if (item.timing?.startTime && prevItem.timing?.endTime) {
+                delayMs = Math.max(0, item.timing.startTime - prevItem.timing.endTime);
+              } else if (item.timestamp && prevItem.timestamp) {
+                delayMs = Math.max(0, item.timestamp - prevItem.timestamp);
+              }
+            }
+
+            return (
+              <Fragment key={item.id}>
+                {index > 0 && delayMs >= 0 && (
+                  <div className="flex pl-16 py-1 relative z-20">
+                    <span
+                      className={clsx(
+                        'text-[10px] px-2 py-0.5 rounded-full flex items-center gap-1 border shadow-sm',
+                        darkMode
+                          ? 'bg-slate-800 text-slate-400 border-slate-700'
+                          : 'bg-white text-slate-500 border-slate-200'
+                      )}
+                      title={`Time passed between previous request finishing and this request starting`}
+                    >
+                      <Clock className="w-3 h-3" />
+                      {delayMs}ms gap
+                    </span>
+                  </div>
+                )}
+                <RedirectItemCard
+                  item={item}
+                  index={index}
+                  isLast={index === items.length - 1}
+                  isExpanded={expandedId === item.id}
+                  onToggle={() => handleToggle(item.id)}
+                  darkMode={darkMode}
+                />
+              </Fragment>
+            );
+          })}
         </div>
       </div>
     </div>

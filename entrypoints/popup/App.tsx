@@ -7,7 +7,7 @@ import Header from '../../components/Header';
 import RedirectPath from '../../components/RedirectPath';
 import { ChainScore, RedirectItem, calculateChainScore, generateId } from '../../types/redirect';
 import { exportToPDF } from '../../utils/pdf-export';
-import { getSettings, saveSettings } from '../../utils/storage';
+import { Settings, getSettings, saveSettings } from '../../utils/storage';
 
 export default function App() {
   const [redirectPath, setRedirectPath] = useState<RedirectItem[]>([]);
@@ -15,6 +15,7 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [currentUrl, setCurrentUrl] = useState('');
   const [darkMode, setDarkMode] = useState(false);
+  const [settings, setSettings] = useState<Settings | null>(null);
   const currentTabId = useRef<number | null>(null);
 
   useEffect(() => {
@@ -74,8 +75,9 @@ export default function App() {
   }, [redirectPath]);
 
   const loadSettings = async () => {
-    const settings = await getSettings();
-    setDarkMode(settings.darkMode);
+    const s = await getSettings();
+    setSettings(s);
+    setDarkMode(s.darkMode);
   };
 
   const loadRedirectPath = async () => {
@@ -207,7 +209,9 @@ export default function App() {
           darkMode={darkMode}
         />
 
-        {chainScore && <ChainScoreCard score={chainScore} darkMode={darkMode} />}
+        {chainScore && settings?.showChainScoreInPopup !== false && (
+          <ChainScoreCard score={chainScore} darkMode={darkMode} />
+        )}
 
         {redirectPath.length > 0 && (
           <CopyButtons
