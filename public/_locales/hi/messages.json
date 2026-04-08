@@ -5,79 +5,328 @@
   "extensionDesc": {
     "message": "एक स्थायी डैशबोर्ड के साथ रीडायरेक्ट ट्रैक करें और छिपे हुए विज्ञापन लिंक पकड़ें। पॉपअप और साइड पैनल के साथ रियल-टाइम SEO चेकर।"
   },
-  "emptyStateSpecialPageTitle": { "message": "इस पेज को ट्रैक नहीं किया जा सकता" },
-  "emptyStateSpecialPageDesc": { "message": "ब्राउज़र के आंतरिक पेज ट्रैक नहीं किए जा सकते। रीडायरेक्ट पथ देखने के लिए किसी वेबसाइट पर जाएं।" },
-  "emptyStateDefaultTitle": { "message": "कोई रीडायरेक्ट नहीं मिला" },
-  "emptyStateDefaultDesc": { "message": "रीडायरेक्ट पथ कैप्चर करने के लिए किसी URL पर जाएं या पेज रिफ्रेश करें।" },
-  "headerSubtitle": { "message": "रीडायरेक्ट पथ विश्लेषक" },
-  "headerLightMode": { "message": "लाइट मोड" },
-  "headerDarkMode": { "message": "डार्क मोड" },
-  "headerOpenRealtimeMonitor": { "message": "रियलटाइम मॉनिटर खोलें" },
-  "headerOpenDashboard": { "message": "डैशबोर्ड खोलें" },
-  "headerRefresh": { "message": "रिफ्रेश करें" },
-  "headerClearPath": { "message": "पथ साफ़ करें" },
-  "scoreGradeA": { "message": "उत्कृष्ट! इष्टतम रीडायरेक्ट चेन।" },
-  "scoreGradeB": { "message": "अच्छा। मामूली सुधार संभव।" },
-  "scoreGradeC": { "message": "ठीक। कुछ समस्याएं हैं।" },
-  "scoreGradeD": { "message": "खराब। महत्वपूर्ण समस्याएं पाई गईं।" },
-  "scoreGradeF": { "message": "गंभीर। बड़ी समस्याएं पाई गईं।" },
-  "scoreIssueSingle": { "message": "समस्या" },
-  "scoreIssuePlural": { "message": "समस्याएं" },
-  "copyPathAs": { "message": "पथ कॉपी करें:" },
-  "copied": { "message": "कॉपी हो गया!" },
-  "textFormat": { "message": "टेक्स्ट" },
-  "csvFormat": { "message": "CSV" },
-  "pdfFormat": { "message": "PDF" },
-  "exportingPdf": { "message": "एक्सपोर्ट हो रहा है..." },
-  "permanentRedirect": { "message": "स्थायी रीडायरेक्ट" },
-  "hstsRedirect": { "message": "HSTS रीडायरेक्ट" },
-  "temporaryRedirect": { "message": "अस्थायी रीडायरेक्ट" },
-  "copyUrl": { "message": "URL कॉपी करें" },
-  "responseHeaders": { "message": "रिस्पॉन्स हेडर" },
-  "openUrl": { "message": "URL खोलें" },
-  "hstsRedirectDesc": { "message": "ब्राउज़र का आंतरिक रीडायरेक्ट। सर्वर ने पहले HTTPS आवश्यकता बताई थी।" },
-  "live": { "message": "लाइव" },
-  "paused": { "message": "रुका हुआ" },
-  "realtimeMonitor": { "message": "रियलटाइम मॉनिटर" },
-  "waitingForRedirects": { "message": "रीडायरेक्ट की प्रतीक्षा हो रही है..." },
-  "monitoringPaused": { "message": "मॉनिटरिंग रुकी हुई है" },
-  "navigateRealtimeMessage": { "message": "रियलटाइम में रीडायरेक्ट देखने के लिए किसी URL पर जाएं" },
-  "pauseMonitoring": { "message": "मॉनिटरिंग रोकें" },
-  "resumeMonitoring": { "message": "मॉनिटरिंग फिर शुरू करें" },
-  "clearSessions": { "message": "सत्र साफ़ करें" },
-  "toggleDarkMode": { "message": "डार्क मोड टॉगल करें" },
-  "monitoringLabel": { "message": "मॉनिटरिंग:" },
-  "scoreLabel": { "message": "स्कोर:" },
-  "autoScroll": { "message": "ऑटो-स्क्रॉल" },
-  "selectAnEntry": { "message": "एक एंट्री चुनें" },
-  "chooseRedirectToView": { "message": "विवरण देखने के लिए सूची से एक रीडायरेक्ट चुनें" },
-  "settingsTitle": { "message": "सेटिंग्स" },
-  "backToHistory": { "message": "इतिहास पर वापस जाएं" },
-  "generalSettings": { "message": "सामान्य सेटिंग्स" },
-  "chainScoreAnalysis": { "message": "चेन स्कोर विश्लेषण" },
-  "aiIntegrations": { "message": "AI इंटीग्रेशन" },
-  "soon": { "message": "जल्द आ रहा है" },
-  "darkModeAppearance": { "message": "डार्क मोड रूप" },
-  "searchUrls": { "message": "URLs खोजें..." },
-  "sortByDate": { "message": "तारीख के अनुसार" },
-  "sortByScore": { "message": "स्कोर के अनुसार" },
-  "sortByRedirects": { "message": "रीडायरेक्ट के अनुसार" },
-  "exportAllToPdf": { "message": "सभी PDF में एक्सपोर्ट करें" },
-  "clearAllHistory": { "message": "सारा इतिहास मिटाएं" },
-  "noMatches": { "message": "कोई मिलान नहीं" },
-  "noHistoryYet": { "message": "अभी तक कोई इतिहास नहीं" },
-  "removeFromFavorites": { "message": "पसंदीदा से हटाएं" },
-  "addToFavorites": { "message": "पसंदीदा में जोड़ें" },
-  "exportToPdf": { "message": "PDF में एक्सपोर्ट" },
-  "deleteEntry": { "message": "हटाएं" },
-  "issuesFound": { "message": "समस्याएं मिलीं" },
-  "recommendations": { "message": "सुझाव" },
-  "success": { "message": "सफल" },
-  "notSpecified": { "message": "निर्दिष्ट नहीं" },
-  "notAvailable": { "message": "उपलब्ध नहीं" },
-  "ipAddress": { "message": "IP पता" },
-  "allHeaders": { "message": "सभी हेडर" },
-  "noHeadersAvailable": { "message": "कोई हेडर उपलब्ध नहीं" },
-  "confirmDeleteEntry": { "message": "क्या आप वाकई इस एंट्री को हटाना चाहते हैं?" },
-  "confirmClearAll": { "message": "क्या आप वाकई सारा इतिहास मिटाना चाहते हैं? यह पूर्ववत नहीं किया जा सकता।" }
+  "emptyStateSpecialPageTitle": {
+    "message": "इस पेज को ट्रैक नहीं किया जा सकता"
+  },
+  "emptyStateSpecialPageDesc": {
+    "message": "ब्राउज़र के आंतरिक पेज ट्रैक नहीं किए जा सकते। रीडायरेक्ट पथ देखने के लिए किसी वेबसाइट पर जाएं।"
+  },
+  "emptyStateDefaultTitle": {
+    "message": "कोई रीडायरेक्ट नहीं मिला"
+  },
+  "emptyStateDefaultDesc": {
+    "message": "रीडायरेक्ट पथ कैप्चर करने के लिए किसी URL पर जाएं या पेज रिफ्रेश करें।"
+  },
+  "headerSubtitle": {
+    "message": "रीडायरेक्ट पथ विश्लेषक"
+  },
+  "headerLightMode": {
+    "message": "लाइट मोड"
+  },
+  "headerDarkMode": {
+    "message": "डार्क मोड"
+  },
+  "headerOpenRealtimeMonitor": {
+    "message": "रियलटाइम मॉनिटर खोलें"
+  },
+  "headerOpenDashboard": {
+    "message": "डैशबोर्ड खोलें"
+  },
+  "headerRefresh": {
+    "message": "रिफ्रेश करें"
+  },
+  "headerClearPath": {
+    "message": "पथ साफ़ करें"
+  },
+  "scoreGradeA": {
+    "message": "उत्कृष्ट! इष्टतम रीडायरेक्ट चेन।"
+  },
+  "scoreGradeB": {
+    "message": "अच्छा। मामूली सुधार संभव।"
+  },
+  "scoreGradeC": {
+    "message": "ठीक। कुछ समस्याएं हैं।"
+  },
+  "scoreGradeD": {
+    "message": "खराब। महत्वपूर्ण समस्याएं पाई गईं।"
+  },
+  "scoreGradeF": {
+    "message": "गंभीर। बड़ी समस्याएं पाई गईं।"
+  },
+  "scoreIssueSingle": {
+    "message": "समस्या"
+  },
+  "scoreIssuePlural": {
+    "message": "समस्याएं"
+  },
+  "copyPathAs": {
+    "message": "पथ कॉपी करें:"
+  },
+  "copied": {
+    "message": "कॉपी हो गया!"
+  },
+  "textFormat": {
+    "message": "टेक्स्ट"
+  },
+  "csvFormat": {
+    "message": "CSV"
+  },
+  "pdfFormat": {
+    "message": "PDF"
+  },
+  "exportingPdf": {
+    "message": "एक्सपोर्ट हो रहा है..."
+  },
+  "permanentRedirect": {
+    "message": "स्थायी रीडायरेक्ट"
+  },
+  "hstsRedirect": {
+    "message": "HSTS रीडायरेक्ट"
+  },
+  "temporaryRedirect": {
+    "message": "अस्थायी रीडायरेक्ट"
+  },
+  "copyUrl": {
+    "message": "URL कॉपी करें"
+  },
+  "responseHeaders": {
+    "message": "रिस्पॉन्स हेडर"
+  },
+  "openUrl": {
+    "message": "URL खोलें"
+  },
+  "hstsRedirectDesc": {
+    "message": "ब्राउज़र का आंतरिक रीडायरेक्ट। सर्वर ने पहले HTTPS आवश्यकता बताई थी।"
+  },
+  "live": {
+    "message": "लाइव"
+  },
+  "paused": {
+    "message": "रुका हुआ"
+  },
+  "realtimeMonitor": {
+    "message": "रियलटाइम मॉनिटर"
+  },
+  "waitingForRedirects": {
+    "message": "रीडायरेक्ट की प्रतीक्षा हो रही है..."
+  },
+  "monitoringPaused": {
+    "message": "मॉनिटरिंग रुकी हुई है"
+  },
+  "navigateRealtimeMessage": {
+    "message": "रियलटाइम में रीडायरेक्ट देखने के लिए किसी URL पर जाएं"
+  },
+  "pauseMonitoring": {
+    "message": "मॉनिटरिंग रोकें"
+  },
+  "resumeMonitoring": {
+    "message": "मॉनिटरिंग फिर शुरू करें"
+  },
+  "clearSessions": {
+    "message": "सत्र साफ़ करें"
+  },
+  "toggleDarkMode": {
+    "message": "डार्क मोड टॉगल करें"
+  },
+  "monitoringLabel": {
+    "message": "मॉनिटरिंग:"
+  },
+  "scoreLabel": {
+    "message": "स्कोर:"
+  },
+  "autoScroll": {
+    "message": "ऑटो-स्क्रॉल"
+  },
+  "selectAnEntry": {
+    "message": "एक एंट्री चुनें"
+  },
+  "chooseRedirectToView": {
+    "message": "विवरण देखने के लिए सूची से एक रीडायरेक्ट चुनें"
+  },
+  "settingsTitle": {
+    "message": "सेटिंग्स"
+  },
+  "backToHistory": {
+    "message": "इतिहास पर वापस जाएं"
+  },
+  "generalSettings": {
+    "message": "सामान्य सेटिंग्स"
+  },
+  "chainScoreAnalysis": {
+    "message": "चेन स्कोर विश्लेषण"
+  },
+  "aiIntegrations": {
+    "message": "AI इंटीग्रेशन"
+  },
+  "soon": {
+    "message": "जल्द आ रहा है"
+  },
+  "darkModeAppearance": {
+    "message": "डार्क मोड रूप"
+  },
+  "searchUrls": {
+    "message": "URLs खोजें..."
+  },
+  "sortByDate": {
+    "message": "तारीख के अनुसार"
+  },
+  "sortByScore": {
+    "message": "स्कोर के अनुसार"
+  },
+  "sortByRedirects": {
+    "message": "रीडायरेक्ट के अनुसार"
+  },
+  "exportAllToPdf": {
+    "message": "सभी PDF में एक्सपोर्ट करें"
+  },
+  "clearAllHistory": {
+    "message": "सारा इतिहास मिटाएं"
+  },
+  "noMatches": {
+    "message": "कोई मिलान नहीं"
+  },
+  "noHistoryYet": {
+    "message": "अभी तक कोई इतिहास नहीं"
+  },
+  "removeFromFavorites": {
+    "message": "पसंदीदा से हटाएं"
+  },
+  "addToFavorites": {
+    "message": "पसंदीदा में जोड़ें"
+  },
+  "exportToPdf": {
+    "message": "PDF में एक्सपोर्ट"
+  },
+  "deleteEntry": {
+    "message": "हटाएं"
+  },
+  "issuesFound": {
+    "message": "समस्याएं मिलीं"
+  },
+  "recommendations": {
+    "message": "सुझाव"
+  },
+  "success": {
+    "message": "सफल"
+  },
+  "notSpecified": {
+    "message": "निर्दिष्ट नहीं"
+  },
+  "notAvailable": {
+    "message": "उपलब्ध नहीं"
+  },
+  "ipAddress": {
+    "message": "IP पता"
+  },
+  "allHeaders": {
+    "message": "सभी हेडर"
+  },
+  "noHeadersAvailable": {
+    "message": "कोई हेडर उपलब्ध नहीं"
+  },
+  "confirmDeleteEntry": {
+    "message": "क्या आप वाकई इस एंट्री को हटाना चाहते हैं?"
+  },
+  "confirmClearAll": {
+    "message": "क्या आप वाकई सारा इतिहास मिटाना चाहते हैं? यह पूर्ववत नहीं किया जा सकता।"
+  },
+  "entriesLabel": {
+    "message": "प्रविष्टियाँ"
+  },
+  "entrySingle": {
+    "message": "प्रविष्टि"
+  },
+  "avgScore": {
+    "message": "औसत स्कोर"
+  },
+  "filterAll": {
+    "message": "सभी"
+  },
+  "filterFav": {
+    "message": "पसंदीदा"
+  },
+  "matchingLabel": {
+    "message": "मेल खाता"
+  },
+  "darkModeDesc": {
+    "message": "डैशबोर्ड में डार्क UI थीम टॉगल करें"
+  },
+  "useHeaderButton": {
+    "message": "हेडर बटन उपयोग करें"
+  },
+  "chainScoreVisibility": {
+    "message": "चेन स्कोर दृश्यता"
+  },
+  "chainScoreVisibilityDesc": {
+    "message": "नियंत्रित करें कि एक्सटेंशन में रीडायरेक्ट विश्लेषण मेट्रिक्स कहाँ दिखाई दें।"
+  },
+  "extensionPopup": {
+    "message": "एक्सटेंशन पॉपअप"
+  },
+  "extensionPopupDesc": {
+    "message": "टूलबार में एक्सटेंशन आइकन पर क्लिक करते समय विश्लेषण कार्ड दिखाएं।"
+  },
+  "sidepanelMonitor": {
+    "message": "साइडपैनल रियलटाइम मॉनिटर"
+  },
+  "sidepanelMonitorDesc": {
+    "message": "सक्रिय मॉनिटरिंग पैन के शीर्ष पर स्कोर सारांश डालें।"
+  },
+  "dashboardCenter": {
+    "message": "डैशबोर्ड केंद्र"
+  },
+  "dashboardCenterDesc": {
+    "message": "रंगीन बैज, समस्या अलर्ट और कार्रवाई योग्य सुझावों सहित पूर्ण विज़ुअल स्कोर UI प्रस्तुत करें।"
+  },
+  "aiPoweredInsights": {
+    "message": "AI-संचालित अंतर्दृष्टि"
+  },
+  "aiPoweredInsightsDesc": {
+    "message": "हम जटिल रीडायरेक्ट पैटर्न और SEO जोखिमों का स्वचालित विश्लेषण करने के लिए AI क्षमताएं विकसित कर रहे हैं। जल्द आ रहा है।"
+  },
+  "hopSingle": {
+    "message": "हॉप"
+  },
+  "hopsPlural": {
+    "message": "हॉप्स"
+  },
+  "redirectSingle": {
+    "message": "रीडायरेक्ट"
+  },
+  "redirectsPlural": {
+    "message": "रीडायरेक्ट"
+  },
+  "sessionSingle": {
+    "message": "सत्र"
+  },
+  "sessionsPlural": {
+    "message": "सत्र"
+  },
+  "totalLabel": {
+    "message": "कुल"
+  },
+  "impactLabel": {
+    "message": "प्रभाव"
+  },
+  "redirectChain": {
+    "message": "रीडायरेक्ट चेन"
+  },
+  "stepsLabel": {
+    "message": "चरण"
+  },
+  "capturedLabel": {
+    "message": "कैप्चर किया"
+  },
+  "categoryServer": {
+    "message": "सर्वर"
+  },
+  "categoryCaching": {
+    "message": "कैशिंग"
+  },
+  "categorySecurity": {
+    "message": "सुरक्षा"
+  },
+  "categoryContent": {
+    "message": "सामग्री"
+  }
 }

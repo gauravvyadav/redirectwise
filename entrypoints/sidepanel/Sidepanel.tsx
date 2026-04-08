@@ -401,8 +401,7 @@ export default function Sidepanel() {
             </div>
             <div className="flex items-center gap-3">
               <span className="text-white/80">
-                {activeSession?.path.length || 0} hop
-                {(activeSession?.path.length || 0) !== 1 ? 's' : ''}
+                {activeSession?.path.length || 0} {(activeSession?.path.length || 0) !== 1 ? chrome.i18n.getMessage('hopsPlural') : chrome.i18n.getMessage('hopSingle')}
               </span>
               {chainScore.issues.length > 0 && (
                 <span className="flex items-center gap-1 text-yellow-300 font-medium">
@@ -672,7 +671,7 @@ export default function Sidepanel() {
         <span
           className={clsx('px-2 py-0.5 rounded-full', darkMode ? 'bg-slate-700' : 'bg-gray-100')}
         >
-          {sessions.size} session{sessions.size !== 1 ? 's' : ''}
+          {sessions.size} {sessions.size !== 1 ? chrome.i18n.getMessage('sessionsPlural') : chrome.i18n.getMessage('sessionSingle')}
         </span>
       </footer>
     </div>

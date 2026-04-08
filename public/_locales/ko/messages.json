@@ -1,79 +1,332 @@
 {
-  "extensionName": { "message": "RedirectWise: HTTP 리디렉션 검사기 및 SEO 감사 도구" },
-  "extensionDesc": { "message": "영구 대시보드로 리디렉션을 추적하고 숨겨진 광고 링크를 감지하세요. 팝업 및 사이드 패널이 포함된 실시간 SEO 검사기." },
-  "emptyStateSpecialPageTitle": { "message": "이 페이지는 추적할 수 없습니다" },
-  "emptyStateSpecialPageDesc": { "message": "브라우저 내부 페이지는 추적할 수 없습니다. 리디렉션 경로를 보려면 웹사이트로 이동하세요." },
-  "emptyStateDefaultTitle": { "message": "리디렉션이 감지되지 않았습니다" },
-  "emptyStateDefaultDesc": { "message": "리디렉션 경로를 캡처하려면 URL로 이동하거나 페이지를 새로고침하세요." },
-  "headerSubtitle": { "message": "리디렉션 경로 분석기" },
-  "headerLightMode": { "message": "라이트 모드" },
-  "headerDarkMode": { "message": "다크 모드" },
-  "headerOpenRealtimeMonitor": { "message": "실시간 모니터 열기" },
-  "headerOpenDashboard": { "message": "대시보드 열기" },
-  "headerRefresh": { "message": "새로고침" },
-  "headerClearPath": { "message": "경로 지우기" },
-  "scoreGradeA": { "message": "우수! 최적의 리디렉션 체인입니다." },
-  "scoreGradeB": { "message": "양호. 약간의 개선이 가능합니다." },
-  "scoreGradeC": { "message": "보통. 일부 문제가 있습니다." },
-  "scoreGradeD": { "message": "불량. 중대한 문제가 발견되었습니다." },
-  "scoreGradeF": { "message": "위험. 심각한 문제가 감지되었습니다." },
-  "scoreIssueSingle": { "message": "문제" },
-  "scoreIssuePlural": { "message": "문제" },
-  "copyPathAs": { "message": "경로 복사:" },
-  "copied": { "message": "복사됨!" },
-  "textFormat": { "message": "텍스트" },
-  "csvFormat": { "message": "CSV" },
-  "pdfFormat": { "message": "PDF" },
-  "exportingPdf": { "message": "내보내는 중..." },
-  "permanentRedirect": { "message": "영구 리디렉션" },
-  "hstsRedirect": { "message": "HSTS 리디렉션" },
-  "temporaryRedirect": { "message": "임시 리디렉션" },
-  "copyUrl": { "message": "URL 복사" },
-  "responseHeaders": { "message": "응답 헤더" },
-  "openUrl": { "message": "URL 열기" },
-  "hstsRedirectDesc": { "message": "브라우저 내부 리디렉션. 서버가 이전에 HTTPS 요구 사항을 표시했습니다." },
-  "live": { "message": "라이브" },
-  "paused": { "message": "일시 중지" },
-  "realtimeMonitor": { "message": "실시간 모니터" },
-  "waitingForRedirects": { "message": "리디렉션 대기 중..." },
-  "monitoringPaused": { "message": "모니터링 일시 중지됨" },
-  "navigateRealtimeMessage": { "message": "실시간으로 리디렉션을 보려면 URL로 이동하세요" },
-  "pauseMonitoring": { "message": "모니터링 일시 중지" },
-  "resumeMonitoring": { "message": "모니터링 재개" },
-  "clearSessions": { "message": "세션 지우기" },
-  "toggleDarkMode": { "message": "다크 모드 전환" },
-  "monitoringLabel": { "message": "모니터링:" },
-  "scoreLabel": { "message": "점수:" },
-  "autoScroll": { "message": "자동 스크롤" },
-  "selectAnEntry": { "message": "항목 선택" },
-  "chooseRedirectToView": { "message": "세부 정보를 보려면 목록에서 리디렉션을 선택하세요" },
-  "settingsTitle": { "message": "설정" },
-  "backToHistory": { "message": "기록으로 돌아가기" },
-  "generalSettings": { "message": "일반 설정" },
-  "chainScoreAnalysis": { "message": "체인 점수 분석" },
-  "aiIntegrations": { "message": "AI 통합" },
-  "soon": { "message": "곧 출시" },
-  "darkModeAppearance": { "message": "다크 모드 외관" },
-  "searchUrls": { "message": "URL 검색..." },
-  "sortByDate": { "message": "날짜순 정렬" },
-  "sortByScore": { "message": "점수순 정렬" },
-  "sortByRedirects": { "message": "리디렉션순 정렬" },
-  "exportAllToPdf": { "message": "모두 PDF로 내보내기" },
-  "clearAllHistory": { "message": "모든 기록 지우기" },
-  "noMatches": { "message": "일치하는 항목 없음" },
-  "noHistoryYet": { "message": "아직 기록이 없습니다" },
-  "removeFromFavorites": { "message": "즐겨찾기에서 제거" },
-  "addToFavorites": { "message": "즐겨찾기에 추가" },
-  "exportToPdf": { "message": "PDF로 내보내기" },
-  "deleteEntry": { "message": "삭제" },
-  "issuesFound": { "message": "발견된 문제" },
-  "recommendations": { "message": "추천 사항" },
-  "success": { "message": "성공" },
-  "notSpecified": { "message": "지정되지 않음" },
-  "notAvailable": { "message": "사용할 수 없음" },
-  "ipAddress": { "message": "IP 주소" },
-  "allHeaders": { "message": "모든 헤더" },
-  "noHeadersAvailable": { "message": "사용 가능한 헤더 없음" },
-  "confirmDeleteEntry": { "message": "이 항목을 삭제하시겠습니까?" },
-  "confirmClearAll": { "message": "모든 기록을 지우시겠습니까? 이 작업은 되돌릴 수 없습니다." }
+  "extensionName": {
+    "message": "RedirectWise: HTTP 리디렉션 검사기 및 SEO 감사 도구"
+  },
+  "extensionDesc": {
+    "message": "영구 대시보드로 리디렉션을 추적하고 숨겨진 광고 링크를 감지하세요. 팝업 및 사이드 패널이 포함된 실시간 SEO 검사기."
+  },
+  "emptyStateSpecialPageTitle": {
+    "message": "이 페이지는 추적할 수 없습니다"
+  },
+  "emptyStateSpecialPageDesc": {
+    "message": "브라우저 내부 페이지는 추적할 수 없습니다. 리디렉션 경로를 보려면 웹사이트로 이동하세요."
+  },
+  "emptyStateDefaultTitle": {
+    "message": "리디렉션이 감지되지 않았습니다"
+  },
+  "emptyStateDefaultDesc": {
+    "message": "리디렉션 경로를 캡처하려면 URL로 이동하거나 페이지를 새로고침하세요."
+  },
+  "headerSubtitle": {
+    "message": "리디렉션 경로 분석기"
+  },
+  "headerLightMode": {
+    "message": "라이트 모드"
+  },
+  "headerDarkMode": {
+    "message": "다크 모드"
+  },
+  "headerOpenRealtimeMonitor": {
+    "message": "실시간 모니터 열기"
+  },
+  "headerOpenDashboard": {
+    "message": "대시보드 열기"
+  },
+  "headerRefresh": {
+    "message": "새로고침"
+  },
+  "headerClearPath": {
+    "message": "경로 지우기"
+  },
+  "scoreGradeA": {
+    "message": "우수! 최적의 리디렉션 체인입니다."
+  },
+  "scoreGradeB": {
+    "message": "양호. 약간의 개선이 가능합니다."
+  },
+  "scoreGradeC": {
+    "message": "보통. 일부 문제가 있습니다."
+  },
+  "scoreGradeD": {
+    "message": "불량. 중대한 문제가 발견되었습니다."
+  },
+  "scoreGradeF": {
+    "message": "위험. 심각한 문제가 감지되었습니다."
+  },
+  "scoreIssueSingle": {
+    "message": "문제"
+  },
+  "scoreIssuePlural": {
+    "message": "문제"
+  },
+  "copyPathAs": {
+    "message": "경로 복사:"
+  },
+  "copied": {
+    "message": "복사됨!"
+  },
+  "textFormat": {
+    "message": "텍스트"
+  },
+  "csvFormat": {
+    "message": "CSV"
+  },
+  "pdfFormat": {
+    "message": "PDF"
+  },
+  "exportingPdf": {
+    "message": "내보내는 중..."
+  },
+  "permanentRedirect": {
+    "message": "영구 리디렉션"
+  },
+  "hstsRedirect": {
+    "message": "HSTS 리디렉션"
+  },
+  "temporaryRedirect": {
+    "message": "임시 리디렉션"
+  },
+  "copyUrl": {
+    "message": "URL 복사"
+  },
+  "responseHeaders": {
+    "message": "응답 헤더"
+  },
+  "openUrl": {
+    "message": "URL 열기"
+  },
+  "hstsRedirectDesc": {
+    "message": "브라우저 내부 리디렉션. 서버가 이전에 HTTPS 요구 사항을 표시했습니다."
+  },
+  "live": {
+    "message": "라이브"
+  },
+  "paused": {
+    "message": "일시 중지"
+  },
+  "realtimeMonitor": {
+    "message": "실시간 모니터"
+  },
+  "waitingForRedirects": {
+    "message": "리디렉션 대기 중..."
+  },
+  "monitoringPaused": {
+    "message": "모니터링 일시 중지됨"
+  },
+  "navigateRealtimeMessage": {
+    "message": "실시간으로 리디렉션을 보려면 URL로 이동하세요"
+  },
+  "pauseMonitoring": {
+    "message": "모니터링 일시 중지"
+  },
+  "resumeMonitoring": {
+    "message": "모니터링 재개"
+  },
+  "clearSessions": {
+    "message": "세션 지우기"
+  },
+  "toggleDarkMode": {
+    "message": "다크 모드 전환"
+  },
+  "monitoringLabel": {
+    "message": "모니터링:"
+  },
+  "scoreLabel": {
+    "message": "점수:"
+  },
+  "autoScroll": {
+    "message": "자동 스크롤"
+  },
+  "selectAnEntry": {
+    "message": "항목 선택"
+  },
+  "chooseRedirectToView": {
+    "message": "세부 정보를 보려면 목록에서 리디렉션을 선택하세요"
+  },
+  "settingsTitle": {
+    "message": "설정"
+  },
+  "backToHistory": {
+    "message": "기록으로 돌아가기"
+  },
+  "generalSettings": {
+    "message": "일반 설정"
+  },
+  "chainScoreAnalysis": {
+    "message": "체인 점수 분석"
+  },
+  "aiIntegrations": {
+    "message": "AI 통합"
+  },
+  "soon": {
+    "message": "곧 출시"
+  },
+  "darkModeAppearance": {
+    "message": "다크 모드 외관"
+  },
+  "searchUrls": {
+    "message": "URL 검색..."
+  },
+  "sortByDate": {
+    "message": "날짜순 정렬"
+  },
+  "sortByScore": {
+    "message": "점수순 정렬"
+  },
+  "sortByRedirects": {
+    "message": "리디렉션순 정렬"
+  },
+  "exportAllToPdf": {
+    "message": "모두 PDF로 내보내기"
+  },
+  "clearAllHistory": {
+    "message": "모든 기록 지우기"
+  },
+  "noMatches": {
+    "message": "일치하는 항목 없음"
+  },
+  "noHistoryYet": {
+    "message": "아직 기록이 없습니다"
+  },
+  "removeFromFavorites": {
+    "message": "즐겨찾기에서 제거"
+  },
+  "addToFavorites": {
+    "message": "즐겨찾기에 추가"
+  },
+  "exportToPdf": {
+    "message": "PDF로 내보내기"
+  },
+  "deleteEntry": {
+    "message": "삭제"
+  },
+  "issuesFound": {
+    "message": "발견된 문제"
+  },
+  "recommendations": {
+    "message": "추천 사항"
+  },
+  "success": {
+    "message": "성공"
+  },
+  "notSpecified": {
+    "message": "지정되지 않음"
+  },
+  "notAvailable": {
+    "message": "사용할 수 없음"
+  },
+  "ipAddress": {
+    "message": "IP 주소"
+  },
+  "allHeaders": {
+    "message": "모든 헤더"
+  },
+  "noHeadersAvailable": {
+    "message": "사용 가능한 헤더 없음"
+  },
+  "confirmDeleteEntry": {
+    "message": "이 항목을 삭제하시겠습니까?"
+  },
+  "confirmClearAll": {
+    "message": "모든 기록을 지우시겠습니까? 이 작업은 되돌릴 수 없습니다."
+  },
+  "entriesLabel": {
+    "message": "항목"
+  },
+  "entrySingle": {
+    "message": "항목"
+  },
+  "avgScore": {
+    "message": "평균 점수"
+  },
+  "filterAll": {
+    "message": "전체"
+  },
+  "filterFav": {
+    "message": "즐겨찾기"
+  },
+  "matchingLabel": {
+    "message": "일치"
+  },
+  "darkModeDesc": {
+    "message": "대시보드 다크 UI 테마 전환"
+  },
+  "useHeaderButton": {
+    "message": "헤더 버튼 사용"
+  },
+  "chainScoreVisibility": {
+    "message": "체인 점수 표시"
+  },
+  "chainScoreVisibilityDesc": {
+    "message": "확장 프로그램에서 리디렉션 분석 지표가 표시되는 위치를 제어합니다."
+  },
+  "extensionPopup": {
+    "message": "확장 팝업"
+  },
+  "extensionPopupDesc": {
+    "message": "도구 모음에서 확장 아이콘 클릭 시 분석 카드를 표시합니다."
+  },
+  "sidepanelMonitor": {
+    "message": "사이드패널 실시간 모니터"
+  },
+  "sidepanelMonitorDesc": {
+    "message": "활성 모니터링 패널 상단에 점수 요약을 삽입합니다."
+  },
+  "dashboardCenter": {
+    "message": "대시보드 센터"
+  },
+  "dashboardCenterDesc": {
+    "message": "색상 배지, 문제 알림 및 추천 사항이 포함된 전체 시각적 점수 UI를 렌더링합니다."
+  },
+  "aiPoweredInsights": {
+    "message": "AI 기반 인사이트"
+  },
+  "aiPoweredInsightsDesc": {
+    "message": "복잡한 리디렉션 패턴과 SEO 위험을 자동으로 분석하는 AI 기능을 구축 중입니다. 곧 출시됩니다."
+  },
+  "hopSingle": {
+    "message": "홉"
+  },
+  "hopsPlural": {
+    "message": "홉"
+  },
+  "redirectSingle": {
+    "message": "리디렉션"
+  },
+  "redirectsPlural": {
+    "message": "리디렉션"
+  },
+  "sessionSingle": {
+    "message": "세션"
+  },
+  "sessionsPlural": {
+    "message": "세션"
+  },
+  "totalLabel": {
+    "message": "총"
+  },
+  "impactLabel": {
+    "message": "영향"
+  },
+  "redirectChain": {
+    "message": "리디렉션 체인"
+  },
+  "stepsLabel": {
+    "message": "단계"
+  },
+  "capturedLabel": {
+    "message": "캡처됨"
+  },
+  "categoryServer": {
+    "message": "서버"
+  },
+  "categoryCaching": {
+    "message": "캐싱"
+  },
+  "categorySecurity": {
+    "message": "보안"
+  },
+  "categoryContent": {
+    "message": "콘텐츠"
+  }
 }

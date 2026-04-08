@@ -229,5 +229,104 @@
   },
   "confirmClearAll": {
     "message": "Tem certeza de que deseja limpar todo o histórico? Esta ação não pode ser desfeita."
+  },
+  "entriesLabel": {
+    "message": "entradas"
+  },
+  "entrySingle": {
+    "message": "entrada"
+  },
+  "avgScore": {
+    "message": "pontuação média"
+  },
+  "filterAll": {
+    "message": "Todos"
+  },
+  "filterFav": {
+    "message": "Fav"
+  },
+  "matchingLabel": {
+    "message": "correspondendo a"
+  },
+  "darkModeDesc": {
+    "message": "Alternar tema escuro no painel"
+  },
+  "useHeaderButton": {
+    "message": "Usar botão do cabeçalho"
+  },
+  "chainScoreVisibility": {
+    "message": "Visibilidade da Pontuação"
+  },
+  "chainScoreVisibilityDesc": {
+    "message": "Controle onde as métricas de análise de redirecionamento são exibidas na extensão."
+  },
+  "extensionPopup": {
+    "message": "Popup da Extensão"
+  },
+  "extensionPopupDesc": {
+    "message": "Mostrar o cartão de análise ao clicar no ícone da extensão, exibindo nota e tempo."
+  },
+  "sidepanelMonitor": {
+    "message": "Monitor do Painel Lateral"
+  },
+  "sidepanelMonitorDesc": {
+    "message": "Inserir o resumo da pontuação no topo do painel de monitoramento ativo."
+  },
+  "dashboardCenter": {
+    "message": "Central do Painel"
+  },
+  "dashboardCenterDesc": {
+    "message": "Renderizar a UI visual completa com badges coloridos, alertas e recomendações."
+  },
+  "aiPoweredInsights": {
+    "message": "Análises com IA"
+  },
+  "aiPoweredInsightsDesc": {
+    "message": "Estamos construindo capacidades de IA para analisar padrões complexos de redirecionamento automaticamente. Em breve."
+  },
+  "hopSingle": {
+    "message": "salto"
+  },
+  "hopsPlural": {
+    "message": "saltos"
+  },
+  "redirectSingle": {
+    "message": "redirecionamento"
+  },
+  "redirectsPlural": {
+    "message": "redirecionamentos"
+  },
+  "sessionSingle": {
+    "message": "sessão"
+  },
+  "sessionsPlural": {
+    "message": "sessões"
+  },
+  "totalLabel": {
+    "message": "total"
+  },
+  "impactLabel": {
+    "message": "Impacto"
+  },
+  "redirectChain": {
+    "message": "Cadeia de Redirecionamento"
+  },
+  "stepsLabel": {
+    "message": "passos"
+  },
+  "capturedLabel": {
+    "message": "Capturado"
+  },
+  "categoryServer": {
+    "message": "Servidor"
+  },
+  "categoryCaching": {
+    "message": "Cache"
+  },
+  "categorySecurity": {
+    "message": "Segurança"
+  },
+  "categoryContent": {
+    "message": "Conteúdo"
   }
 }

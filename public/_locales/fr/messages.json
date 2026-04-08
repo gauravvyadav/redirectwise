@@ -229,5 +229,104 @@
   },
   "confirmClearAll": {
     "message": "Êtes-vous sûr de vouloir effacer tout l'historique ? Cette action est irréversible."
+  },
+  "entriesLabel": {
+    "message": "entrées"
+  },
+  "entrySingle": {
+    "message": "entrée"
+  },
+  "avgScore": {
+    "message": "score moy."
+  },
+  "filterAll": {
+    "message": "Tous"
+  },
+  "filterFav": {
+    "message": "Fav"
+  },
+  "matchingLabel": {
+    "message": "correspondant à"
+  },
+  "darkModeDesc": {
+    "message": "Basculer le thème sombre dans le tableau de bord"
+  },
+  "useHeaderButton": {
+    "message": "Utiliser le bouton d'en-tête"
+  },
+  "chainScoreVisibility": {
+    "message": "Visibilité du Score"
+  },
+  "chainScoreVisibilityDesc": {
+    "message": "Contrôlez où les métriques d'analyse de redirection sont affichées dans l'extension."
+  },
+  "extensionPopup": {
+    "message": "Popup de l'Extension"
+  },
+  "extensionPopupDesc": {
+    "message": "Afficher la carte d'analyse en cliquant sur l'icône de l'extension, montrant le grade et le temps."
+  },
+  "sidepanelMonitor": {
+    "message": "Moniteur du Panneau Latéral"
+  },
+  "sidepanelMonitorDesc": {
+    "message": "Injecter le résumé du score en haut du panneau de surveillance actif."
+  },
+  "dashboardCenter": {
+    "message": "Centre du Tableau de Bord"
+  },
+  "dashboardCenterDesc": {
+    "message": "Afficher l'interface visuelle complète avec badges colorés, alertes et recommandations."
+  },
+  "aiPoweredInsights": {
+    "message": "Analyses par IA"
+  },
+  "aiPoweredInsightsDesc": {
+    "message": "Nous développons des capacités d'IA pour analyser automatiquement les patterns de redirection complexes. Très bientôt."
+  },
+  "hopSingle": {
+    "message": "saut"
+  },
+  "hopsPlural": {
+    "message": "sauts"
+  },
+  "redirectSingle": {
+    "message": "redirection"
+  },
+  "redirectsPlural": {
+    "message": "redirections"
+  },
+  "sessionSingle": {
+    "message": "session"
+  },
+  "sessionsPlural": {
+    "message": "sessions"
+  },
+  "totalLabel": {
+    "message": "total"
+  },
+  "impactLabel": {
+    "message": "Impact"
+  },
+  "redirectChain": {
+    "message": "Chaîne de Redirection"
+  },
+  "stepsLabel": {
+    "message": "étapes"
+  },
+  "capturedLabel": {
+    "message": "Capturé"
+  },
+  "categoryServer": {
+    "message": "Serveur"
+  },
+  "categoryCaching": {
+    "message": "Cache"
+  },
+  "categorySecurity": {
+    "message": "Sécurité"
+  },
+  "categoryContent": {
+    "message": "Contenu"
   }
 }

@@ -229,5 +229,104 @@
   },
   "confirmClearAll": {
     "message": "Sind Sie sicher, dass Sie den gesamten Verlauf löschen möchten? Dies kann nicht rückgängig gemacht werden."
+  },
+  "entriesLabel": {
+    "message": "Einträge"
+  },
+  "entrySingle": {
+    "message": "Eintrag"
+  },
+  "avgScore": {
+    "message": "Ø Bewertung"
+  },
+  "filterAll": {
+    "message": "Alle"
+  },
+  "filterFav": {
+    "message": "Fav"
+  },
+  "matchingLabel": {
+    "message": "passend zu"
+  },
+  "darkModeDesc": {
+    "message": "Dunkles UI-Thema im Dashboard umschalten"
+  },
+  "useHeaderButton": {
+    "message": "Header-Button verwenden"
+  },
+  "chainScoreVisibility": {
+    "message": "Kettenbewertung Sichtbarkeit"
+  },
+  "chainScoreVisibilityDesc": {
+    "message": "Steuern Sie, wo die Weiterleitungsanalyse-Metriken angezeigt werden."
+  },
+  "extensionPopup": {
+    "message": "Erweiterungs-Popup"
+  },
+  "extensionPopupDesc": {
+    "message": "Analysekarte beim Klicken auf das Erweiterungssymbol anzeigen."
+  },
+  "sidepanelMonitor": {
+    "message": "Seitenpanel Echtzeit-Monitor"
+  },
+  "sidepanelMonitorDesc": {
+    "message": "Bewertungszusammenfassung am oberen Rand des aktiven Überwachungsbereichs einfügen."
+  },
+  "dashboardCenter": {
+    "message": "Dashboard-Zentrale"
+  },
+  "dashboardCenterDesc": {
+    "message": "Vollständige visuelle Bewertungs-UI mit farbigen Abzeichen, Warnungen und Empfehlungen rendern."
+  },
+  "aiPoweredInsights": {
+    "message": "KI-gestützte Einblicke"
+  },
+  "aiPoweredInsightsDesc": {
+    "message": "Wir entwickeln derzeit lokale KI-Funktionen zur automatischen Analyse komplexer Weiterleitungsmuster. Kommt sehr bald."
+  },
+  "hopSingle": {
+    "message": "Hop"
+  },
+  "hopsPlural": {
+    "message": "Hops"
+  },
+  "redirectSingle": {
+    "message": "Weiterleitung"
+  },
+  "redirectsPlural": {
+    "message": "Weiterleitungen"
+  },
+  "sessionSingle": {
+    "message": "Sitzung"
+  },
+  "sessionsPlural": {
+    "message": "Sitzungen"
+  },
+  "totalLabel": {
+    "message": "gesamt"
+  },
+  "impactLabel": {
+    "message": "Auswirkung"
+  },
+  "redirectChain": {
+    "message": "Weiterleitungskette"
+  },
+  "stepsLabel": {
+    "message": "Schritte"
+  },
+  "capturedLabel": {
+    "message": "Erfasst"
+  },
+  "categoryServer": {
+    "message": "Server"
+  },
+  "categoryCaching": {
+    "message": "Caching"
+  },
+  "categorySecurity": {
+    "message": "Sicherheit"
+  },
+  "categoryContent": {
+    "message": "Inhalt"
   }
 }

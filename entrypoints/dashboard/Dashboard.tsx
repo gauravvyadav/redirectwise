@@ -265,10 +265,10 @@ export default function Dashboard() {
                 )}
               >
                 <span>
-                  <strong>{stats.totalEntries}</strong> entries
+                  <strong>{stats.totalEntries}</strong> {chrome.i18n.getMessage('entriesLabel')}
                 </span>
                 <span>
-                  <strong>{stats.avgScore}</strong> avg score
+                  <strong>{stats.avgScore}</strong> {chrome.i18n.getMessage('avgScore')}
                 </span>
               </div>
             )}
@@ -356,7 +356,7 @@ export default function Dashboard() {
                         : 'bg-slate-100 hover:bg-slate-200'
                   )}
                 >
-                  All
+                  {chrome.i18n.getMessage('filterAll')}
                 </button>
                 <button
                   onClick={() => setFilter('favorites')}
@@ -369,7 +369,7 @@ export default function Dashboard() {
                         : 'bg-slate-100 hover:bg-slate-200'
                   )}
                 >
-                  <Star className="w-3 h-3" /> Fav
+                  <Star className="w-3 h-3" /> {chrome.i18n.getMessage('filterFav')}
                 </button>
                 {(['A', 'B', 'C', 'D', 'F'] as const).map(grade => (
                   <button
@@ -446,8 +446,8 @@ export default function Dashboard() {
                   : 'text-slate-500 border-slate-200 bg-slate-50'
               )}
             >
-              {filteredHistory.length} {filteredHistory.length === 1 ? 'entry' : 'entries'}
-              {searchQuery && ` matching "${searchQuery}"`}
+              {filteredHistory.length} {filteredHistory.length === 1 ? chrome.i18n.getMessage('entrySingle') : chrome.i18n.getMessage('entriesLabel')}
+              {searchQuery && ` ${chrome.i18n.getMessage('matchingLabel')} "${searchQuery}"`}
             </div>
 
             {/* History List */}
@@ -627,7 +627,7 @@ function SettingsViewUI({ settings, darkMode, activeTab, setActiveTab, onToggleS
               <div>
                 <h3 className="font-medium">{chrome.i18n.getMessage("darkModeAppearance")}</h3>
                 <p className={clsx('text-sm mt-1', darkMode ? 'text-slate-400' : 'text-slate-500')}>
-                  Toggle dark UI theme across the dashboard
+                  {chrome.i18n.getMessage('darkModeDesc')}
                 </p>
               </div>
               <span
@@ -636,17 +636,16 @@ function SettingsViewUI({ settings, darkMode, activeTab, setActiveTab, onToggleS
                   darkMode ? 'bg-slate-700 text-slate-300' : 'bg-slate-100 text-slate-600'
                 )}
               >
-                Use Header Button
+                {chrome.i18n.getMessage('useHeaderButton')}
               </span>
             </div>
           </div>
         )}
         {activeTab === 'chainScore' && (
           <div className="max-w-3xl">
-            <h2 className="text-2xl font-semibold mb-2">Chain Score Visiblity</h2>
+            <h2 className="text-2xl font-semibold mb-2">{chrome.i18n.getMessage('chainScoreVisibility')}</h2>
             <p className={clsx('text-sm mb-6', darkMode ? 'text-slate-400' : 'text-slate-500')}>
-              Control where the rigorous redirect analysis metrics are displayed throughout the
-              extension.
+              {chrome.i18n.getMessage('chainScoreVisibilityDesc')}
             </p>
 
             <div className="space-y-4">
@@ -658,15 +657,14 @@ function SettingsViewUI({ settings, darkMode, activeTab, setActiveTab, onToggleS
               >
                 <div className="flex items-center justify-between">
                   <div>
-                    <span className="font-medium text-base">Extension Popup</span>
+                    <span className="font-medium text-base">{chrome.i18n.getMessage('extensionPopup')}</span>
                     <p
                       className={clsx(
                         'text-sm mt-1 mb-2',
                         darkMode ? 'text-slate-400' : 'text-slate-500'
                       )}
                     >
-                      Show the analysis card when clicking the extension icon in the toolbar,
-                      displaying grade and time.
+                      {chrome.i18n.getMessage('extensionPopupDesc')}
                     </p>
                   </div>
                   <ToggleSwitch
@@ -685,14 +683,14 @@ function SettingsViewUI({ settings, darkMode, activeTab, setActiveTab, onToggleS
               >
                 <div className="flex items-center justify-between">
                   <div>
-                    <span className="font-medium text-base">Sidepanel Realtime Monitor</span>
+                    <span className="font-medium text-base">{chrome.i18n.getMessage('sidepanelMonitor')}</span>
                     <p
                       className={clsx(
                         'text-sm mt-1 mb-2',
                         darkMode ? 'text-slate-400' : 'text-slate-500'
                       )}
                     >
-                      Inject the score summary block at the top of the active monitoring pane.
+                      {chrome.i18n.getMessage('sidepanelMonitorDesc')}
                     </p>
                   </div>
                   <ToggleSwitch
@@ -711,15 +709,14 @@ function SettingsViewUI({ settings, darkMode, activeTab, setActiveTab, onToggleS
               >
                 <div className="flex items-center justify-between">
                   <div>
-                    <span className="font-medium text-base">Dashboard Center</span>
+                    <span className="font-medium text-base">{chrome.i18n.getMessage('dashboardCenter')}</span>
                     <p
                       className={clsx(
                         'text-sm mt-1 mb-2',
                         darkMode ? 'text-slate-400' : 'text-slate-500'
                       )}
                     >
-                      Render full visual score UI including colored badges, issues alerts, and
-                      actionable recommendations in the main portal.
+                      {chrome.i18n.getMessage('dashboardCenterDesc')}
                     </p>
                   </div>
                   <ToggleSwitch
@@ -742,10 +739,9 @@ function SettingsViewUI({ settings, darkMode, activeTab, setActiveTab, onToggleS
             >
               <Zap className="w-8 h-8 text-purple-500" />
             </div>
-            <h2 className="text-2xl font-bold mb-2">AI-Powered Insights</h2>
+            <h2 className="text-2xl font-bold mb-2">{chrome.i18n.getMessage('aiPoweredInsights')}</h2>
             <p className={clsx('max-w-md', darkMode ? 'text-slate-400' : 'text-slate-500')}>
-              We are currently building localized LLM capabilities to analyze complex redirect
-              patterns and SEO risks automatically. Coming very soon.
+              {chrome.i18n.getMessage('aiPoweredInsightsDesc')}
             </p>
           </div>
         )}
@@ -869,7 +865,7 @@ function HistoryListItem({
             <span
               className={clsx('px-1.5 py-0.5 rounded', darkMode ? 'bg-slate-700' : 'bg-slate-200')}
             >
-              {entry.redirectCount} hop{entry.redirectCount !== 1 ? 's' : ''}
+              {entry.redirectCount} {entry.redirectCount !== 1 ? chrome.i18n.getMessage('hopsPlural') : chrome.i18n.getMessage('hopSingle')}
             </span>
             <span className={darkMode ? 'text-slate-500' : 'text-slate-400'}>
               {formatDistanceToNow(entry.timestamp, { addSuffix: true })}
@@ -1041,7 +1037,7 @@ function DetailPanel({
                   darkMode ? 'bg-slate-700' : 'bg-slate-200'
                 )}
               >
-                {entry.redirectCount} redirect{entry.redirectCount !== 1 ? 's' : ''}
+                {entry.redirectCount} {entry.redirectCount !== 1 ? chrome.i18n.getMessage('redirectsPlural') : chrome.i18n.getMessage('redirectSingle')}
               </span>
               <span className={darkMode ? 'text-slate-500' : 'text-slate-400'}>
                 {format(entry.timestamp, "MMM d, yyyy 'at' h:mm a")}
@@ -1054,7 +1050,7 @@ function DetailPanel({
                   )}
                 >
                   <Zap className="w-3 h-3" />
-                  {entry.totalTime}ms total
+                  {entry.totalTime}ms {chrome.i18n.getMessage('totalLabel')}
                 </span>
               )}
             </div>
@@ -1144,7 +1140,7 @@ function DetailPanel({
                     <span
                       className={clsx('text-xs', darkMode ? 'text-slate-500' : 'text-slate-400')}
                     >
-                      Impact: {issue.impact}
+                      {chrome.i18n.getMessage('impactLabel')}: {issue.impact}
                     </span>
                   </div>
                 </div>
@@ -1192,7 +1188,7 @@ function DetailPanel({
         >
           <h3 className="font-medium mb-3 flex items-center gap-2">
             <ArrowRight className="w-4 h-4" />
-            Redirect Chain ({entry.path.length} steps)
+            {chrome.i18n.getMessage('redirectChain')} ({entry.path.length} {chrome.i18n.getMessage('stepsLabel')})
           </h3>
           <div className="space-y-0">
             {entry.path.map((item, idx) => (
@@ -1353,7 +1349,7 @@ function DetailPanel({
             darkMode ? 'text-slate-500' : 'text-slate-400'
           )}
         >
-          Captured: {format(entry.timestamp, "MMMM d, yyyy 'at' h:mm:ss a")} • ID:{' '}
+          {chrome.i18n.getMessage('capturedLabel')}: {format(entry.timestamp, "MMMM d, yyyy 'at' h:mm:ss a")} • ID:{' '}
           {entry.id.substring(0, 8)}
         </div>
       </div>

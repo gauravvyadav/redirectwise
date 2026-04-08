@@ -229,5 +229,104 @@
   },
   "confirmClearAll": {
     "message": "すべての履歴をクリアしてもよろしいですか？この操作は元に戻せません。"
+  },
+  "entriesLabel": {
+    "message": "件"
+  },
+  "entrySingle": {
+    "message": "件"
+  },
+  "avgScore": {
+    "message": "平均スコア"
+  },
+  "filterAll": {
+    "message": "すべて"
+  },
+  "filterFav": {
+    "message": "お気に入り"
+  },
+  "matchingLabel": {
+    "message": "一致"
+  },
+  "darkModeDesc": {
+    "message": "ダッシュボード全体のダークUIテーマを切り替え"
+  },
+  "useHeaderButton": {
+    "message": "ヘッダーボタンを使用"
+  },
+  "chainScoreVisibility": {
+    "message": "チェーンスコア表示"
+  },
+  "chainScoreVisibilityDesc": {
+    "message": "リダイレクト分析指標の表示場所を制御します。"
+  },
+  "extensionPopup": {
+    "message": "拡張機能ポップアップ"
+  },
+  "extensionPopupDesc": {
+    "message": "ツールバーの拡張機能アイコンをクリック時に分析カードを表示。"
+  },
+  "sidepanelMonitor": {
+    "message": "サイドパネルリアルタイムモニター"
+  },
+  "sidepanelMonitorDesc": {
+    "message": "アクティブな監視パネルの上部にスコアサマリーを挿入。"
+  },
+  "dashboardCenter": {
+    "message": "ダッシュボードセンター"
+  },
+  "dashboardCenterDesc": {
+    "message": "カラーバッジ、問題アラート、推奨事項を含む完全なスコアUIを表示。"
+  },
+  "aiPoweredInsights": {
+    "message": "AI分析"
+  },
+  "aiPoweredInsightsDesc": {
+    "message": "複雑なリダイレクトパターンとSEOリスクを自動分析するAI機能を構築中です。近日公開。"
+  },
+  "hopSingle": {
+    "message": "ホップ"
+  },
+  "hopsPlural": {
+    "message": "ホップ"
+  },
+  "redirectSingle": {
+    "message": "リダイレクト"
+  },
+  "redirectsPlural": {
+    "message": "リダイレクト"
+  },
+  "sessionSingle": {
+    "message": "セッション"
+  },
+  "sessionsPlural": {
+    "message": "セッション"
+  },
+  "totalLabel": {
+    "message": "合計"
+  },
+  "impactLabel": {
+    "message": "影響"
+  },
+  "redirectChain": {
+    "message": "リダイレクトチェーン"
+  },
+  "stepsLabel": {
+    "message": "ステップ"
+  },
+  "capturedLabel": {
+    "message": "キャプチャ"
+  },
+  "categoryServer": {
+    "message": "サーバー"
+  },
+  "categoryCaching": {
+    "message": "キャッシュ"
+  },
+  "categorySecurity": {
+    "message": "セキュリティ"
+  },
+  "categoryContent": {
+    "message": "コンテンツ"
   }
 }

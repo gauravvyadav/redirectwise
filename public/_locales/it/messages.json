@@ -1,79 +1,332 @@
 {
-  "extensionName": { "message": "RedirectWise: Controllo Reindirizzamenti HTTP e Strumento di Audit SEO" },
-  "extensionDesc": { "message": "Traccia i reindirizzamenti e rileva link pubblicitari nascosti con una dashboard persistente. Checker SEO in tempo reale con popup e pannello laterale." },
-  "emptyStateSpecialPageTitle": { "message": "Impossibile tracciare questa pagina" },
-  "emptyStateSpecialPageDesc": { "message": "Le pagine interne del browser non possono essere tracciate. Vai su un sito web per vedere il percorso di reindirizzamento." },
-  "emptyStateDefaultTitle": { "message": "Nessun reindirizzamento rilevato" },
-  "emptyStateDefaultDesc": { "message": "Vai a un URL o aggiorna la pagina per catturare il percorso di reindirizzamento." },
-  "headerSubtitle": { "message": "Analizzatore Percorsi di Reindirizzamento" },
-  "headerLightMode": { "message": "Modalità chiara" },
-  "headerDarkMode": { "message": "Modalità scura" },
-  "headerOpenRealtimeMonitor": { "message": "Apri Monitor in Tempo Reale" },
-  "headerOpenDashboard": { "message": "Apri Dashboard" },
-  "headerRefresh": { "message": "Aggiorna" },
-  "headerClearPath": { "message": "Cancella percorso" },
-  "scoreGradeA": { "message": "Eccellente! Catena di reindirizzamento ottimale." },
-  "scoreGradeB": { "message": "Buono. Piccoli miglioramenti possibili." },
-  "scoreGradeC": { "message": "Discreto. Alcuni problemi da risolvere." },
-  "scoreGradeD": { "message": "Scarso. Problemi significativi trovati." },
-  "scoreGradeF": { "message": "Critico. Problemi gravi rilevati." },
-  "scoreIssueSingle": { "message": "problema" },
-  "scoreIssuePlural": { "message": "problemi" },
-  "copyPathAs": { "message": "Copia percorso come:" },
-  "copied": { "message": "Copiato!" },
-  "textFormat": { "message": "Testo" },
-  "csvFormat": { "message": "CSV" },
-  "pdfFormat": { "message": "PDF" },
-  "exportingPdf": { "message": "Esportazione..." },
-  "permanentRedirect": { "message": "Reindirizzamento Permanente" },
-  "hstsRedirect": { "message": "Reindirizzamento HSTS" },
-  "temporaryRedirect": { "message": "Reindirizzamento Temporaneo" },
-  "copyUrl": { "message": "Copia URL" },
-  "responseHeaders": { "message": "Intestazioni di Risposta" },
-  "openUrl": { "message": "Apri URL" },
-  "hstsRedirectDesc": { "message": "Reindirizzamento interno del browser. Il server ha precedentemente indicato il requisito HTTPS." },
-  "live": { "message": "In Diretta" },
-  "paused": { "message": "In Pausa" },
-  "realtimeMonitor": { "message": "Monitor in Tempo Reale" },
-  "waitingForRedirects": { "message": "In attesa di reindirizzamenti..." },
-  "monitoringPaused": { "message": "Monitoraggio in pausa" },
-  "navigateRealtimeMessage": { "message": "Vai a un URL per vedere i reindirizzamenti in tempo reale" },
-  "pauseMonitoring": { "message": "Metti in pausa il monitoraggio" },
-  "resumeMonitoring": { "message": "Riprendi monitoraggio" },
-  "clearSessions": { "message": "Cancella sessioni" },
-  "toggleDarkMode": { "message": "Attiva/disattiva modalità scura" },
-  "monitoringLabel": { "message": "Monitoraggio:" },
-  "scoreLabel": { "message": "Punteggio:" },
-  "autoScroll": { "message": "Scorrimento automatico" },
-  "selectAnEntry": { "message": "Seleziona una Voce" },
-  "chooseRedirectToView": { "message": "Scegli un reindirizzamento dalla lista per vedere i dettagli" },
-  "settingsTitle": { "message": "Impostazioni" },
-  "backToHistory": { "message": "Torna alla Cronologia" },
-  "generalSettings": { "message": "Impostazioni Generali" },
-  "chainScoreAnalysis": { "message": "Analisi Punteggio Catena" },
-  "aiIntegrations": { "message": "Integrazioni IA" },
-  "soon": { "message": "Prossimamente" },
-  "darkModeAppearance": { "message": "Aspetto Modalità Scura" },
-  "searchUrls": { "message": "Cerca URL..." },
-  "sortByDate": { "message": "Ordina per Data" },
-  "sortByScore": { "message": "Ordina per Punteggio" },
-  "sortByRedirects": { "message": "Ordina per Reindirizzamenti" },
-  "exportAllToPdf": { "message": "Esporta Tutto in PDF" },
-  "clearAllHistory": { "message": "Cancella Tutta la Cronologia" },
-  "noMatches": { "message": "Nessuna corrispondenza" },
-  "noHistoryYet": { "message": "Nessuna cronologia" },
-  "removeFromFavorites": { "message": "Rimuovi dai preferiti" },
-  "addToFavorites": { "message": "Aggiungi ai preferiti" },
-  "exportToPdf": { "message": "Esporta in PDF" },
-  "deleteEntry": { "message": "Elimina" },
-  "issuesFound": { "message": "Problemi Trovati" },
-  "recommendations": { "message": "Raccomandazioni" },
-  "success": { "message": "Successo" },
-  "notSpecified": { "message": "Non specificato" },
-  "notAvailable": { "message": "Non disponibile" },
-  "ipAddress": { "message": "Indirizzo IP" },
-  "allHeaders": { "message": "Tutte le Intestazioni" },
-  "noHeadersAvailable": { "message": "Nessuna intestazione disponibile" },
-  "confirmDeleteEntry": { "message": "Sei sicuro di voler eliminare questa voce?" },
-  "confirmClearAll": { "message": "Sei sicuro di voler cancellare tutta la cronologia? Questa azione è irreversibile." }
+  "extensionName": {
+    "message": "RedirectWise: Controllo Reindirizzamenti HTTP e Strumento di Audit SEO"
+  },
+  "extensionDesc": {
+    "message": "Traccia i reindirizzamenti e rileva link pubblicitari nascosti con una dashboard persistente. Checker SEO in tempo reale con popup e pannello laterale."
+  },
+  "emptyStateSpecialPageTitle": {
+    "message": "Impossibile tracciare questa pagina"
+  },
+  "emptyStateSpecialPageDesc": {
+    "message": "Le pagine interne del browser non possono essere tracciate. Vai su un sito web per vedere il percorso di reindirizzamento."
+  },
+  "emptyStateDefaultTitle": {
+    "message": "Nessun reindirizzamento rilevato"
+  },
+  "emptyStateDefaultDesc": {
+    "message": "Vai a un URL o aggiorna la pagina per catturare il percorso di reindirizzamento."
+  },
+  "headerSubtitle": {
+    "message": "Analizzatore Percorsi di Reindirizzamento"
+  },
+  "headerLightMode": {
+    "message": "Modalità chiara"
+  },
+  "headerDarkMode": {
+    "message": "Modalità scura"
+  },
+  "headerOpenRealtimeMonitor": {
+    "message": "Apri Monitor in Tempo Reale"
+  },
+  "headerOpenDashboard": {
+    "message": "Apri Dashboard"
+  },
+  "headerRefresh": {
+    "message": "Aggiorna"
+  },
+  "headerClearPath": {
+    "message": "Cancella percorso"
+  },
+  "scoreGradeA": {
+    "message": "Eccellente! Catena di reindirizzamento ottimale."
+  },
+  "scoreGradeB": {
+    "message": "Buono. Piccoli miglioramenti possibili."
+  },
+  "scoreGradeC": {
+    "message": "Discreto. Alcuni problemi da risolvere."
+  },
+  "scoreGradeD": {
+    "message": "Scarso. Problemi significativi trovati."
+  },
+  "scoreGradeF": {
+    "message": "Critico. Problemi gravi rilevati."
+  },
+  "scoreIssueSingle": {
+    "message": "problema"
+  },
+  "scoreIssuePlural": {
+    "message": "problemi"
+  },
+  "copyPathAs": {
+    "message": "Copia percorso come:"
+  },
+  "copied": {
+    "message": "Copiato!"
+  },
+  "textFormat": {
+    "message": "Testo"
+  },
+  "csvFormat": {
+    "message": "CSV"
+  },
+  "pdfFormat": {
+    "message": "PDF"
+  },
+  "exportingPdf": {
+    "message": "Esportazione..."
+  },
+  "permanentRedirect": {
+    "message": "Reindirizzamento Permanente"
+  },
+  "hstsRedirect": {
+    "message": "Reindirizzamento HSTS"
+  },
+  "temporaryRedirect": {
+    "message": "Reindirizzamento Temporaneo"
+  },
+  "copyUrl": {
+    "message": "Copia URL"
+  },
+  "responseHeaders": {
+    "message": "Intestazioni di Risposta"
+  },
+  "openUrl": {
+    "message": "Apri URL"
+  },
+  "hstsRedirectDesc": {
+    "message": "Reindirizzamento interno del browser. Il server ha precedentemente indicato il requisito HTTPS."
+  },
+  "live": {
+    "message": "In Diretta"
+  },
+  "paused": {
+    "message": "In Pausa"
+  },
+  "realtimeMonitor": {
+    "message": "Monitor in Tempo Reale"
+  },
+  "waitingForRedirects": {
+    "message": "In attesa di reindirizzamenti..."
+  },
+  "monitoringPaused": {
+    "message": "Monitoraggio in pausa"
+  },
+  "navigateRealtimeMessage": {
+    "message": "Vai a un URL per vedere i reindirizzamenti in tempo reale"
+  },
+  "pauseMonitoring": {
+    "message": "Metti in pausa il monitoraggio"
+  },
+  "resumeMonitoring": {
+    "message": "Riprendi monitoraggio"
+  },
+  "clearSessions": {
+    "message": "Cancella sessioni"
+  },
+  "toggleDarkMode": {
+    "message": "Attiva/disattiva modalità scura"
+  },
+  "monitoringLabel": {
+    "message": "Monitoraggio:"
+  },
+  "scoreLabel": {
+    "message": "Punteggio:"
+  },
+  "autoScroll": {
+    "message": "Scorrimento automatico"
+  },
+  "selectAnEntry": {
+    "message": "Seleziona una Voce"
+  },
+  "chooseRedirectToView": {
+    "message": "Scegli un reindirizzamento dalla lista per vedere i dettagli"
+  },
+  "settingsTitle": {
+    "message": "Impostazioni"
+  },
+  "backToHistory": {
+    "message": "Torna alla Cronologia"
+  },
+  "generalSettings": {
+    "message": "Impostazioni Generali"
+  },
+  "chainScoreAnalysis": {
+    "message": "Analisi Punteggio Catena"
+  },
+  "aiIntegrations": {
+    "message": "Integrazioni IA"
+  },
+  "soon": {
+    "message": "Prossimamente"
+  },
+  "darkModeAppearance": {
+    "message": "Aspetto Modalità Scura"
+  },
+  "searchUrls": {
+    "message": "Cerca URL..."
+  },
+  "sortByDate": {
+    "message": "Ordina per Data"
+  },
+  "sortByScore": {
+    "message": "Ordina per Punteggio"
+  },
+  "sortByRedirects": {
+    "message": "Ordina per Reindirizzamenti"
+  },
+  "exportAllToPdf": {
+    "message": "Esporta Tutto in PDF"
+  },
+  "clearAllHistory": {
+    "message": "Cancella Tutta la Cronologia"
+  },
+  "noMatches": {
+    "message": "Nessuna corrispondenza"
+  },
+  "noHistoryYet": {
+    "message": "Nessuna cronologia"
+  },
+  "removeFromFavorites": {
+    "message": "Rimuovi dai preferiti"
+  },
+  "addToFavorites": {
+    "message": "Aggiungi ai preferiti"
+  },
+  "exportToPdf": {
+    "message": "Esporta in PDF"
+  },
+  "deleteEntry": {
+    "message": "Elimina"
+  },
+  "issuesFound": {
+    "message": "Problemi Trovati"
+  },
+  "recommendations": {
+    "message": "Raccomandazioni"
+  },
+  "success": {
+    "message": "Successo"
+  },
+  "notSpecified": {
+    "message": "Non specificato"
+  },
+  "notAvailable": {
+    "message": "Non disponibile"
+  },
+  "ipAddress": {
+    "message": "Indirizzo IP"
+  },
+  "allHeaders": {
+    "message": "Tutte le Intestazioni"
+  },
+  "noHeadersAvailable": {
+    "message": "Nessuna intestazione disponibile"
+  },
+  "confirmDeleteEntry": {
+    "message": "Sei sicuro di voler eliminare questa voce?"
+  },
+  "confirmClearAll": {
+    "message": "Sei sicuro di voler cancellare tutta la cronologia? Questa azione è irreversibile."
+  },
+  "entriesLabel": {
+    "message": "voci"
+  },
+  "entrySingle": {
+    "message": "voce"
+  },
+  "avgScore": {
+    "message": "punteggio medio"
+  },
+  "filterAll": {
+    "message": "Tutti"
+  },
+  "filterFav": {
+    "message": "Pref"
+  },
+  "matchingLabel": {
+    "message": "corrispondente a"
+  },
+  "darkModeDesc": {
+    "message": "Attiva/disattiva il tema scuro nella dashboard"
+  },
+  "useHeaderButton": {
+    "message": "Usa il pulsante nell'intestazione"
+  },
+  "chainScoreVisibility": {
+    "message": "Visibilità Punteggio Catena"
+  },
+  "chainScoreVisibilityDesc": {
+    "message": "Controlla dove le metriche di analisi dei reindirizzamenti vengono visualizzate nell'estensione."
+  },
+  "extensionPopup": {
+    "message": "Popup dell'Estensione"
+  },
+  "extensionPopupDesc": {
+    "message": "Mostra la scheda di analisi cliccando l'icona dell'estensione nella barra degli strumenti."
+  },
+  "sidepanelMonitor": {
+    "message": "Monitor Pannello Laterale"
+  },
+  "sidepanelMonitorDesc": {
+    "message": "Inserisci il riepilogo del punteggio nella parte superiore del pannello di monitoraggio attivo."
+  },
+  "dashboardCenter": {
+    "message": "Centro Dashboard"
+  },
+  "dashboardCenterDesc": {
+    "message": "Visualizza l'interfaccia completa con badge colorati, avvisi problemi e raccomandazioni."
+  },
+  "aiPoweredInsights": {
+    "message": "Analisi con IA"
+  },
+  "aiPoweredInsightsDesc": {
+    "message": "Stiamo sviluppando capacità di IA per analizzare automaticamente pattern di reindirizzamento complessi. In arrivo presto."
+  },
+  "hopSingle": {
+    "message": "hop"
+  },
+  "hopsPlural": {
+    "message": "hop"
+  },
+  "redirectSingle": {
+    "message": "reindirizzamento"
+  },
+  "redirectsPlural": {
+    "message": "reindirizzamenti"
+  },
+  "sessionSingle": {
+    "message": "sessione"
+  },
+  "sessionsPlural": {
+    "message": "sessioni"
+  },
+  "totalLabel": {
+    "message": "totale"
+  },
+  "impactLabel": {
+    "message": "Impatto"
+  },
+  "redirectChain": {
+    "message": "Catena di Reindirizzamento"
+  },
+  "stepsLabel": {
+    "message": "passaggi"
+  },
+  "capturedLabel": {
+    "message": "Catturato"
+  },
+  "categoryServer": {
+    "message": "Server"
+  },
+  "categoryCaching": {
+    "message": "Caching"
+  },
+  "categorySecurity": {
+    "message": "Sicurezza"
+  },
+  "categoryContent": {
+    "message": "Contenuto"
+  }
 }

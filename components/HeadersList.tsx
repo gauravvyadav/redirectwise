@@ -85,7 +85,7 @@ export default function HeadersList({ headers, ip, darkMode = false }: HeadersLi
 
   if (serverItems.length > 0) {
     categories.push({
-      name: 'Server',
+      name: chrome.i18n.getMessage('categoryServer'),
       icon: <Server className="w-3.5 h-3.5" />,
       items: serverItems,
       color: 'bg-blue-100 text-blue-700 border-blue-200',
@@ -114,7 +114,7 @@ export default function HeadersList({ headers, ip, darkMode = false }: HeadersLi
 
   if (cacheItems.length > 0) {
     categories.push({
-      name: 'Caching',
+      name: chrome.i18n.getMessage('categoryCaching'),
       icon: <Clock className="w-3.5 h-3.5" />,
       items: cacheItems,
       color: 'bg-amber-100 text-amber-700 border-amber-200',
@@ -158,7 +158,7 @@ export default function HeadersList({ headers, ip, darkMode = false }: HeadersLi
 
   if (securityItems.length > 0) {
     categories.push({
-      name: 'Security',
+      name: chrome.i18n.getMessage('categorySecurity'),
       icon: <Shield className="w-3.5 h-3.5" />,
       items: securityItems,
       color: 'bg-green-100 text-green-700 border-green-200',
@@ -200,7 +200,7 @@ export default function HeadersList({ headers, ip, darkMode = false }: HeadersLi
 
   if (contentItems.length > 0) {
     categories.push({
-      name: 'Content',
+      name: chrome.i18n.getMessage('categoryContent'),
       icon: <FileText className="w-3.5 h-3.5" />,
       items: contentItems,
       color: 'bg-purple-100 text-purple-700 border-purple-200',
