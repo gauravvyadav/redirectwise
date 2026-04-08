@@ -3,22 +3,79 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>RedirectWise - HTTP Redirect Chain Analyzer & SEO Tool</title>
+    <title>RedirectWise: HTTP Redirect Checker & SEO Audit Tool</title>
     <meta
       name="description"
       content="Track HTTP redirects, analyze SEO impact, and optimize your redirect chains in real-time. Free browser extension for Chrome and Edge."
     />
     <meta
       name="keywords"
-      content="redirect checker, HTTP redirect, SEO tool, redirect chain analyzer, 301 redirect, 302 redirect, browser extension"
+      content="redirect checker, HTTP redirect checker, SEO audit tool, redirect chain analyzer, 301 redirect checker, URL redirect checker, link hop tracking, check redirect path, website health tool, redirect debug, browser extension, Chrome extension, Edge add-on, SEO extension"
     />
-    <meta property="og:title" content="RedirectWise - HTTP Redirect Chain Analyzer" />
+    <meta property="og:title" content="RedirectWise: HTTP Redirect Checker & SEO Audit Tool" />
     <meta
       property="og:description"
-      content="Track HTTP redirects, analyze SEO impact, and optimize your redirect chains in real-time."
+      content="Track HTTP redirects, analyze SEO impact, and optimize your redirect chains in real-time. Free browser extension for Chrome and Edge."
     />
     <meta property="og:url" content="https://redirectwise.gauravlabs.com" />
     <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://redirectwise.gauravlabs.com/assets/preview.png" />
+    
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="RedirectWise: HTTP Redirect Checker & SEO Audit Tool" />
+    <meta name="twitter:description" content="Track HTTP redirects, analyze SEO impact, and optimize your redirect chains in real-time. Free browser extension." />
+    <meta name="twitter:image" content="https://redirectwise.gauravlabs.com/assets/preview.png" />
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "RedirectWise",
+      "operatingSystem": "Chrome, Edge",
+      "applicationCategory": "BrowserExtension",
+      "description": "Track HTTP redirects, analyze SEO impact, and optimize your redirect chains in real-time. Free browser extension.",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [{
+        "@type": "Question",
+        "name": "What is a Redirect Checker?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "A redirect checker is a tool that allows you to see the complete path a URL takes before arriving at the final destination. It helps trace 301, 302, and meta refresh redirects."
+        }
+      }, {
+        "@type": "Question",
+        "name": "Can it catch hidden ad redirects & page refreshes?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Unlike basic tools that wipe history when a page reloads, RedirectWise features a Persistent History Dashboard. Even if an ad forcefully redirects you or a page refreshes, the full redirect chain remains safely recorded for the active tab."
+        }
+      }, {
+        "@type": "Question",
+        "name": "Why do redirect chains hurt SEO?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Long redirect chains can dilute page rank ('link juice'), increase page load times, and consume search engine crawl budget, causing poor SEO performance."
+        }
+      }, {
+        "@type": "Question",
+        "name": "Does RedirectWise support Chrome and Edge?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes! RedirectWise is available as a free browser extension for both Google Chrome and Microsoft Edge."
+        }
+      }]
+    }
+    </script>
     <link rel="canonical" href="https://redirectwise.gauravlabs.com" />
     <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png" />
@@ -186,10 +243,9 @@
                 />
               </svg>
             </div>
-            <h3 class="text-xl font-bold text-slate-900 mb-3">Real-time Tracking</h3>
+            <h3 class="text-xl font-bold text-slate-900 mb-3">Popup & Sidepanel</h3>
             <p class="text-slate-600">
-              Capture all HTTP redirects (301, 302, 307, 308) instantly as they happen while
-              browsing.
+              Track redirects easily from the quick extension popup or pin the sidepanel for continuous real-time monitoring while browsing.
             </p>
           </div>
           <!-- Feature 2 -->
@@ -246,10 +302,9 @@
                 />
               </svg>
             </div>
-            <h3 class="text-xl font-bold text-slate-900 mb-3">History Dashboard</h3>
+            <h3 class="text-xl font-bold text-slate-900 mb-3">Persistent History Dashboard</h3>
             <p class="text-slate-600">
-              Browse, search, and manage all your saved redirect chains with a full-featured
-              dashboard.
+              Never miss a hidden ad redirect! Full active-tab history is retained in the dashboard even if the page automatically refreshes.
             </p>
           </div>
           <!-- Feature 5 -->
@@ -372,6 +427,34 @@
             <div class="text-4xl mb-4">📊</div>
             <h3 class="font-bold text-slate-900 mb-2">Campaign Tracking</h3>
             <p class="text-sm text-slate-600">Track marketing URL redirects</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="py-20 lg:py-32 bg-slate-50">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+          <h2 class="text-3xl sm:text-4xl font-bold text-slate-900 mb-4">Frequently Asked Questions</h2>
+          <p class="text-xl text-slate-600">Common questions about URL redirection and SEO audits.</p>
+        </div>
+        <div class="space-y-6">
+          <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+            <h3 class="text-lg font-bold text-slate-900 mb-2">What is a Redirect Checker?</h3>
+            <p class="text-slate-600">A redirect checker is a tool that allows you to see the complete path a URL takes before arriving at the final destination. It helps trace 301, 302, and meta refresh redirects to ensure visitors reach the right page efficiently.</p>
+          </div>
+          <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+            <h3 class="text-lg font-bold text-slate-900 mb-2">Can it catch hidden ad redirects & page refreshes?</h3>
+            <p class="text-slate-600">Unlike basic tools that wipe history when a page reloads, RedirectWise features a Persistent History Dashboard. Even if an ad forcefully redirects you or a page refreshes, the full redirect chain remains safely recorded for the active tab.</p>
+          </div>
+          <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+            <h3 class="text-lg font-bold text-slate-900 mb-2">Why do redirect chains hurt SEO?</h3>
+            <p class="text-slate-600">Long redirect chains can dilute page rank ("link juice"), increase page load times, and unnecessarily consume search engine crawl budget. This often results in a poor user experience and lower SEO rankings for the target URL.</p>
+          </div>
+          <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+            <h3 class="text-lg font-bold text-slate-900 mb-2">Does RedirectWise support Chrome and Edge?</h3>
+            <p class="text-slate-600">Yes! RedirectWise is available as a completely free browser extension for both Google Chrome and Microsoft Edge.</p>
           </div>
         </div>
       </div>

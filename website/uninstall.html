@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>We're sorry to see you go - RedirectWise</title>
+    <meta name="robots" content="noindex" />
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+      body {
+        font-family: 'Inter', sans-serif;
+      }
+    </style>
+  </head>
+  <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+    <!-- Header -->
+    <header class="bg-white border-b border-slate-200">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center h-16">
+          <a href="index.html" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
+            <img
+              src="assets/logo.svg"
+              alt="RedirectWise Logo"
+              class="w-10 h-10 shadow-lg shadow-blue-500/25 rounded-xl"
+            />
+            <span class="text-xl font-bold text-slate-900"
+              >Redirect<span class="text-blue-500">Wise</span></span
+            >
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="grow flex items-center justify-center p-6">
+      <div
+        class="max-w-2xl w-full bg-white rounded-3xl shadow-xl border border-slate-200 p-8 md:p-12 text-center"
+      >
+        <div
+          class="w-20 h-20 bg-blue-50 text-blue-500 rounded-2xl flex items-center justify-center mx-auto mb-6"
+        >
+          <svg
+            class="w-10 h-10"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
+            ></path>
+          </svg>
+        </div>
+        <h1 class="text-3xl font-extrabold text-slate-900 mb-4">We're sorry to see you go!</h1>
+        <p class="text-lg text-slate-600 mb-6">
+          RedirectWise is a
+          <span class="font-bold text-slate-900">100% free, open-source tool</span> built to help
+          the SEO and developer community. There are no premium charges, ever.
+        </p>
+        <p class="text-slate-600 mb-8 leading-relaxed">
+          Could you take a quick moment to tell us why you uninstalled? Your feedback is the only
+          way we can learn and make the extension better for everyone.
+        </p>
+
+        <a
+          href="mailto:support@gauravlabs.com?subject=RedirectWise%20Uninstall%20Feedback&body=Hi!%20I%20uninstalled%20RedirectWise%20because..."
+          class="inline-flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-8 py-3.5 rounded-xl font-semibold transition-colors shadow-lg shadow-blue-500/30 w-full sm:w-auto text-lg"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+            ></path>
+          </svg>
+          Send Feedback Email
+        </a>
+      </div>
+    </main>
+  </body>
+</html>

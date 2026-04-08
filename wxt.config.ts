@@ -4,9 +4,9 @@ import { defineConfig } from 'wxt';
 export default defineConfig({
   modules: ['@wxt-dev/module-react'],
   manifest: {
-    name: 'RedirectWise',
-    description: 'Track and analyze HTTP redirect chains for any URL',
-    version: '1.2.0',
+    name: 'RedirectWise: HTTP Redirect Checker & SEO Audit Tool',
+    description: 'Track redirects & catch hidden ad links with a persistent history dashboard. Real-time SEO checker with popup & sidepanel.',
+    version: '1.3.0',
     permissions: ['webRequest', 'webNavigation', 'tabs', 'storage', 'sidePanel'],
     host_permissions: ['<all_urls>'],
     icons: {

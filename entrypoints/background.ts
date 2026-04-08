@@ -160,6 +160,18 @@ function getLocationHeader(headers: RedirectHeader[]): string | undefined {
 export default defineBackground(() => {
   console.log('[RedirectWise] Background script initialized');
 
+  // Set uninstall feedback URL
+  if (chrome.runtime.setUninstallURL) {
+    chrome.runtime.setUninstallURL('https://redirectwise.gauravlabs.com/uninstall.html');
+  }
+
+  // Open welcome page on installation
+  chrome.runtime.onInstalled.addListener((details) => {
+    if (details.reason === 'install') {
+      chrome.tabs.create({ url: 'https://redirectwise.gauravlabs.com/welcome.html' });
+    }
+  });
+
   // Enable sidepanel to open on action click (optional - can also be opened programmatically)
   if (chrome.sidePanel) {
     chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: false }).catch(() => {
