@@ -26,11 +26,10 @@ export default function EmptyState({ currentUrl, darkMode = false }: EmptyStateP
               darkMode ? 'text-slate-200' : 'text-slate-700'
             )}
           >
-            Cannot track this page
+            {chrome.i18n.getMessage("emptyStateSpecialPageTitle")}
           </h2>
           <p className={clsx('text-sm', darkMode ? 'text-slate-400' : 'text-slate-500')}>
-            Browser internal pages cannot be tracked. Navigate to a website to see its redirect
-            path.
+            {chrome.i18n.getMessage("emptyStateSpecialPageDesc")}
           </p>
         </>
       ) : (
@@ -44,10 +43,10 @@ export default function EmptyState({ currentUrl, darkMode = false }: EmptyStateP
               darkMode ? 'text-slate-200' : 'text-slate-700'
             )}
           >
-            No redirects detected
+            {chrome.i18n.getMessage("emptyStateDefaultTitle")}
           </h2>
           <p className={clsx('text-sm', darkMode ? 'text-slate-400' : 'text-slate-500')}>
-            Navigate to a URL or refresh the page to capture its redirect path.
+            {chrome.i18n.getMessage("emptyStateDefaultDesc")}
           </p>
         </>
       )}

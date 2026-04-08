@@ -1,0 +1,233 @@
+{
+  "extensionName": {
+    "message": "RedirectWise: Verificador de Redirecciones HTTP y Auditoría SEO"
+  },
+  "extensionDesc": {
+    "message": "Rastrea redirecciones y detecta enlaces ocultos de anuncios con un panel persistente. Verificador SEO en tiempo real con popup y panel lateral."
+  },
+  "emptyStateSpecialPageTitle": {
+    "message": "No se puede rastrear esta página"
+  },
+  "emptyStateSpecialPageDesc": {
+    "message": "Las páginas internas del navegador no se pueden rastrear. Navega a un sitio web para ver su ruta de redirección."
+  },
+  "emptyStateDefaultTitle": {
+    "message": "No se detectaron redirecciones"
+  },
+  "emptyStateDefaultDesc": {
+    "message": "Navega a una URL o actualiza la página para capturar su ruta de redirección."
+  },
+  "headerSubtitle": {
+    "message": "Analizador de Rutas de Redirección"
+  },
+  "headerLightMode": {
+    "message": "Modo claro"
+  },
+  "headerDarkMode": {
+    "message": "Modo oscuro"
+  },
+  "headerOpenRealtimeMonitor": {
+    "message": "Abrir Monitor en Tiempo Real"
+  },
+  "headerOpenDashboard": {
+    "message": "Abrir Panel de Control"
+  },
+  "headerRefresh": {
+    "message": "Actualizar"
+  },
+  "headerClearPath": {
+    "message": "Limpiar ruta"
+  },
+  "scoreGradeA": {
+    "message": "¡Excelente! Cadena de redirección óptima."
+  },
+  "scoreGradeB": {
+    "message": "Bueno. Mejoras menores posibles."
+  },
+  "scoreGradeC": {
+    "message": "Regular. Algunos problemas por resolver."
+  },
+  "scoreGradeD": {
+    "message": "Deficiente. Problemas significativos encontrados."
+  },
+  "scoreGradeF": {
+    "message": "Crítico. Problemas graves detectados."
+  },
+  "scoreIssueSingle": {
+    "message": "problema"
+  },
+  "scoreIssuePlural": {
+    "message": "problemas"
+  },
+  "copyPathAs": {
+    "message": "Copiar ruta como:"
+  },
+  "copied": {
+    "message": "¡Copiado!"
+  },
+  "textFormat": {
+    "message": "Texto"
+  },
+  "csvFormat": {
+    "message": "CSV"
+  },
+  "pdfFormat": {
+    "message": "PDF"
+  },
+  "exportingPdf": {
+    "message": "Exportando..."
+  },
+  "permanentRedirect": {
+    "message": "Redirección Permanente"
+  },
+  "hstsRedirect": {
+    "message": "Redirección HSTS"
+  },
+  "temporaryRedirect": {
+    "message": "Redirección Temporal"
+  },
+  "copyUrl": {
+    "message": "Copiar URL"
+  },
+  "responseHeaders": {
+    "message": "Cabeceras de Respuesta"
+  },
+  "openUrl": {
+    "message": "Abrir URL"
+  },
+  "hstsRedirectDesc": {
+    "message": "Redirección interna del navegador. El servidor indicó previamente que se requiere HTTPS."
+  },
+  "live": {
+    "message": "En Vivo"
+  },
+  "paused": {
+    "message": "Pausado"
+  },
+  "realtimeMonitor": {
+    "message": "Monitor en Tiempo Real"
+  },
+  "waitingForRedirects": {
+    "message": "Esperando redirecciones..."
+  },
+  "monitoringPaused": {
+    "message": "Monitoreo pausado"
+  },
+  "navigateRealtimeMessage": {
+    "message": "Navega a una URL para ver las redirecciones en tiempo real"
+  },
+  "pauseMonitoring": {
+    "message": "Pausar monitoreo"
+  },
+  "resumeMonitoring": {
+    "message": "Reanudar monitoreo"
+  },
+  "clearSessions": {
+    "message": "Limpiar sesiones"
+  },
+  "toggleDarkMode": {
+    "message": "Alternar modo oscuro"
+  },
+  "monitoringLabel": {
+    "message": "Monitoreando:"
+  },
+  "scoreLabel": {
+    "message": "Puntuación:"
+  },
+  "autoScroll": {
+    "message": "Auto-desplazamiento"
+  },
+  "selectAnEntry": {
+    "message": "Selecciona una Entrada"
+  },
+  "chooseRedirectToView": {
+    "message": "Elige una redirección de la lista para ver los detalles"
+  },
+  "settingsTitle": {
+    "message": "Configuración"
+  },
+  "backToHistory": {
+    "message": "Volver al Historial"
+  },
+  "generalSettings": {
+    "message": "Configuración General"
+  },
+  "chainScoreAnalysis": {
+    "message": "Análisis de Puntuación de Cadena"
+  },
+  "aiIntegrations": {
+    "message": "Integraciones de IA"
+  },
+  "soon": {
+    "message": "Próximamente"
+  },
+  "darkModeAppearance": {
+    "message": "Apariencia en Modo Oscuro"
+  },
+  "searchUrls": {
+    "message": "Buscar URLs..."
+  },
+  "sortByDate": {
+    "message": "Ordenar por Fecha"
+  },
+  "sortByScore": {
+    "message": "Ordenar por Puntuación"
+  },
+  "sortByRedirects": {
+    "message": "Ordenar por Redirecciones"
+  },
+  "exportAllToPdf": {
+    "message": "Exportar Todo a PDF"
+  },
+  "clearAllHistory": {
+    "message": "Limpiar Todo el Historial"
+  },
+  "noMatches": {
+    "message": "Sin coincidencias"
+  },
+  "noHistoryYet": {
+    "message": "Aún no hay historial"
+  },
+  "removeFromFavorites": {
+    "message": "Quitar de favoritos"
+  },
+  "addToFavorites": {
+    "message": "Agregar a favoritos"
+  },
+  "exportToPdf": {
+    "message": "Exportar a PDF"
+  },
+  "deleteEntry": {
+    "message": "Eliminar"
+  },
+  "issuesFound": {
+    "message": "Problemas Encontrados"
+  },
+  "recommendations": {
+    "message": "Recomendaciones"
+  },
+  "success": {
+    "message": "Éxito"
+  },
+  "notSpecified": {
+    "message": "No especificado"
+  },
+  "notAvailable": {
+    "message": "No disponible"
+  },
+  "ipAddress": {
+    "message": "Dirección IP"
+  },
+  "allHeaders": {
+    "message": "Todas las Cabeceras"
+  },
+  "noHeadersAvailable": {
+    "message": "No hay cabeceras disponibles"
+  },
+  "confirmDeleteEntry": {
+    "message": "¿Estás seguro de que deseas eliminar esta entrada?"
+  },
+  "confirmClearAll": {
+    "message": "¿Estás seguro de que deseas limpiar todo el historial? Esta acción no se puede deshacer."
+  }
+}

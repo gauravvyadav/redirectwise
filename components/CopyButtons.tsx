@@ -102,7 +102,7 @@ export default function CopyButtons({
       )}
     >
       <span className={clsx('text-xs mr-auto', darkMode ? 'text-slate-400' : 'text-slate-500')}>
-        Copy path as:
+        {chrome.i18n.getMessage('copyPathAs')}
       </span>
 
       <button
@@ -119,12 +119,12 @@ export default function CopyButtons({
         {copiedFormat === 'text' ? (
           <>
             <Check className="w-3.5 h-3.5" />
-            Copied!
+            {chrome.i18n.getMessage('copied')}
           </>
         ) : (
           <>
             <Copy className="w-3.5 h-3.5" />
-            Text
+            {chrome.i18n.getMessage('textFormat')}
           </>
         )}
       </button>
@@ -143,12 +143,12 @@ export default function CopyButtons({
         {copiedFormat === 'csv' ? (
           <>
             <Check className="w-3.5 h-3.5" />
-            Copied!
+            {chrome.i18n.getMessage('copied')}
           </>
         ) : (
           <>
             <FileSpreadsheet className="w-3.5 h-3.5" />
-            CSV
+            {chrome.i18n.getMessage('csvFormat')}
           </>
         )}
       </button>
@@ -170,7 +170,7 @@ export default function CopyButtons({
             )}
           >
             <FileDown className={clsx('w-3.5 h-3.5', exporting && 'animate-bounce')} />
-            {exporting ? 'Exporting...' : 'PDF'}
+            {exporting ? chrome.i18n.getMessage('exportingPdf') : chrome.i18n.getMessage('pdfFormat')}
           </button>
         </>
       )}

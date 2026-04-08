@@ -1,0 +1,233 @@
+{
+  "extensionName": {
+    "message": "RedirectWise: HTTP-Weiterleitungsprüfer & SEO-Audit-Tool"
+  },
+  "extensionDesc": {
+    "message": "Verfolgen Sie Weiterleitungen und erkennen Sie versteckte Werbelinks mit einem persistenten Dashboard. Echtzeit-SEO-Prüfer mit Popup & Seitenpanel."
+  },
+  "emptyStateSpecialPageTitle": {
+    "message": "Diese Seite kann nicht verfolgt werden"
+  },
+  "emptyStateSpecialPageDesc": {
+    "message": "Interne Browserseiten können nicht verfolgt werden. Navigieren Sie zu einer Website, um den Weiterleitungspfad zu sehen."
+  },
+  "emptyStateDefaultTitle": {
+    "message": "Keine Weiterleitungen erkannt"
+  },
+  "emptyStateDefaultDesc": {
+    "message": "Navigieren Sie zu einer URL oder aktualisieren Sie die Seite, um den Weiterleitungspfad zu erfassen."
+  },
+  "headerSubtitle": {
+    "message": "Weiterleitungspfad-Analysator"
+  },
+  "headerLightMode": {
+    "message": "Heller Modus"
+  },
+  "headerDarkMode": {
+    "message": "Dunkler Modus"
+  },
+  "headerOpenRealtimeMonitor": {
+    "message": "Echtzeit-Monitor öffnen"
+  },
+  "headerOpenDashboard": {
+    "message": "Dashboard öffnen"
+  },
+  "headerRefresh": {
+    "message": "Aktualisieren"
+  },
+  "headerClearPath": {
+    "message": "Pfad löschen"
+  },
+  "scoreGradeA": {
+    "message": "Ausgezeichnet! Optimale Weiterleitungskette."
+  },
+  "scoreGradeB": {
+    "message": "Gut. Kleine Verbesserungen möglich."
+  },
+  "scoreGradeC": {
+    "message": "Befriedigend. Einige Probleme zu beheben."
+  },
+  "scoreGradeD": {
+    "message": "Mangelhaft. Erhebliche Probleme gefunden."
+  },
+  "scoreGradeF": {
+    "message": "Kritisch. Schwerwiegende Probleme erkannt."
+  },
+  "scoreIssueSingle": {
+    "message": "Problem"
+  },
+  "scoreIssuePlural": {
+    "message": "Probleme"
+  },
+  "copyPathAs": {
+    "message": "Pfad kopieren als:"
+  },
+  "copied": {
+    "message": "Kopiert!"
+  },
+  "textFormat": {
+    "message": "Text"
+  },
+  "csvFormat": {
+    "message": "CSV"
+  },
+  "pdfFormat": {
+    "message": "PDF"
+  },
+  "exportingPdf": {
+    "message": "Exportiere..."
+  },
+  "permanentRedirect": {
+    "message": "Permanente Weiterleitung"
+  },
+  "hstsRedirect": {
+    "message": "HSTS-Weiterleitung"
+  },
+  "temporaryRedirect": {
+    "message": "Temporäre Weiterleitung"
+  },
+  "copyUrl": {
+    "message": "URL kopieren"
+  },
+  "responseHeaders": {
+    "message": "Antwort-Header"
+  },
+  "openUrl": {
+    "message": "URL öffnen"
+  },
+  "hstsRedirectDesc": {
+    "message": "Interne Browser-Weiterleitung. Server hat zuvor HTTPS-Anforderung angegeben."
+  },
+  "live": {
+    "message": "Live"
+  },
+  "paused": {
+    "message": "Pausiert"
+  },
+  "realtimeMonitor": {
+    "message": "Echtzeit-Monitor"
+  },
+  "waitingForRedirects": {
+    "message": "Warte auf Weiterleitungen..."
+  },
+  "monitoringPaused": {
+    "message": "Überwachung pausiert"
+  },
+  "navigateRealtimeMessage": {
+    "message": "Navigieren Sie zu einer URL, um Weiterleitungen in Echtzeit zu sehen"
+  },
+  "pauseMonitoring": {
+    "message": "Überwachung pausieren"
+  },
+  "resumeMonitoring": {
+    "message": "Überwachung fortsetzen"
+  },
+  "clearSessions": {
+    "message": "Sitzungen löschen"
+  },
+  "toggleDarkMode": {
+    "message": "Dunklen Modus umschalten"
+  },
+  "monitoringLabel": {
+    "message": "Überwachung:"
+  },
+  "scoreLabel": {
+    "message": "Bewertung:"
+  },
+  "autoScroll": {
+    "message": "Auto-Scrollen"
+  },
+  "selectAnEntry": {
+    "message": "Eintrag auswählen"
+  },
+  "chooseRedirectToView": {
+    "message": "Wählen Sie eine Weiterleitung aus der Liste, um Details anzuzeigen"
+  },
+  "settingsTitle": {
+    "message": "Einstellungen"
+  },
+  "backToHistory": {
+    "message": "Zurück zum Verlauf"
+  },
+  "generalSettings": {
+    "message": "Allgemeine Einstellungen"
+  },
+  "chainScoreAnalysis": {
+    "message": "Kettenanalyse-Bewertung"
+  },
+  "aiIntegrations": {
+    "message": "KI-Integrationen"
+  },
+  "soon": {
+    "message": "Bald"
+  },
+  "darkModeAppearance": {
+    "message": "Dunkler Modus Erscheinung"
+  },
+  "searchUrls": {
+    "message": "URLs suchen..."
+  },
+  "sortByDate": {
+    "message": "Nach Datum sortieren"
+  },
+  "sortByScore": {
+    "message": "Nach Bewertung sortieren"
+  },
+  "sortByRedirects": {
+    "message": "Nach Weiterleitungen sortieren"
+  },
+  "exportAllToPdf": {
+    "message": "Alle als PDF exportieren"
+  },
+  "clearAllHistory": {
+    "message": "Gesamten Verlauf löschen"
+  },
+  "noMatches": {
+    "message": "Keine Treffer"
+  },
+  "noHistoryYet": {
+    "message": "Noch kein Verlauf"
+  },
+  "removeFromFavorites": {
+    "message": "Aus Favoriten entfernen"
+  },
+  "addToFavorites": {
+    "message": "Zu Favoriten hinzufügen"
+  },
+  "exportToPdf": {
+    "message": "Als PDF exportieren"
+  },
+  "deleteEntry": {
+    "message": "Löschen"
+  },
+  "issuesFound": {
+    "message": "Probleme gefunden"
+  },
+  "recommendations": {
+    "message": "Empfehlungen"
+  },
+  "success": {
+    "message": "Erfolg"
+  },
+  "notSpecified": {
+    "message": "Nicht angegeben"
+  },
+  "notAvailable": {
+    "message": "Nicht verfügbar"
+  },
+  "ipAddress": {
+    "message": "IP-Adresse"
+  },
+  "allHeaders": {
+    "message": "Alle Header"
+  },
+  "noHeadersAvailable": {
+    "message": "Keine Header verfügbar"
+  },
+  "confirmDeleteEntry": {
+    "message": "Sind Sie sicher, dass Sie diesen Eintrag löschen möchten?"
+  },
+  "confirmClearAll": {
+    "message": "Sind Sie sicher, dass Sie den gesamten Verlauf löschen möchten? Dies kann nicht rückgängig gemacht werden."
+  }
+}

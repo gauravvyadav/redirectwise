@@ -143,7 +143,7 @@ export default function Dashboard() {
 
   const handleDelete = useCallback(
     async (id: string) => {
-      if (confirm('Are you sure you want to delete this entry?')) {
+      if (confirm(chrome.i18n.getMessage('confirmDeleteEntry'))) {
         await deleteHistoryEntry(id);
         if (selectedEntry?.id === id) {
           setSelectedEntry(null);
@@ -167,7 +167,7 @@ export default function Dashboard() {
   );
 
   const handleClearAll = useCallback(async () => {
-    if (confirm('Are you sure you want to clear all history? This cannot be undone.')) {
+    if (confirm(chrome.i18n.getMessage('confirmClearAll'))) {
       await clearHistory();
       setSelectedEntry(null);
       await loadData();
@@ -252,7 +252,7 @@ export default function Dashboard() {
             </button>
             <Logo size={32} />
             <div>
-              <h1 className="text-lg font-bold leading-tight">RedirectWise</h1>
+              <h1 className="text-lg font-bold leading-tight">{chrome.i18n.getMessage("extensionName").split(":")[0]}</h1>
             </div>
           </div>
 
@@ -280,7 +280,7 @@ export default function Dashboard() {
                   (darkMode ? 'bg-slate-700 text-blue-400' : 'bg-slate-200 text-blue-600'),
                 darkMode ? 'hover:bg-slate-700' : 'hover:bg-slate-100'
               )}
-              title={currentView === 'history' ? 'Settings' : 'Back to History'}
+              title={currentView === 'history' ? chrome.i18n.getMessage('settingsTitle') : chrome.i18n.getMessage('backToHistory')}
             >
               <Settings className="w-5 h-5" />
             </button>
@@ -290,7 +290,7 @@ export default function Dashboard() {
                 'p-2 rounded-lg transition-colors',
                 darkMode ? 'hover:bg-slate-700' : 'hover:bg-slate-100'
               )}
-              title={darkMode ? 'Light mode' : 'Dark mode'}
+              title={chrome.i18n.getMessage(darkMode ? 'headerLightMode' : 'headerDarkMode')}
             >
               {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
             </button>
@@ -300,7 +300,7 @@ export default function Dashboard() {
                 'p-2 rounded-lg transition-colors',
                 darkMode ? 'hover:bg-slate-700' : 'hover:bg-slate-100'
               )}
-              title="Refresh"
+              title={chrome.i18n.getMessage('headerRefresh')}
             >
               <RefreshCw className="w-5 h-5" />
             </button>
@@ -331,7 +331,7 @@ export default function Dashboard() {
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                 <input
                   type="text"
-                  placeholder="Search URLs..."
+                  placeholder={chrome.i18n.getMessage('searchUrls')}
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
                   className={clsx(
@@ -399,9 +399,9 @@ export default function Dashboard() {
                     darkMode ? 'bg-slate-700 border-slate-600' : 'bg-slate-50 border-slate-200'
                   )}
                 >
-                  <option value="date">Sort by Date</option>
-                  <option value="score">Sort by Score</option>
-                  <option value="redirects">Sort by Redirects</option>
+                  <option value="date">{chrome.i18n.getMessage('sortByDate')}</option>
+                  <option value="score">{chrome.i18n.getMessage('sortByScore')}</option>
+                  <option value="redirects">{chrome.i18n.getMessage('sortByRedirects')}</option>
                 </select>
                 <button
                   onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
@@ -420,7 +420,7 @@ export default function Dashboard() {
                   <button
                     onClick={handleExportAllPDF}
                     className="p-1.5 rounded-md bg-blue-500 text-white hover:bg-blue-600 transition-colors"
-                    title="Export All to PDF"
+                    title={chrome.i18n.getMessage('exportAllToPdf')}
                   >
                     <Download className="w-4 h-4" />
                   </button>
@@ -429,7 +429,7 @@ export default function Dashboard() {
                   <button
                     onClick={handleClearAll}
                     className="p-1.5 rounded-md bg-red-500 text-white hover:bg-red-600 transition-colors"
-                    title="Clear All History"
+                    title={chrome.i18n.getMessage('clearAllHistory')}
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -460,7 +460,7 @@ export default function Dashboard() {
                 <div className="flex flex-col items-center justify-center h-32 text-center p-4">
                   <Clock className="w-10 h-10 mb-2 text-slate-300" />
                   <p className={clsx('text-sm', darkMode ? 'text-slate-400' : 'text-slate-500')}>
-                    {searchQuery || filter !== 'all' ? 'No matches' : 'No history yet'}
+                    {searchQuery || filter !== 'all' ? chrome.i18n.getMessage('noMatches') : chrome.i18n.getMessage('noHistoryYet')}
                   </p>
                 </div>
               ) : (
@@ -513,9 +513,9 @@ export default function Dashboard() {
                 >
                   <Globe className="w-10 h-10 text-slate-300" />
                 </div>
-                <h3 className="text-lg font-medium mb-1">Select an Entry</h3>
+                <h3 className="text-lg font-medium mb-1">{chrome.i18n.getMessage("selectAnEntry")}</h3>
                 <p className={clsx('text-sm', darkMode ? 'text-slate-400' : 'text-slate-500')}>
-                  Choose a redirect from the list to view details
+                  {chrome.i18n.getMessage("chooseRedirectToView")}
                 </p>
               </div>
             )}
@@ -551,7 +551,7 @@ function SettingsViewUI({ settings, darkMode, activeTab, setActiveTab, onToggleS
             darkMode ? 'border-slate-700' : 'border-slate-200'
           )}
         >
-          Settings
+          {chrome.i18n.getMessage("settingsTitle")}
         </div>
         <div className="flex-1 p-2 space-y-1">
           <button
@@ -567,7 +567,7 @@ function SettingsViewUI({ settings, darkMode, activeTab, setActiveTab, onToggleS
                   : 'hover:bg-slate-100 text-slate-600'
             )}
           >
-            General
+            {chrome.i18n.getMessage("generalSettings")}
           </button>
           <button
             onClick={() => setActiveTab('chainScore')}
@@ -582,7 +582,7 @@ function SettingsViewUI({ settings, darkMode, activeTab, setActiveTab, onToggleS
                   : 'hover:bg-slate-100 text-slate-600'
             )}
           >
-            Chain Score Analysis
+            {chrome.i18n.getMessage("chainScoreAnalysis")}
           </button>
           <button
             onClick={() => setActiveTab('ai')}
@@ -597,14 +597,14 @@ function SettingsViewUI({ settings, darkMode, activeTab, setActiveTab, onToggleS
                   : 'hover:bg-slate-100 text-slate-600'
             )}
           >
-            AI Integrations
+            {chrome.i18n.getMessage("aiIntegrations")}
             <span
               className={clsx(
                 'text-[10px] px-1.5 py-0.5 rounded-full uppercase',
                 darkMode ? 'bg-purple-900/50 text-purple-300' : 'bg-purple-100 text-purple-600'
               )}
             >
-              Soon
+              {chrome.i18n.getMessage("soon")}
             </span>
           </button>
         </div>
@@ -617,7 +617,7 @@ function SettingsViewUI({ settings, darkMode, activeTab, setActiveTab, onToggleS
       >
         {activeTab === 'general' && (
           <div className="max-w-3xl">
-            <h2 className="text-2xl font-semibold mb-6">General Settings</h2>
+            <h2 className="text-2xl font-semibold mb-6">{chrome.i18n.getMessage("generalSettings")}</h2>
             <div
               className={clsx(
                 'rounded-xl border p-6 flex items-center justify-between',
@@ -625,7 +625,7 @@ function SettingsViewUI({ settings, darkMode, activeTab, setActiveTab, onToggleS
               )}
             >
               <div>
-                <h3 className="font-medium">Dark Mode Appearance</h3>
+                <h3 className="font-medium">{chrome.i18n.getMessage("darkModeAppearance")}</h3>
                 <p className={clsx('text-sm mt-1', darkMode ? 'text-slate-400' : 'text-slate-500')}>
                   Toggle dark UI theme across the dashboard
                 </p>
@@ -1072,7 +1072,7 @@ function DetailPanel({
                     ? 'text-slate-400 hover:text-slate-200'
                     : 'text-slate-400 hover:text-slate-600'
               )}
-              title={entry.isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+              title={entry.isFavorite ? chrome.i18n.getMessage('removeFromFavorites') : chrome.i18n.getMessage('addToFavorites')}
             >
               {entry.isFavorite ? (
                 <Star className="w-5 h-5 fill-current" />
@@ -1088,14 +1088,14 @@ function DetailPanel({
                   ? 'text-slate-400 hover:text-slate-200'
                   : 'text-slate-400 hover:text-slate-600'
               )}
-              title="Export to PDF"
+              title={chrome.i18n.getMessage('exportToPdf')}
             >
               <Download className="w-5 h-5" />
             </button>
             <button
               onClick={onDelete}
               className="p-2 rounded-lg text-red-400 hover:text-red-500 transition-colors"
-              title="Delete"
+              title={chrome.i18n.getMessage('deleteEntry')}
             >
               <Trash2 className="w-5 h-5" />
             </button>
@@ -1115,7 +1115,7 @@ function DetailPanel({
           >
             <h3 className="font-medium mb-3 flex items-center gap-2">
               <AlertTriangle className="w-4 h-4 text-amber-500" />
-              Issues Found ({entry.chainScore.issues.length})
+              {chrome.i18n.getMessage('issuesFound')} ({entry.chainScore.issues.length})
             </h3>
             <div className="space-y-2">
               {entry.chainScore.issues.map((issue, idx) => (
@@ -1164,7 +1164,7 @@ function DetailPanel({
             >
               <h3 className="font-medium mb-3 flex items-center gap-2">
                 <Info className="w-4 h-4 text-blue-500" />
-                Recommendations
+                {chrome.i18n.getMessage('recommendations')}
               </h3>
               <ul className="space-y-2">
                 {entry.chainScore.recommendations.map((rec, idx) => (
@@ -1241,15 +1241,13 @@ function DetailPanel({
                             )}
                           >
                             {item.type === 'server_redirect'
-                              ? `${
-                                  item.redirect_type === 'permanent'
-                                    ? 'Permanent'
-                                    : item.redirect_type === 'hsts'
-                                      ? 'HSTS'
-                                      : 'Temporary'
-                                } Redirect`
+                              ? item.redirect_type === 'permanent'
+                                ? chrome.i18n.getMessage('permanentRedirect')
+                                : item.redirect_type === 'hsts'
+                                  ? chrome.i18n.getMessage('hstsRedirect')
+                                  : chrome.i18n.getMessage('temporaryRedirect')
                               : item.statusObject?.isSuccess
-                                ? 'Success'
+                                ? chrome.i18n.getMessage('success')
                                 : item.status_line}
                           </span>
                           <span className="flex-1" />

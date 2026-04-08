@@ -25,8 +25,8 @@ export default function Header({
       <div className="flex items-center gap-2">
         <Logo size={32} />
         <div>
-          <h1 className="text-lg font-semibold leading-tight">RedirectWise</h1>
-          <p className="text-xs text-blue-200">Redirect Path Analyzer</p>
+          <h1 className="text-lg font-semibold leading-tight">{chrome.i18n.getMessage('extensionName').split(':')[0]}</h1>
+          <p className="text-xs text-blue-200">{chrome.i18n.getMessage('headerSubtitle')}</p>
         </div>
       </div>
 
@@ -34,7 +34,7 @@ export default function Header({
         <button
           onClick={onToggleDarkMode}
           className="p-2 hover:bg-white/10 rounded-lg transition-colors"
-          title={darkMode ? 'Light mode' : 'Dark mode'}
+          title={chrome.i18n.getMessage(darkMode ? 'headerLightMode' : 'headerDarkMode')}
         >
           {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
         </button>
@@ -43,7 +43,7 @@ export default function Header({
           <button
             onClick={onOpenSidepanel}
             className="p-2 hover:bg-white/10 rounded-lg transition-colors"
-            title="Open Realtime Monitor"
+            title={chrome.i18n.getMessage('headerOpenRealtimeMonitor')}
           >
             <PanelRight className="w-4 h-4" />
           </button>
@@ -52,7 +52,7 @@ export default function Header({
         <button
           onClick={onOpenDashboard}
           className="p-2 hover:bg-white/10 rounded-lg transition-colors"
-          title="Open Dashboard"
+          title={chrome.i18n.getMessage('headerOpenDashboard')}
         >
           <LayoutDashboard className="w-4 h-4" />
         </button>
@@ -60,7 +60,7 @@ export default function Header({
         <button
           onClick={onRefresh}
           className="p-2 hover:bg-white/10 rounded-lg transition-colors"
-          title="Refresh"
+          title={chrome.i18n.getMessage('headerRefresh')}
         >
           <RefreshCw className="w-4 h-4" />
         </button>
@@ -69,7 +69,7 @@ export default function Header({
           <button
             onClick={onClear}
             className="p-2 hover:bg-white/10 rounded-lg transition-colors"
-            title="Clear path"
+            title={chrome.i18n.getMessage('headerClearPath')}
           >
             <Trash2 className="w-4 h-4" />
           </button>

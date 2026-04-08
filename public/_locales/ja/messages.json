@@ -1,0 +1,233 @@
+{
+  "extensionName": {
+    "message": "RedirectWise: HTTPリダイレクトチェッカー＆SEO監査ツール"
+  },
+  "extensionDesc": {
+    "message": "永続的なダッシュボードでリダイレクトを追跡し、隠された広告リンクを検出します。ポップアップとサイドパネルを備えたリアルタイムSEOチェッカー。"
+  },
+  "emptyStateSpecialPageTitle": {
+    "message": "このページは追跡できません"
+  },
+  "emptyStateSpecialPageDesc": {
+    "message": "ブラウザの内部ページは追跡できません。リダイレクトパスを確認するにはウェブサイトに移動してください。"
+  },
+  "emptyStateDefaultTitle": {
+    "message": "リダイレクトが検出されませんでした"
+  },
+  "emptyStateDefaultDesc": {
+    "message": "リダイレクトパスをキャプチャするには、URLに移動するかページを更新してください。"
+  },
+  "headerSubtitle": {
+    "message": "リダイレクトパス分析"
+  },
+  "headerLightMode": {
+    "message": "ライトモード"
+  },
+  "headerDarkMode": {
+    "message": "ダークモード"
+  },
+  "headerOpenRealtimeMonitor": {
+    "message": "リアルタイムモニターを開く"
+  },
+  "headerOpenDashboard": {
+    "message": "ダッシュボードを開く"
+  },
+  "headerRefresh": {
+    "message": "更新"
+  },
+  "headerClearPath": {
+    "message": "パスをクリア"
+  },
+  "scoreGradeA": {
+    "message": "優秀！最適なリダイレクトチェーンです。"
+  },
+  "scoreGradeB": {
+    "message": "良好。軽微な改善が可能です。"
+  },
+  "scoreGradeC": {
+    "message": "普通。いくつかの問題があります。"
+  },
+  "scoreGradeD": {
+    "message": "不良。重大な問題が見つかりました。"
+  },
+  "scoreGradeF": {
+    "message": "危険。深刻な問題が検出されました。"
+  },
+  "scoreIssueSingle": {
+    "message": "件の問題"
+  },
+  "scoreIssuePlural": {
+    "message": "件の問題"
+  },
+  "copyPathAs": {
+    "message": "パスをコピー："
+  },
+  "copied": {
+    "message": "コピー済み！"
+  },
+  "textFormat": {
+    "message": "テキスト"
+  },
+  "csvFormat": {
+    "message": "CSV"
+  },
+  "pdfFormat": {
+    "message": "PDF"
+  },
+  "exportingPdf": {
+    "message": "エクスポート中..."
+  },
+  "permanentRedirect": {
+    "message": "永続リダイレクト"
+  },
+  "hstsRedirect": {
+    "message": "HSTSリダイレクト"
+  },
+  "temporaryRedirect": {
+    "message": "一時リダイレクト"
+  },
+  "copyUrl": {
+    "message": "URLをコピー"
+  },
+  "responseHeaders": {
+    "message": "レスポンスヘッダー"
+  },
+  "openUrl": {
+    "message": "URLを開く"
+  },
+  "hstsRedirectDesc": {
+    "message": "ブラウザ内部のリダイレクト。サーバーが以前にHTTPS要件を示しました。"
+  },
+  "live": {
+    "message": "ライブ"
+  },
+  "paused": {
+    "message": "一時停止"
+  },
+  "realtimeMonitor": {
+    "message": "リアルタイムモニター"
+  },
+  "waitingForRedirects": {
+    "message": "リダイレクトを待っています..."
+  },
+  "monitoringPaused": {
+    "message": "モニタリング一時停止中"
+  },
+  "navigateRealtimeMessage": {
+    "message": "リアルタイムでリダイレクトを確認するにはURLに移動してください"
+  },
+  "pauseMonitoring": {
+    "message": "モニタリングを一時停止"
+  },
+  "resumeMonitoring": {
+    "message": "モニタリングを再開"
+  },
+  "clearSessions": {
+    "message": "セッションをクリア"
+  },
+  "toggleDarkMode": {
+    "message": "ダークモード切替"
+  },
+  "monitoringLabel": {
+    "message": "監視中："
+  },
+  "scoreLabel": {
+    "message": "スコア："
+  },
+  "autoScroll": {
+    "message": "自動スクロール"
+  },
+  "selectAnEntry": {
+    "message": "エントリーを選択"
+  },
+  "chooseRedirectToView": {
+    "message": "リストからリダイレクトを選択して詳細を表示"
+  },
+  "settingsTitle": {
+    "message": "設定"
+  },
+  "backToHistory": {
+    "message": "履歴に戻る"
+  },
+  "generalSettings": {
+    "message": "一般設定"
+  },
+  "chainScoreAnalysis": {
+    "message": "チェーンスコア分析"
+  },
+  "aiIntegrations": {
+    "message": "AI統合"
+  },
+  "soon": {
+    "message": "近日公開"
+  },
+  "darkModeAppearance": {
+    "message": "ダークモード外観"
+  },
+  "searchUrls": {
+    "message": "URLを検索..."
+  },
+  "sortByDate": {
+    "message": "日付順"
+  },
+  "sortByScore": {
+    "message": "スコア順"
+  },
+  "sortByRedirects": {
+    "message": "リダイレクト数順"
+  },
+  "exportAllToPdf": {
+    "message": "すべてPDFにエクスポート"
+  },
+  "clearAllHistory": {
+    "message": "すべての履歴をクリア"
+  },
+  "noMatches": {
+    "message": "一致なし"
+  },
+  "noHistoryYet": {
+    "message": "まだ履歴がありません"
+  },
+  "removeFromFavorites": {
+    "message": "お気に入りから削除"
+  },
+  "addToFavorites": {
+    "message": "お気に入りに追加"
+  },
+  "exportToPdf": {
+    "message": "PDFにエクスポート"
+  },
+  "deleteEntry": {
+    "message": "削除"
+  },
+  "issuesFound": {
+    "message": "問題が見つかりました"
+  },
+  "recommendations": {
+    "message": "推奨事項"
+  },
+  "success": {
+    "message": "成功"
+  },
+  "notSpecified": {
+    "message": "未指定"
+  },
+  "notAvailable": {
+    "message": "利用不可"
+  },
+  "ipAddress": {
+    "message": "IPアドレス"
+  },
+  "allHeaders": {
+    "message": "全ヘッダー"
+  },
+  "noHeadersAvailable": {
+    "message": "ヘッダーがありません"
+  },
+  "confirmDeleteEntry": {
+    "message": "このエントリーを削除してもよろしいですか？"
+  },
+  "confirmClearAll": {
+    "message": "すべての履歴をクリアしてもよろしいですか？この操作は元に戻せません。"
+  }
+}

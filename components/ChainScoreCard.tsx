@@ -40,15 +40,15 @@ export default function ChainScoreCard({ score, darkMode = false }: ChainScoreCa
   const getGradeDescription = () => {
     switch (score.grade) {
       case 'A':
-        return 'Excellent! Optimal redirect chain.';
+        return chrome.i18n.getMessage('scoreGradeA');
       case 'B':
-        return 'Good. Minor improvements possible.';
+        return chrome.i18n.getMessage('scoreGradeB');
       case 'C':
-        return 'Fair. Some issues to address.';
+        return chrome.i18n.getMessage('scoreGradeC');
       case 'D':
-        return 'Poor. Significant issues found.';
+        return chrome.i18n.getMessage('scoreGradeD');
       case 'F':
-        return 'Critical. Major problems detected.';
+        return chrome.i18n.getMessage('scoreGradeF');
     }
   };
 
@@ -108,7 +108,7 @@ export default function ChainScoreCard({ score, darkMode = false }: ChainScoreCa
               )}
               title={filteredIssues.map(issue => `• ${issue.message}`).join('\n')}
             >
-              {filteredIssues.length} {filteredIssues.length === 1 ? 'issue' : 'issues'}
+              {filteredIssues.length} {filteredIssues.length === 1 ? chrome.i18n.getMessage('scoreIssueSingle') : chrome.i18n.getMessage('scoreIssuePlural')}
             </span>
             {isExpanded ? (
               <ChevronDown

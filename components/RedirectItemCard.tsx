@@ -65,13 +65,11 @@ export default function RedirectItemCard({
 
   const getStatusLabel = () => {
     if (item.type === 'server_redirect') {
-      const redirectLabel =
-        item.redirect_type === 'permanent'
-          ? 'Permanent'
-          : item.redirect_type === 'hsts'
-          ? 'HSTS'
-          : 'Temporary';
-      return `${redirectLabel} Redirect`;
+      return item.redirect_type === 'permanent'
+        ? chrome.i18n.getMessage('permanentRedirect')
+        : item.redirect_type === 'hsts'
+        ? chrome.i18n.getMessage('hstsRedirect')
+        : chrome.i18n.getMessage('temporaryRedirect');
     }
     return item.status_line;
   };
@@ -180,7 +178,7 @@ export default function RedirectItemCard({
                 darkMode ? 'hover:bg-slate-700/50 text-slate-500' : 'text-slate-400',
                 copied && 'text-green-500'
               )}
-              title="Copy URL"
+              title={chrome.i18n.getMessage('copyUrl')}
             >
               <Copy className="w-3.5 h-3.5" />
               {copied && (
@@ -190,7 +188,7 @@ export default function RedirectItemCard({
                     darkMode ? 'bg-slate-700 text-green-400' : 'bg-slate-800 text-green-400'
                   )}
                 >
-                  Copied!
+                  {chrome.i18n.getMessage('copied')}
                 </span>
               )}
             </button>
@@ -231,7 +229,7 @@ export default function RedirectItemCard({
                 )}
               >
                 <Info className="w-3 h-3" />
-                Response Headers
+                {chrome.i18n.getMessage('responseHeaders')}
                 {showHeaders ? (
                   <ChevronDown className="w-3 h-3" />
                 ) : (
@@ -248,7 +246,7 @@ export default function RedirectItemCard({
                   chrome.tabs.create({ url: item.url });
                 }}
               >
-                Open URL <ExternalLink className="w-3 h-3" />
+                {chrome.i18n.getMessage('openUrl')} <ExternalLink className="w-3 h-3" />
               </a>
             </div>
             {showHeaders && <HeadersList headers={item.headers} ip={item.ip} darkMode={darkMode} />}
@@ -263,8 +261,7 @@ export default function RedirectItemCard({
                   : 'bg-purple-50 border border-purple-200 text-purple-700'
               )}
             >
-              <strong>HSTS Redirect:</strong> Internal browser redirect. Server previously indicated
-              HTTPS requirement.
+              <strong>{chrome.i18n.getMessage('hstsRedirect')}:</strong> {chrome.i18n.getMessage('hstsRedirectDesc')}
             </div>
           )}
         </div>

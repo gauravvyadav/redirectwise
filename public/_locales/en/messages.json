@@ -1,0 +1,235 @@
+{
+  "extensionName": {
+    "message": "RedirectWise: HTTP Redirect Checker & SEO Audit Tool",
+    "description": "Name of the extension"
+  },
+  "extensionDesc": {
+    "message": "Track redirects & catch hidden ad links with a persistent history dashboard. Real-time SEO checker with popup & sidepanel.",
+    "description": "Description of the extension"
+  },
+  "emptyStateSpecialPageTitle": {
+    "message": "Cannot track this page"
+  },
+  "emptyStateSpecialPageDesc": {
+    "message": "Browser internal pages cannot be tracked. Navigate to a website to see its redirect path."
+  },
+  "emptyStateDefaultTitle": {
+    "message": "No redirects detected"
+  },
+  "emptyStateDefaultDesc": {
+    "message": "Navigate to a URL or refresh the page to capture its redirect path."
+  },
+  "headerSubtitle": {
+    "message": "Redirect Path Analyzer"
+  },
+  "headerLightMode": {
+    "message": "Light mode"
+  },
+  "headerDarkMode": {
+    "message": "Dark mode"
+  },
+  "headerOpenRealtimeMonitor": {
+    "message": "Open Realtime Monitor"
+  },
+  "headerOpenDashboard": {
+    "message": "Open Dashboard"
+  },
+  "headerRefresh": {
+    "message": "Refresh"
+  },
+  "headerClearPath": {
+    "message": "Clear path"
+  },
+  "scoreGradeA": {
+    "message": "Excellent! Optimal redirect chain."
+  },
+  "scoreGradeB": {
+    "message": "Good. Minor improvements possible."
+  },
+  "scoreGradeC": {
+    "message": "Fair. Some issues to address."
+  },
+  "scoreGradeD": {
+    "message": "Poor. Significant issues found."
+  },
+  "scoreGradeF": {
+    "message": "Critical. Major problems detected."
+  },
+  "scoreIssueSingle": {
+    "message": "issue"
+  },
+  "scoreIssuePlural": {
+    "message": "issues"
+  },
+  "copyPathAs": {
+    "message": "Copy path as:"
+  },
+  "copied": {
+    "message": "Copied!"
+  },
+  "textFormat": {
+    "message": "Text"
+  },
+  "csvFormat": {
+    "message": "CSV"
+  },
+  "pdfFormat": {
+    "message": "PDF"
+  },
+  "exportingPdf": {
+    "message": "Exporting..."
+  },
+  "permanentRedirect": {
+    "message": "Permanent Redirect"
+  },
+  "hstsRedirect": {
+    "message": "HSTS Redirect"
+  },
+  "temporaryRedirect": {
+    "message": "Temporary Redirect"
+  },
+  "copyUrl": {
+    "message": "Copy URL"
+  },
+  "responseHeaders": {
+    "message": "Response Headers"
+  },
+  "openUrl": {
+    "message": "Open URL"
+  },
+  "hstsRedirectDesc": {
+    "message": "Internal browser redirect. Server previously indicated HTTPS requirement."
+  },
+  "live": {
+    "message": "Live"
+  },
+  "paused": {
+    "message": "Paused"
+  },
+  "realtimeMonitor": {
+    "message": "Realtime Monitor"
+  },
+  "waitingForRedirects": {
+    "message": "Waiting for redirects..."
+  },
+  "monitoringPaused": {
+    "message": "Monitoring paused"
+  },
+  "navigateRealtimeMessage": {
+    "message": "Navigate to a URL to see redirects in realtime"
+  },
+  "pauseMonitoring": {
+    "message": "Pause monitoring"
+  },
+  "resumeMonitoring": {
+    "message": "Resume monitoring"
+  },
+  "clearSessions": {
+    "message": "Clear sessions"
+  },
+  "toggleDarkMode": {
+    "message": "Toggle dark mode"
+  },
+  "monitoringLabel": {
+    "message": "Monitoring:"
+  },
+  "scoreLabel": {
+    "message": "Score:"
+  },
+  "autoScroll": {
+    "message": "Auto-scroll"
+  },
+  "selectAnEntry": {
+    "message": "Select an Entry"
+  },
+  "chooseRedirectToView": {
+    "message": "Choose a redirect from the list to view details"
+  },
+  "settingsTitle": {
+    "message": "Settings"
+  },
+  "backToHistory": {
+    "message": "Back to History"
+  },
+  "generalSettings": {
+    "message": "General Settings"
+  },
+  "chainScoreAnalysis": {
+    "message": "Chain Score Analysis"
+  },
+  "aiIntegrations": {
+    "message": "AI Integrations"
+  },
+  "soon": {
+    "message": "Soon"
+  },
+  "darkModeAppearance": {
+    "message": "Dark Mode Appearance"
+  },
+  "searchUrls": {
+    "message": "Search URLs..."
+  },
+  "sortByDate": {
+    "message": "Sort by Date"
+  },
+  "sortByScore": {
+    "message": "Sort by Score"
+  },
+  "sortByRedirects": {
+    "message": "Sort by Redirects"
+  },
+  "exportAllToPdf": {
+    "message": "Export All to PDF"
+  },
+  "clearAllHistory": {
+    "message": "Clear All History"
+  },
+  "noMatches": {
+    "message": "No matches"
+  },
+  "noHistoryYet": {
+    "message": "No history yet"
+  },
+  "removeFromFavorites": {
+    "message": "Remove from favorites"
+  },
+  "addToFavorites": {
+    "message": "Add to favorites"
+  },
+  "exportToPdf": {
+    "message": "Export to PDF"
+  },
+  "deleteEntry": {
+    "message": "Delete"
+  },
+  "issuesFound": {
+    "message": "Issues Found"
+  },
+  "recommendations": {
+    "message": "Recommendations"
+  },
+  "success": {
+    "message": "Success"
+  },
+  "notSpecified": {
+    "message": "Not specified"
+  },
+  "notAvailable": {
+    "message": "Not available"
+  },
+  "ipAddress": {
+    "message": "IP Address"
+  },
+  "allHeaders": {
+    "message": "All Headers"
+  },
+  "noHeadersAvailable": {
+    "message": "No headers available"
+  },
+  "confirmDeleteEntry": {
+    "message": "Are you sure you want to delete this entry?"
+  },
+  "confirmClearAll": {
+    "message": "Are you sure you want to clear all history? This cannot be undone."
+  }
+}

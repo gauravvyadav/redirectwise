@@ -319,7 +319,7 @@ export default function Sidepanel() {
             <Logo size={32} />
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-lg font-semibold leading-tight">RedirectWise</h1>
+                <h1 className="text-lg font-semibold leading-tight">{chrome.i18n.getMessage('extensionName').split(':')[0]}</h1>
                 <span
                   className={clsx(
                     'text-xs px-1.5 py-0.5 rounded-full flex items-center gap-1',
@@ -332,10 +332,10 @@ export default function Sidepanel() {
                       isMonitoring ? 'bg-green-400 animate-pulse-live' : 'bg-white/50'
                     )}
                   />
-                  {isMonitoring ? 'Live' : 'Paused'}
+                  {isMonitoring ? chrome.i18n.getMessage('live') : chrome.i18n.getMessage('paused')}
                 </span>
               </div>
-              <p className="text-xs text-blue-200">Realtime Monitor</p>
+              <p className="text-xs text-blue-200">{chrome.i18n.getMessage('realtimeMonitor')}</p>
             </div>
           </div>
 
@@ -343,7 +343,7 @@ export default function Sidepanel() {
             <button
               onClick={() => setIsMonitoring(!isMonitoring)}
               className="p-2 hover:bg-white/10 rounded-lg transition-colors"
-              title={isMonitoring ? 'Pause monitoring' : 'Resume monitoring'}
+              title={isMonitoring ? chrome.i18n.getMessage('pauseMonitoring') : chrome.i18n.getMessage('resumeMonitoring')}
             >
               {isMonitoring ? (
                 <Activity className="w-4 h-4 text-green-300" />
@@ -355,7 +355,7 @@ export default function Sidepanel() {
             <button
               onClick={clearSessions}
               className="p-2 hover:bg-white/10 rounded-lg transition-colors"
-              title="Clear sessions"
+              title={chrome.i18n.getMessage('clearSessions')}
             >
               <Trash2 className="w-4 h-4" />
             </button>
@@ -363,7 +363,7 @@ export default function Sidepanel() {
             <button
               onClick={toggleDarkMode}
               className="p-2 hover:bg-white/10 rounded-lg transition-colors"
-              title="Toggle dark mode"
+              title={chrome.i18n.getMessage('toggleDarkMode')}
             >
               {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
             </button>
@@ -373,7 +373,7 @@ export default function Sidepanel() {
         {/* Active Tab Info - Show current tab URL */}
         {(activeSession?.url || activeTabUrl) && (
           <div className="mt-2 text-xs truncate px-2 py-1.5 rounded bg-white/10">
-            <span className="text-blue-200">Monitoring: </span>
+            <span className="text-blue-200">{chrome.i18n.getMessage('monitoringLabel')} </span>
             <span className="font-medium">
               {truncateUrl(activeSession?.url || activeTabUrl, 50)}
             </span>
@@ -384,7 +384,7 @@ export default function Sidepanel() {
         {chainScore && settings?.showChainScoreInSidepanel !== false && (
           <div className="mt-2 flex items-center justify-between text-xs px-2 py-1.5 rounded bg-white/10">
             <div className="flex items-center gap-2">
-              <span className="text-blue-200">Score:</span>
+              <span className="text-blue-200">{chrome.i18n.getMessage('scoreLabel')}</span>
               <span
                 className={clsx(
                   'font-bold px-1.5 py-0.5 rounded text-[10px]',
@@ -407,7 +407,7 @@ export default function Sidepanel() {
               {chainScore.issues.length > 0 && (
                 <span className="flex items-center gap-1 text-yellow-300 font-medium">
                   <AlertTriangle className="w-3.5 h-3.5" />
-                  {chainScore.issues.length} {chainScore.issues.length === 1 ? 'issue' : 'issues'}
+                  {chainScore.issues.length} {chainScore.issues.length === 1 ? chrome.i18n.getMessage('scoreIssueSingle') : chrome.i18n.getMessage('scoreIssuePlural')}
                 </span>
               )}
             </div>
@@ -437,10 +437,10 @@ export default function Sidepanel() {
             <p
               className={clsx('text-sm font-medium', darkMode ? 'text-slate-300' : 'text-gray-600')}
             >
-              {isMonitoring ? 'Waiting for redirects...' : 'Monitoring paused'}
+              {isMonitoring ? chrome.i18n.getMessage('waitingForRedirects') : chrome.i18n.getMessage('monitoringPaused')}
             </p>
             <p className={clsx('text-xs mt-1', darkMode ? 'text-slate-500' : 'text-gray-400')}>
-              Navigate to a URL to see redirects in realtime
+              {chrome.i18n.getMessage('navigateRealtimeMessage')}
             </p>
           </div>
         ) : (
@@ -667,7 +667,7 @@ export default function Sidepanel() {
             onChange={e => setAutoScroll(e.target.checked)}
             className="w-3.5 h-3.5 rounded accent-blue-500"
           />
-          <span>Auto-scroll</span>
+          <span>{chrome.i18n.getMessage('autoScroll')}</span>
         </label>
         <span
           className={clsx('px-2 py-0.5 rounded-full', darkMode ? 'bg-slate-700' : 'bg-gray-100')}

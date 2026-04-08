@@ -37,7 +37,7 @@ export default function HeadersList({ headers, ip, darkMode = false }: HeadersLi
 
   // Parse cache-control header
   const parseCacheControl = (value: string | undefined): string => {
-    if (!value) return 'Not specified';
+    if (!value) return chrome.i18n.getMessage('notSpecified');
     const parts = value.split(',').map(p => p.trim());
     const maxAge = parts.find(p => p.startsWith('max-age='));
     const sMaxAge = parts.find(p => p.startsWith('s-maxage='));
@@ -67,7 +67,7 @@ export default function HeadersList({ headers, ip, darkMode = false }: HeadersLi
   // Server Info
   const serverItems: { label: string; value: string }[] = [];
   // Always show IP Address
-  serverItems.push({ label: 'IP Address', value: ip || 'Not available' });
+  serverItems.push({ label: chrome.i18n.getMessage('ipAddress'), value: ip || chrome.i18n.getMessage('notAvailable') });
   const server = getHeader('server');
   if (server) serverItems.push({ label: 'Server', value: server });
   const poweredBy = getHeader('x-powered-by');
@@ -273,7 +273,7 @@ export default function HeadersList({ headers, ip, darkMode = false }: HeadersLi
       >
         <span className="flex items-center gap-1.5">
           <Zap className="w-3.5 h-3.5" />
-          All Headers ({filteredHeaders.length})
+          {chrome.i18n.getMessage('allHeaders')} ({filteredHeaders.length})
         </span>
         {showAllHeaders ? (
           <ChevronDown className="w-4 h-4" />
@@ -318,7 +318,7 @@ export default function HeadersList({ headers, ip, darkMode = false }: HeadersLi
 
       {categories.length === 0 && filteredHeaders.length === 0 && (
         <p className={clsx('text-xs italic', darkMode ? 'text-slate-500' : 'text-slate-400')}>
-          No headers available
+          {chrome.i18n.getMessage('noHeadersAvailable')}
         </p>
       )}
     </div>
