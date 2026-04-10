@@ -250,9 +250,16 @@ export default function Dashboard() {
             >
               <Menu className="w-5 h-5" />
             </button>
-            <Logo size={32} />
-            <div>
-              <h1 className="text-lg font-bold leading-tight">{chrome.i18n.getMessage("extensionName").split(":")[0]}</h1>
+            
+            <div 
+              className="flex items-center gap-2 cursor-pointer group"
+              onClick={() => window.location.reload()}
+              title={chrome.i18n.getMessage('headerRefresh')}
+            >
+              <Logo size={32} />
+              <h1 className="text-lg font-bold leading-tight group-hover:text-blue-500 transition-colors">
+                {chrome.i18n.getMessage("extensionName").split(":")[0]}
+              </h1>
             </div>
           </div>
 
