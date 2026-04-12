@@ -195,7 +195,7 @@ export default function RedirectItemCard({
           </div>
 
           <p className={clsx('text-xs break-all', darkMode ? 'text-slate-400' : 'text-slate-600')}>
-            {item.url}
+            {!isExpanded && item.url.length > 100 ? `${item.url.substring(0, 100)}...` : item.url}
           </p>
 
           {item.ip && item.ip !== 'Unknown' && (

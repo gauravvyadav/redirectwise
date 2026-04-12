@@ -9,6 +9,25 @@ import { getSettings, saveHistoryEntry } from '../utils/storage';
 
 // Store redirect paths for each tab
 const tabPaths: Map<number, TabRedirectPath> = new Map();
+let isStorageInitialized = false;
+let storageInitPromise: Promise<void> | null = null;
+
+async function saveTabPathToSession(tabId: number, path: TabRedirectPath) {
+  try {
+    await chrome.storage.session.set({ [`tabPath_${tabId}`]: path });
+  } catch (e) {
+    console.error('[RedirectWise] Failed to save to session storage', e);
+  }
+}
+
+async function removeTabPathFromSession(tabId: number) {
+  try {
+    await chrome.storage.session.remove(`tabPath_${tabId}`);
+  } catch (e) {
+    console.error('[RedirectWise] Failed to remove from session storage', e);
+  }
+}
+
 const requestTimings: Map<string, number> = new Map();
 
 // Cleanup stale request timings older than 60 seconds
@@ -61,7 +80,8 @@ function clearBadge(tabId: number): void {
 }
 
 // Helper to get or create a tab path
-function getOrCreateTabPath(tabId: number): TabRedirectPath {
+async function getOrCreateTabPath(tabId: number): Promise<TabRedirectPath> {
+  if (!isStorageInitialized && storageInitPromise) await storageInitPromise;
   if (!tabPaths.has(tabId)) {
     tabPaths.set(tabId, {
       tabId,
@@ -73,17 +93,20 @@ function getOrCreateTabPath(tabId: number): TabRedirectPath {
 }
 
 // Clear tab path on new navigation
-function clearTabPath(tabId: number): void {
-  tabPaths.set(tabId, {
+async function clearTabPath(tabId: number): Promise<void> {
+  if (!isStorageInitialized && storageInitPromise) await storageInitPromise;
+  const newPath = {
     tabId,
     path: [],
     startTime: Date.now(),
-  });
+  };
+  tabPaths.set(tabId, newPath);
+  saveTabPathToSession(tabId, newPath);
 }
 
 // Add a redirect item to the tab path
-function addRedirectItem(tabId: number, item: Partial<RedirectItem>): void {
-  const tabPath = getOrCreateTabPath(tabId);
+async function addRedirectItem(tabId: number, item: Partial<RedirectItem>): Promise<void> {
+  const tabPath = await getOrCreateTabPath(tabId);
   const requestKey = `${tabId}-${item.url}`;
   const startTime = requestTimings.get(requestKey) || Date.now();
   const endTime = Date.now();
@@ -119,6 +142,7 @@ function addRedirectItem(tabId: number, item: Partial<RedirectItem>): void {
   });
 
   console.log('[RedirectWise] Added redirect item:', fullItem);
+  saveTabPathToSession(tabId, tabPath);
 }
 
 // Parse headers from Chrome's format
@@ -160,6 +184,22 @@ function getLocationHeader(headers: RedirectHeader[]): string | undefined {
 export default defineBackground(() => {
   console.log('[RedirectWise] Background script initialized');
 
+  storageInitPromise = (async () => {
+    try {
+      const data = await chrome.storage.session.get(null);
+      for (const [key, value] of Object.entries(data)) {
+        if (key.startsWith('tabPath_')) {
+          const tabId = parseInt(key.replace('tabPath_', ''), 10);
+          tabPaths.set(tabId, value as TabRedirectPath);
+        }
+      }
+      console.log('[RedirectWise] Restored tab paths:', tabPaths.size);
+    } catch (e) {
+      console.error('[RedirectWise] Failed to restore from session storage', e);
+    }
+    isStorageInitialized = true;
+  })();
+
   // Set uninstall feedback URL
   if (chrome.runtime.setUninstallURL) {
     chrome.runtime.setUninstallURL('https://redirectwise.gauravlabs.com/uninstall.html');
@@ -180,7 +220,8 @@ export default defineBackground(() => {
   }
 
   // Update badge when tab is activated (switched to)
-  chrome.tabs.onActivated.addListener(activeInfo => {
+  chrome.tabs.onActivated.addListener(async activeInfo => {
+    if (!isStorageInitialized && storageInitPromise) await storageInitPromise;
     const tabPath = tabPaths.get(activeInfo.tabId);
     if (tabPath && tabPath.path.length > 0) {
       const firstItem = tabPath.path[0];
@@ -188,11 +229,6 @@ export default defineBackground(() => {
     } else {
       clearBadge(activeInfo.tabId);
     }
-  });
-
-  // Clean up when tab is closed
-  chrome.tabs.onRemoved.addListener(tabId => {
-    tabPaths.delete(tabId);
   });
 
   // Store IP addresses from onResponseStarted (more reliable for IP)
@@ -210,7 +246,7 @@ export default defineBackground(() => {
 
   // Listen for response started - this is where we reliably get the IP address
   chrome.webRequest.onResponseStarted.addListener(
-    details => {
+    async details => {
       if (details.type !== 'main_frame') return;
       if (details.ip) {
         const requestKey = `${details.tabId}-${details.url}`;
@@ -218,12 +254,14 @@ export default defineBackground(() => {
         console.log('[RedirectWise] Captured IP for', details.url, ':', details.ip);
 
         // Also update the existing path item if it exists with Unknown IP
+        if (!isStorageInitialized && storageInitPromise) await storageInitPromise;
         const tabPath = tabPaths.get(details.tabId);
         if (tabPath) {
           const item = tabPath.path.find(p => p.url === details.url && p.ip === 'Unknown');
           if (item) {
             item.ip = details.ip;
             console.log('[RedirectWise] Updated IP for existing item:', details.url);
+            saveTabPathToSession(details.tabId, tabPath);
           }
         }
       }
@@ -294,17 +332,19 @@ export default defineBackground(() => {
 
   // Also listen to webRequest.onCompleted for additional IP capture
   chrome.webRequest.onCompleted.addListener(
-    details => {
+    async details => {
       if (details.type !== 'main_frame') return;
 
       // Update IP if we got one and the item exists with Unknown IP
       if (details.ip) {
+        if (!isStorageInitialized && storageInitPromise) await storageInitPromise;
         const tabPath = tabPaths.get(details.tabId);
         if (tabPath) {
           const item = tabPath.path.find(p => p.url === details.url && p.ip === 'Unknown');
           if (item) {
             item.ip = details.ip;
             console.log('[RedirectWise] Updated IP from onCompleted:', details.url, details.ip);
+            saveTabPathToSession(details.tabId, tabPath);
           }
         }
       }
@@ -316,13 +356,14 @@ export default defineBackground(() => {
   chrome.webNavigation.onCompleted.addListener(async details => {
     if (details.frameId !== 0) return;
 
+    if (!isStorageInitialized && storageInitPromise) await storageInitPromise;
     const tabPath = tabPaths.get(details.tabId);
 
     // If we have no path items yet but navigation completed, the page loaded without any tracked headers
     // This can happen on some cached pages or internal pages - try to add the final URL
     if (!tabPath || tabPath.path.length === 0) {
       console.log('[RedirectWise] Navigation completed but no path captured, adding final URL');
-      addRedirectItem(details.tabId, {
+      await addRedirectItem(details.tabId, {
         url: details.url,
         status_code: 200,
         status_line: 'HTTP/1.1 200 OK',
@@ -358,49 +399,51 @@ export default defineBackground(() => {
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     console.log('[RedirectWise] Received message:', message);
 
-    if (message.name === 'getTabPath') {
-      const tabPath = tabPaths.get(message.tabId);
-      sendResponse({
-        path: tabPath?.path || [],
-      });
-    }
+    (async () => {
+      if (!isStorageInitialized && storageInitPromise) await storageInitPromise;
 
-    if (message.name === 'clearTabPath') {
-      clearTabPath(message.tabId);
-      sendResponse({ success: true });
-    }
+      if (message.name === 'getTabPath') {
+        const tabPath = tabPaths.get(message.tabId);
+        sendResponse({
+          path: tabPath?.path || [],
+        });
+      }
 
-    if (message.name === 'openDashboard') {
-      chrome.tabs.create({ url: chrome.runtime.getURL('/dashboard.html') });
-      sendResponse({ success: true });
-    }
+      if (message.name === 'clearTabPath') {
+        await clearTabPath(message.tabId);
+        sendResponse({ success: true });
+      }
 
-    if (message.name === 'openSidepanel') {
-      if (chrome.sidePanel) {
-        chrome.sidePanel
-          .open({ windowId: message.windowId })
-          .then(() => {
+      if (message.name === 'openDashboard') {
+        chrome.tabs.create({ url: chrome.runtime.getURL('/dashboard.html') });
+        sendResponse({ success: true });
+      }
+
+      if (message.name === 'openSidepanel') {
+        if (chrome.sidePanel) {
+          try {
+            await chrome.sidePanel.open({ windowId: message.windowId });
             sendResponse({ success: true });
-          })
-          .catch(error => {
+          } catch (error: any) {
             console.error('[RedirectWise] Error opening sidepanel:', error);
             sendResponse({ success: false, error: error.message });
-          });
-        return true; // Keep channel open for async
+          }
+        } else {
+          sendResponse({ success: false, error: 'Sidepanel not supported' });
+        }
       }
-      sendResponse({ success: false, error: 'Sidepanel not supported' });
-    }
 
-    if (message.name === 'saveToHistory') {
-      const tabPath = tabPaths.get(message.tabId);
-      if (tabPath && tabPath.path.length > 0) {
-        saveHistoryEntry(tabPath.path).then(entry => {
-          sendResponse({ success: true, entry });
-        });
-        return true; // Keep channel open for async
+      if (message.name === 'saveToHistory') {
+        const tabPath = tabPaths.get(message.tabId);
+        if (tabPath && tabPath.path.length > 0) {
+          saveHistoryEntry(tabPath.path).then(entry => {
+            sendResponse({ success: true, entry });
+          });
+        } else {
+          sendResponse({ success: false });
+        }
       }
-      sendResponse({ success: false });
-    }
+    })();
 
     return true; // Keep the message channel open for async response
   });
@@ -408,6 +451,7 @@ export default defineBackground(() => {
   // Clean up when tabs are closed
   chrome.tabs.onRemoved.addListener(tabId => {
     tabPaths.delete(tabId);
+    removeTabPathFromSession(tabId);
     console.log('[RedirectWise] Cleaned up tab:', tabId);
   });
 });

@@ -374,6 +374,44 @@ export async function exportToPDF(
   // Table Body
   for (let i = 0; i < entry.path.length; i++) {
     const item = entry.path[i];
+
+    if (i > 0) {
+      const prevItem = entry.path[i - 1];
+      let delayMs = 0;
+      if (item.timing?.startTime && prevItem.timing?.endTime) {
+        delayMs = Math.max(0, item.timing.startTime - prevItem.timing.endTime);
+      } else if (item.timestamp && prevItem.timestamp) {
+        delayMs = Math.max(0, item.timestamp - prevItem.timestamp);
+      }
+
+      if (delayMs >= 0) {
+        checkPageBreak(25);
+        const gapText = `${delayMs}ms gap`;
+        const textWidth = fontNormal.widthOfTextAtSize(gapText, 8);
+        const tagWidth = textWidth + 16;
+        const tagHeight = 14;
+        const centerX = PAGE_WIDTH / 2;
+
+        page.drawRectangle({
+          x: centerX - tagWidth / 2,
+          y: yPos - 3,
+          width: tagWidth,
+          height: tagHeight,
+          color: rgb(0.95, 0.96, 0.98),
+          borderWidth: 1,
+          borderColor: rgb(0.8, 0.85, 0.9),
+        });
+
+        page.drawText(gapText, {
+          x: centerX - textWidth / 2,
+          y: yPos,
+          size: 8,
+          font: fontNormal,
+          color: COLORS.textSecondary,
+        });
+        yPos -= 18;
+      }
+    }
     const statusLabel = getStatusLabel(item);
     const timing = item.timing?.duration ? `${item.timing.duration}ms` : '-';
     const statusColor = item.status_code ? getStatusColor(item.status_code) : COLORS.dark;
@@ -478,8 +516,8 @@ export async function exportToPDF(
         issue.type === 'error'
           ? COLORS.error
           : issue.type === 'warning'
-          ? COLORS.warning
-          : COLORS.success;
+            ? COLORS.warning
+            : COLORS.success;
 
       page.drawCircle({ x: 20, y: yPos + 3, size: 4, color: iconColor });
       page.drawText(issue.message, {
