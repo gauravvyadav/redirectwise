@@ -32,6 +32,65 @@ export interface RedirectTiming {
   duration: number;
 }
 
+export function formatDuration(
+  durationMs?: number | null,
+  options: { style?: 'compact' | 'long'; fallback?: string } = {}
+): string {
+  const { style = 'compact', fallback = '-' } = options;
+
+  if (durationMs == null || !Number.isFinite(durationMs)) return fallback;
+
+  const duration = Math.max(0, durationMs);
+
+  if (duration < 1000) {
+    const roundedMs = Math.round(duration);
+    return style === 'long'
+      ? `${roundedMs} ${roundedMs === 1 ? 'millisecond' : 'milliseconds'}`
+      : `${roundedMs} ms`;
+  }
+
+  if (duration < 60000) {
+    const seconds = duration / 1000;
+    const roundedSeconds = seconds < 10 ? Math.round(seconds * 10) / 10 : Math.round(seconds);
+    const formattedSeconds = Number.isInteger(roundedSeconds)
+      ? roundedSeconds.toString()
+      : roundedSeconds.toFixed(1);
+
+    return style === 'long'
+      ? `${formattedSeconds} ${roundedSeconds === 1 ? 'second' : 'seconds'}`
+      : `${formattedSeconds} sec`;
+  }
+
+  const minutes = duration / 60000;
+  const roundedMinutes = minutes < 10 ? Math.round(minutes * 10) / 10 : Math.round(minutes);
+  const formattedMinutes = Number.isInteger(roundedMinutes)
+    ? roundedMinutes.toString()
+    : roundedMinutes.toFixed(1);
+
+  return style === 'long'
+    ? `${formattedMinutes} ${roundedMinutes === 1 ? 'minute' : 'minutes'}`
+    : `${formattedMinutes} min`;
+}
+
+export function calculateTotalDuration(path: Pick<RedirectItem, 'timing'>[]): number {
+  return path.reduce((sum, item) => sum + (item.timing?.duration || 0), 0);
+}
+
+export function calculateGapDuration(
+  previousItem?: Pick<RedirectItem, 'timing' | 'timestamp'>,
+  currentItem?: Pick<RedirectItem, 'timing' | 'timestamp'>
+): number | null {
+  if (currentItem?.timing && previousItem?.timing) {
+    return Math.max(0, currentItem.timing.startTime - previousItem.timing.endTime);
+  }
+
+  if (currentItem?.timestamp && previousItem?.timestamp) {
+    return Math.max(0, currentItem.timestamp - previousItem.timestamp);
+  }
+
+  return null;
+}
+
 export interface TabRedirectPath {
   tabId: number;
   path: RedirectItem[];
@@ -140,7 +199,7 @@ export function calculateChainScore(path: RedirectItem[]): ChainScore {
   const trackingRedirectCount = redirects.filter(r => isTrackingDomain(r.url)).length;
   const regularRedirectCount = redirectCount - trackingRedirectCount;
 
-  const totalTime = path.reduce((sum, p) => sum + (p.timing?.duration || 0), 0);
+  const totalTime = calculateTotalDuration(path);
   const slowRedirects = path.filter(p => (p.timing?.duration || 0) > 1000);
 
   if (regularRedirectCount > 0) {
@@ -218,14 +277,14 @@ export function calculateChainScore(path: RedirectItem[]): ChainScore {
     score += 5;
     issues.push({
       type: 'info',
-      message: `Fast chain: ${totalTime}ms total.`,
+      message: `Fast chain: ${formatDuration(totalTime, { style: 'long' })} total.`,
       impact: 'low',
     });
   }
   if (slowRedirects.length > 0) {
     issues.push({
       type: 'warning',
-      message: `${slowRedirects.length} slow redirect(s) (>1000ms each).`,
+      message: `${slowRedirects.length} slow redirect(s) (>1 second each).`,
       impact: 'medium',
     });
     score -= slowRedirects.length * 5;

@@ -1,7 +1,12 @@
 // Storage utilities for persistent history
 
 import { v4 as uuidv4 } from 'uuid';
-import { HistoryEntry, RedirectItem, calculateChainScore } from '../types/redirect';
+import {
+  HistoryEntry,
+  RedirectItem,
+  calculateChainScore,
+  calculateTotalDuration,
+} from '../types/redirect';
 
 const HISTORY_STORAGE_KEY = 'redirectwise_history';
 const SETTINGS_STORAGE_KEY = 'redirectwise_settings';
@@ -48,9 +53,7 @@ export async function saveHistoryEntry(path: RedirectItem[]): Promise<HistoryEnt
     const chainScore = calculateChainScore(path);
 
     // Calculate total time
-    const totalTime = path.reduce((acc, item) => {
-      return acc + (item.timing?.duration || 0);
-    }, 0);
+    const totalTime = calculateTotalDuration(path);
 
     const redirectCount = path.filter(
       p => p.type === 'server_redirect' || p.type === 'client_redirect'

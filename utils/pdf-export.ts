@@ -1,7 +1,13 @@
 // PDF Export utility using pdf-lib (Pure TypeScript, no external deps)
 import { format } from 'date-fns';
 import { Color, PDFDocument, PDFFont, StandardFonts, rgb } from 'pdf-lib';
-import { ChainScore, HistoryEntry, RedirectItem } from '../types/redirect';
+import {
+  ChainScore,
+  HistoryEntry,
+  RedirectItem,
+  calculateGapDuration,
+  formatDuration,
+} from '../types/redirect';
 
 interface PDFExportOptions {
   title?: string;
@@ -377,16 +383,11 @@ export async function exportToPDF(
 
     if (i > 0) {
       const prevItem = entry.path[i - 1];
-      let delayMs = 0;
-      if (item.timing?.startTime && prevItem.timing?.endTime) {
-        delayMs = Math.max(0, item.timing.startTime - prevItem.timing.endTime);
-      } else if (item.timestamp && prevItem.timestamp) {
-        delayMs = Math.max(0, item.timestamp - prevItem.timestamp);
-      }
+      const delayMs = calculateGapDuration(prevItem, item);
 
-      if (delayMs >= 0) {
+      if (delayMs != null) {
         checkPageBreak(25);
-        const gapText = `${delayMs}ms gap`;
+        const gapText = `${formatDuration(delayMs)} gap`;
         const textWidth = fontNormal.widthOfTextAtSize(gapText, 8);
         const tagWidth = textWidth + 16;
         const tagHeight = 14;
@@ -413,7 +414,7 @@ export async function exportToPDF(
       }
     }
     const statusLabel = getStatusLabel(item);
-    const timing = item.timing?.duration ? `${item.timing.duration}ms` : '-';
+    const timing = item.timing ? formatDuration(item.timing.duration) : '-';
     const statusColor = item.status_code ? getStatusColor(item.status_code) : COLORS.dark;
 
     const urlLines = wrapText(item.url, colWidths[3] - 10, fontNormal, 9);

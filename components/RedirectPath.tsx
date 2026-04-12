@@ -1,7 +1,12 @@
 import clsx from 'clsx';
 import { Clock } from 'lucide-react';
 import { Fragment, useState } from 'react';
-import { RedirectItem } from '../types/redirect';
+import {
+  RedirectItem,
+  calculateGapDuration,
+  calculateTotalDuration,
+  formatDuration,
+} from '../types/redirect';
 import RedirectItemCard from './RedirectItemCard';
 
 interface RedirectPathProps {
@@ -17,7 +22,7 @@ export default function RedirectPath({ items, darkMode = false }: RedirectPathPr
   };
 
   // Calculate total time
-  const totalTime = items.reduce((acc, item) => acc + (item.timing?.duration || 0), 0);
+  const totalTime = calculateTotalDuration(items);
 
   return (
     <div className="space-y-2">
@@ -31,7 +36,7 @@ export default function RedirectPath({ items, darkMode = false }: RedirectPathPr
         </span>
         {totalTime > 0 && (
           <span className={`text-xs ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>
-            Total Request Time: {totalTime}ms
+            Total Request Time: {formatDuration(totalTime)}
           </span>
         )}
       </div>
@@ -46,25 +51,17 @@ export default function RedirectPath({ items, darkMode = false }: RedirectPathPr
           />
         )}
 
-        <div className="flex flex-col gap-3 relative z-10">
+        <div className="flex flex-col gap-2 relative z-10">
           {items.map((item, index) => {
-            let delayMs = 0;
-            if (index > 0) {
-              const prevItem = items[index - 1];
-              if (item.timing?.startTime && prevItem.timing?.endTime) {
-                delayMs = Math.max(0, item.timing.startTime - prevItem.timing.endTime);
-              } else if (item.timestamp && prevItem.timestamp) {
-                delayMs = Math.max(0, item.timestamp - prevItem.timestamp);
-              }
-            }
+            const delayMs = index > 0 ? calculateGapDuration(items[index - 1], item) : null;
 
             return (
               <Fragment key={item.id}>
-                {index > 0 && delayMs >= 0 && (
+                {index > 0 && delayMs != null && (
                   <div className="flex pl-16 py-1 relative z-20">
                     <span
                       className={clsx(
-                        'text-[10px] px-2 py-0.5 rounded-full flex items-center gap-1 border shadow-sm',
+                        'text-[10px] px-2 py-0.5 rounded-full flex items-center gap-1 border',
                         darkMode
                           ? 'bg-slate-800 text-slate-400 border-slate-700'
                           : 'bg-white text-slate-500 border-slate-200'
@@ -72,7 +69,7 @@ export default function RedirectPath({ items, darkMode = false }: RedirectPathPr
                       title={`Time passed between previous request finishing and this request starting`}
                     >
                       <Clock className="w-3 h-3" />
-                      {delayMs}ms gap
+                      {formatDuration(delayMs)} gap
                     </span>
                   </div>
                 )}

@@ -1,6 +1,7 @@
 import {
   RedirectHeader,
   RedirectItem,
+  RedirectTiming,
   TabRedirectPath,
   generateId,
   getStatusObject,
@@ -28,7 +29,13 @@ async function removeTabPathFromSession(tabId: number) {
   }
 }
 
-const requestTimings: Map<string, number> = new Map();
+interface PendingRequest {
+  startTime: number;
+  ip?: string;
+  itemId?: string;
+}
+
+const requestMetadata: Map<string, PendingRequest> = new Map();
 
 // Cleanup stale request timings older than 60 seconds
 const TIMING_CLEANUP_INTERVAL = 60000;
@@ -36,9 +43,9 @@ const TIMING_MAX_AGE = 60000;
 
 setInterval(() => {
   const now = Date.now();
-  for (const [key, startTime] of requestTimings) {
-    if (now - startTime > TIMING_MAX_AGE) {
-      requestTimings.delete(key);
+  for (const [key, metadata] of requestMetadata) {
+    if (now - metadata.startTime > TIMING_MAX_AGE) {
+      requestMetadata.delete(key);
     }
   }
 }, TIMING_CLEANUP_INTERVAL);
@@ -104,12 +111,18 @@ async function clearTabPath(tabId: number): Promise<void> {
   saveTabPathToSession(tabId, newPath);
 }
 
-// Add a redirect item to the tab path
-async function addRedirectItem(tabId: number, item: Partial<RedirectItem>): Promise<void> {
+async function addRedirectItem(
+  tabId: number,
+  item: Partial<RedirectItem> & { timing?: Partial<RedirectTiming> },
+  options?: { requestId?: string; eventTime?: number }
+): Promise<RedirectItem> {
   const tabPath = await getOrCreateTabPath(tabId);
-  const requestKey = `${tabId}-${item.url}`;
-  const startTime = requestTimings.get(requestKey) || Date.now();
-  const endTime = Date.now();
+  const metadata = options?.requestId ? requestMetadata.get(options.requestId) : undefined;
+  const rawStartTime = item.timing?.startTime ?? metadata?.startTime ?? options?.eventTime ?? Date.now();
+  const rawEndTime = item.timing?.endTime ?? options?.eventTime ?? Date.now();
+  const startTime = Math.round(rawStartTime);
+  const endTime = Math.max(startTime, Math.round(rawEndTime));
+  const duration = Math.max(0, Math.round(item.timing?.duration ?? endTime - startTime));
 
   const fullItem: RedirectItem = {
     id: generateId(),
@@ -121,17 +134,24 @@ async function addRedirectItem(tabId: number, item: Partial<RedirectItem>): Prom
     redirect_type: item.redirect_type,
     redirect_url: item.redirect_url,
     headers: item.headers || [],
-    timestamp: Date.now(),
+    timestamp: endTime,
     timing: {
       startTime,
       endTime,
-      duration: endTime - startTime,
+      duration,
     },
     statusObject: getStatusObject(item.status_code || 0),
   };
 
   tabPath.path.push(fullItem);
-  requestTimings.delete(requestKey);
+
+  if (options?.requestId) {
+    const pendingRequest = requestMetadata.get(options.requestId);
+    if (pendingRequest) {
+      pendingRequest.itemId = fullItem.id;
+      requestMetadata.set(options.requestId, pendingRequest);
+    }
+  }
 
   // Broadcast realtime update to sidepanel
   broadcastMessage({
@@ -143,6 +163,7 @@ async function addRedirectItem(tabId: number, item: Partial<RedirectItem>): Prom
 
   console.log('[RedirectWise] Added redirect item:', fullItem);
   saveTabPathToSession(tabId, tabPath);
+  return fullItem;
 }
 
 // Parse headers from Chrome's format
@@ -231,15 +252,13 @@ export default defineBackground(() => {
     }
   });
 
-  // Store IP addresses from onResponseStarted (more reliable for IP)
-  const requestIPs: Map<string, string> = new Map();
-
   // Listen for request start to track timing
   chrome.webRequest.onBeforeRequest.addListener(
     details => {
       if (details.type !== 'main_frame') return;
-      const requestKey = `${details.tabId}-${details.url}`;
-      requestTimings.set(requestKey, Date.now());
+      requestMetadata.set(details.requestId, {
+        startTime: Math.round(details.timeStamp),
+      });
     },
     { urls: ['<all_urls>'] }
   );
@@ -249,15 +268,21 @@ export default defineBackground(() => {
     async details => {
       if (details.type !== 'main_frame') return;
       if (details.ip) {
-        const requestKey = `${details.tabId}-${details.url}`;
-        requestIPs.set(requestKey, details.ip);
+        const pendingRequest = requestMetadata.get(details.requestId);
+        if (pendingRequest) {
+          pendingRequest.ip = details.ip;
+          requestMetadata.set(details.requestId, pendingRequest);
+        }
         console.log('[RedirectWise] Captured IP for', details.url, ':', details.ip);
 
-        // Also update the existing path item if it exists with Unknown IP
+        // Also update the existing path item if it already exists with Unknown IP
         if (!isStorageInitialized && storageInitPromise) await storageInitPromise;
         const tabPath = tabPaths.get(details.tabId);
         if (tabPath) {
-          const item = tabPath.path.find(p => p.url === details.url && p.ip === 'Unknown');
+          const itemId = pendingRequest?.itemId;
+          const item = itemId
+            ? tabPath.path.find(pathItem => pathItem.id === itemId && pathItem.ip === 'Unknown')
+            : undefined;
           if (item) {
             item.ip = details.ip;
             console.log('[RedirectWise] Updated IP for existing item:', details.url);
@@ -305,26 +330,34 @@ export default defineBackground(() => {
       const isRedirect = details.statusCode >= 300 && details.statusCode < 400;
       const redirectUrl = isRedirect ? getLocationHeader(headers) : undefined;
 
-      // Try to get IP from details, or from our stored IPs map
-      const requestKey = `${details.tabId}-${details.url}`;
+      // Try to get IP from details first, then fall back to the request metadata
       const detailsWithIP = details as chrome.webRequest.WebResponseHeadersDetails & {
         ip?: string;
       };
-      const ip = detailsWithIP.ip || requestIPs.get(requestKey) || 'Unknown';
+      const pendingRequest = requestMetadata.get(details.requestId);
+      const ip = detailsWithIP.ip || pendingRequest?.ip || 'Unknown';
 
-      addRedirectItem(details.tabId, {
-        url: details.url,
-        status_code: details.statusCode,
-        status_line: details.statusLine,
-        ip,
-        type: isRedirect ? 'server_redirect' : 'navigation',
-        redirect_type: isRedirect ? getRedirectType(details.statusCode, headers) : undefined,
-        redirect_url: redirectUrl,
-        headers,
-      });
-
-      // Clean up the IP from our map after using it
-      requestIPs.delete(requestKey);
+      void addRedirectItem(
+        details.tabId,
+        {
+          url: details.url,
+          status_code: details.statusCode,
+          status_line: details.statusLine,
+          ip,
+          type: isRedirect ? 'server_redirect' : 'navigation',
+          redirect_type: isRedirect ? getRedirectType(details.statusCode, headers) : undefined,
+          redirect_url: redirectUrl,
+          headers,
+          timing: {
+            startTime: pendingRequest?.startTime ?? details.timeStamp,
+            endTime: details.timeStamp,
+          },
+        },
+        {
+          requestId: details.requestId,
+          eventTime: details.timeStamp,
+        }
+      );
     },
     { urls: ['<all_urls>'] },
     ['responseHeaders', 'extraHeaders']
@@ -340,7 +373,10 @@ export default defineBackground(() => {
         if (!isStorageInitialized && storageInitPromise) await storageInitPromise;
         const tabPath = tabPaths.get(details.tabId);
         if (tabPath) {
-          const item = tabPath.path.find(p => p.url === details.url && p.ip === 'Unknown');
+          const itemId = requestMetadata.get(details.requestId)?.itemId;
+          const item = itemId
+            ? tabPath.path.find(pathItem => pathItem.id === itemId && pathItem.ip === 'Unknown')
+            : undefined;
           if (item) {
             item.ip = details.ip;
             console.log('[RedirectWise] Updated IP from onCompleted:', details.url, details.ip);
@@ -348,6 +384,8 @@ export default defineBackground(() => {
           }
         }
       }
+
+      requestMetadata.delete(details.requestId);
     },
     { urls: ['<all_urls>'] }
   );
@@ -369,6 +407,10 @@ export default defineBackground(() => {
         status_line: 'HTTP/1.1 200 OK',
         type: 'navigation',
         headers: [],
+        timing: {
+          startTime: details.timeStamp,
+          endTime: details.timeStamp,
+        },
       });
     }
 

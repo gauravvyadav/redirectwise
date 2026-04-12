@@ -10,7 +10,7 @@ import {
   Zap,
 } from 'lucide-react';
 import { useState } from 'react';
-import { RedirectItem } from '../types/redirect';
+import { RedirectItem, formatDuration } from '../types/redirect';
 import HeadersList from './HeadersList';
 
 interface RedirectItemCardProps {
@@ -152,14 +152,14 @@ export default function RedirectItemCard({
             >
               {item.status_code}
             </span>
-            {item.timing?.duration && (
+            {item.timing && (
               <span
                 className={clsx(
                   'text-xs px-1.5 py-0.5 rounded',
                   darkMode ? 'bg-slate-700 text-slate-300' : 'bg-slate-200 text-slate-600'
                 )}
               >
-                {item.timing.duration}ms
+                {formatDuration(item.timing.duration)}
               </span>
             )}
             {quickIndicators.map((indicator, i) => (

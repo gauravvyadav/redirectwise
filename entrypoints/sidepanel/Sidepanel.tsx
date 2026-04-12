@@ -18,7 +18,13 @@ import {
 import { Fragment, useCallback, useEffect, useRef, useState } from 'react';
 import HeadersList from '../../components/HeadersList';
 import Logo from '../../components/Logo';
-import { ChainScore, RedirectItem, calculateChainScore } from '../../types/redirect';
+import {
+  ChainScore,
+  RedirectItem,
+  calculateChainScore,
+  calculateGapDuration,
+  formatDuration,
+} from '../../types/redirect';
 import { Settings, getSettings, saveSettings } from '../../utils/storage';
 
 interface LiveRedirect extends RedirectItem {
@@ -444,23 +450,16 @@ export default function Sidepanel() {
           </div>
         ) : (
           activeSession.path.map((item, index) => {
-            let delayMs = 0;
-            if (index > 0) {
-              const prevItem = activeSession.path[index - 1];
-              if (item.timing?.startTime && prevItem.timing?.endTime) {
-                delayMs = Math.max(0, item.timing.startTime - prevItem.timing.endTime);
-              } else if (item.timestamp && prevItem.timestamp) {
-                delayMs = Math.max(0, item.timestamp - prevItem.timestamp);
-              }
-            }
+            const delayMs =
+              index > 0 ? calculateGapDuration(activeSession.path[index - 1], item) : null;
 
             return (
               <Fragment key={item.id}>
-                {index > 0 && delayMs >= 0 && (
+                {index > 0 && delayMs != null && (
                   <div className="flex justify-center py-1 relative z-20">
                     <span
                       className={clsx(
-                        'text-[10px] px-2 py-0.5 rounded-full flex items-center gap-1 border shadow-sm',
+                        'text-[10px] px-2 py-0.5 rounded-full flex items-center gap-1 border',
                         darkMode
                           ? 'bg-slate-800 text-slate-400 border-slate-700'
                           : 'bg-white text-slate-500 border-slate-200'
@@ -468,7 +467,7 @@ export default function Sidepanel() {
                       title={`Time passed between previous request finishing and this request starting`}
                     >
                       <Clock className="w-3 h-3" />
-                      {delayMs}ms gap
+                      {formatDuration(delayMs)} gap
                     </span>
                   </div>
                 )}
@@ -520,14 +519,14 @@ export default function Sidepanel() {
                       {item.status_code}
                     </span>
 
-                    {item.timing?.duration && (
+                    {item.timing && (
                       <span
                         className={clsx(
                           'text-[10px] shrink-0 px-1.5 py-0.5 rounded',
                           darkMode ? 'bg-slate-700 text-slate-400' : 'bg-gray-100 text-gray-500'
                         )}
                       >
-                        {item.timing.duration}ms
+                        {formatDuration(item.timing.duration)}
                       </span>
                     )}
 
@@ -621,7 +620,7 @@ export default function Sidepanel() {
                           <span className="text-gray-500 w-14">Time:</span>
                           <span className="flex items-center gap-1">
                             <Clock className="w-3 h-3 text-gray-400" />
-                            {item.timing.duration}ms
+                            {formatDuration(item.timing.duration)}
                           </span>
                         </div>
                       )}

@@ -25,7 +25,7 @@ import {
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import HeadersList from '../../components/HeadersList';
 import Logo from '../../components/Logo';
-import { ChainScore, HistoryEntry } from '../../types/redirect';
+import { ChainScore, HistoryEntry, formatDuration } from '../../types/redirect';
 import { exportHistoryToPDF, exportToPDF } from '../../utils/pdf-export';
 import {
   Settings as AppSettings,
@@ -1057,7 +1057,7 @@ function DetailPanel({
                   )}
                 >
                   <Zap className="w-3 h-3" />
-                  {entry.totalTime}ms {chrome.i18n.getMessage('totalLabel')}
+                  {formatDuration(entry.totalTime)} {chrome.i18n.getMessage('totalLabel')}
                 </span>
               )}
             </div>
@@ -1274,7 +1274,7 @@ function DetailPanel({
                           >
                             {item.status_code}
                           </span>
-                          {item.timing?.duration && (
+                          {item.timing && (
                             <span
                               className={clsx(
                                 'px-2 py-0.5 rounded text-xs',
@@ -1283,7 +1283,7 @@ function DetailPanel({
                                   : 'bg-slate-200 text-slate-600'
                               )}
                             >
-                              {item.timing.duration}ms
+                              {formatDuration(item.timing.duration)}
                             </span>
                           )}
                           {item.type === 'server_redirect' && item.redirect_type && (

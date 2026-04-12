@@ -5,7 +5,13 @@ import CopyButtons from '../../components/CopyButtons';
 import EmptyState from '../../components/EmptyState';
 import Header from '../../components/Header';
 import RedirectPath from '../../components/RedirectPath';
-import { ChainScore, RedirectItem, calculateChainScore, generateId } from '../../types/redirect';
+import {
+  ChainScore,
+  RedirectItem,
+  calculateChainScore,
+  calculateTotalDuration,
+  generateId,
+} from '../../types/redirect';
 import { exportToPDF } from '../../utils/pdf-export';
 import { Settings, getSettings, saveSettings } from '../../utils/storage';
 
@@ -171,7 +177,7 @@ export default function App() {
   const handleExportPDF = useCallback(async () => {
     if (redirectPath.length === 0 || !chainScore) return;
 
-    const totalTime = redirectPath.reduce((acc, item) => acc + (item.timing?.duration || 0), 0);
+    const totalTime = calculateTotalDuration(redirectPath);
     const redirectCount = redirectPath.filter(
       p => p.type === 'server_redirect' || p.type === 'client_redirect'
     ).length;
