@@ -1,4 +1,5 @@
 import clsx from 'clsx';
+import { AlertTriangle } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import ChainScoreCard from '../../components/ChainScoreCard';
 import CopyButtons from '../../components/CopyButtons';
@@ -19,6 +20,7 @@ export default function App() {
   const [redirectPath, setRedirectPath] = useState<RedirectItem[]>([]);
   const [chainScore, setChainScore] = useState<ChainScore | null>(null);
   const [loading, setLoading] = useState(true);
+  const [navigationError, setNavigationError] = useState<string | null>(null);
   const [currentUrl, setCurrentUrl] = useState('');
   const [darkMode, setDarkMode] = useState(false);
   const [settings, setSettings] = useState<Settings | null>(null);
@@ -34,6 +36,7 @@ export default function App() {
       tabId?: number;
       path?: RedirectItem[];
       item?: RedirectItem;
+      error?: string;
     }) => {
       if (!currentTabId.current) return;
 
@@ -50,11 +53,21 @@ export default function App() {
         message.tabId === currentTabId.current &&
         message.path
       ) {
+        setNavigationError(null);
         setRedirectPath(message.path);
         setLoading(false);
       }
 
+      if (message.name === 'navigationError' && message.tabId === currentTabId.current) {
+        if (message.path) {
+          setRedirectPath(message.path);
+        }
+        setNavigationError(message.error || 'Navigation failed');
+        setLoading(false);
+      }
+
       if (message.name === 'navigationStart' && message.tabId === currentTabId.current) {
+        setNavigationError(null);
         setRedirectPath([]);
         setLoading(true);
       }
@@ -104,6 +117,7 @@ export default function App() {
 
         console.log('[RedirectWise] Received path:', response);
         const path = response.path || [];
+        setNavigationError(null);
         setRedirectPath(path);
 
         // If no path and page might still be loading, wait a bit and retry
@@ -234,8 +248,33 @@ export default function App() {
           <div className="flex items-center justify-center h-32">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
           </div>
+        ) : navigationError && redirectPath.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-32 text-center px-4">
+            <AlertTriangle className="w-10 h-10 text-red-500 mb-3" />
+            <code
+              className={clsx(
+                'text-xs px-2 py-1 rounded break-all',
+                darkMode ? 'bg-red-950/40 text-red-300' : 'bg-red-50 text-red-600'
+              )}
+            >
+              {navigationError}
+            </code>
+          </div>
         ) : redirectPath.length > 0 ? (
-          <RedirectPath items={redirectPath} darkMode={darkMode} />
+          <div className="space-y-3">
+            {navigationError && (
+              <div
+                className={clsx(
+                  'rounded-lg border px-3 py-2 flex items-center gap-2',
+                  darkMode ? 'bg-red-950/30 border-red-900/60 text-red-300' : 'bg-red-50 border-red-200 text-red-600'
+                )}
+              >
+                <AlertTriangle className="w-4 h-4 shrink-0" />
+                <code className="text-[11px] break-all">{navigationError}</code>
+              </div>
+            )}
+            <RedirectPath items={redirectPath} darkMode={darkMode} />
+          </div>
         ) : (
           <EmptyState currentUrl={currentUrl} darkMode={darkMode} />
         )}

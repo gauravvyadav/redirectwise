@@ -390,6 +390,25 @@ export default defineBackground(() => {
     { urls: ['<all_urls>'] }
   );
 
+  chrome.webRequest.onErrorOccurred.addListener(
+    async details => {
+      if (details.type !== 'main_frame' || details.tabId < 0) return;
+
+      requestMetadata.delete(details.requestId);
+
+      if (!isStorageInitialized && storageInitPromise) await storageInitPromise;
+
+      broadcastMessage({
+        name: 'navigationError',
+        tabId: details.tabId,
+        url: details.url,
+        path: tabPaths.get(details.tabId)?.path || [],
+        error: details.error,
+      });
+    },
+    { urls: ['<all_urls>'] }
+  );
+
   // Save to history when navigation completes
   chrome.webNavigation.onCompleted.addListener(async details => {
     if (details.frameId !== 0) return;

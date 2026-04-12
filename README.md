@@ -1,161 +1,146 @@
 # RedirectWise
 
-A modern, open-source Chrome extension to track and analyze HTTP redirect chains for any URL.
+Track redirects, uncover hidden ad/tracking hops, and review the full redirect journey with a popup, live sidepanel, and persistent history dashboard.
 
-## ✨ Features
+<p>
+  <a href="https://chromewebstore.google.com/detail/redirectwise/mhahonijegjclaecmoinjomidmhhleln">
+    <img src="website/assets/Google_Chrome.svg" alt="Google Chrome" width="18" align="center" />
+    Chrome Web Store
+  </a>
+  &nbsp;&nbsp;&nbsp;
+  <a href="https://microsoftedge.microsoft.com/addons/detail/mdgmnjiooaiahcnkinkgdgibhmjklaid">
+    <img src="website/assets/Microsoft_Edge.svg" alt="Microsoft Edge" width="18" align="center" />
+    Microsoft Edge Add-ons
+  </a>
+</p>
 
-### Core Features
+Latest tagged release: `v1.4.1`
 
-- 🔄 **Track Redirects** - Automatically captures all HTTP redirects (301, 302, 307, 308, etc.)
-- 📊 **Visual Path Display** - Clean UI showing the complete redirect chain
-- 📋 **Export Options** - Copy redirect path as plain text or CSV
-- 🔍 **Header Inspection** - View full response headers for each redirect
-- 🛡️ **HSTS Detection** - Identifies browser-cached HSTS redirects
-- 🌐 **Cross-browser** - Works on Chrome, Edge (with WXT)
+## Features
 
-### Advanced Features (Unique to RedirectWise!)
+- `Popup redirect inspector` for the current tab with a full hop-by-hop path view
+- `Realtime sidepanel monitor` that keeps tracking redirects continuously while you browse
+- `Accurate timing insights` with per-hop duration, inter-hop gap timing, and user-friendly time formatting
+- `SEO chain score` with grades, issues, and recommendations
+- `Persistent history dashboard` with search, sort, filters, favorites, and notes-ready metadata
+- `Export tools` for text, CSV, individual PDFs, and bulk PDF history export
+- `Header inspection` for response headers, IP addresses, caching, content, and security details
+- `HSTS detection` for browser-enforced HTTPS upgrades
+- `Dark mode` across popup, sidepanel, and dashboard
+- `Session persistence` so redirect data survives popup closes and short-lived extension UI reloads
+- `Internationalization` with 18 locales
 
-- 📈 **Chain Health Score** - SEO rating (A-F) with detailed analysis
-- ⏱️ **Redirect Timing** - See how long each redirect takes
-- 📝 **Persistent History** - Browse past redirect chains anytime
-- 🗂️ **History Dashboard** - Full CRUD management of saved redirects
-- 📄 **Beautiful PDF Export** - Share professional reports with clients
-- 🌙 **Dark Mode** - Easy on the eyes
-- ⭐ **Favorites** - Mark important redirect chains
-- 🔍 **Search & Filter** - Find specific entries quickly
-- 📊 **Statistics** - Overview of your redirect tracking activity
+## Release Highlights
+
+- `v1.4.x`
+  Added full i18n coverage, expanded language support to 18 locales, improved dashboard refresh behavior, fixed history persistence, and polished redirect timing/gap display.
+- `v1.3.0`
+  Improved SEO scoring and analysis quality.
+- `v1.2.0`
+  Optimized performance, synchronized redirect recording, improved sidepanel auto-scroll, and redesigned dashboard settings around chain score controls.
+- `v1.1.0`
+  Improved scoring logic and UI polish.
+- `v1.0.x`
+  Added the extension badge, enhanced URL/header details, moved PDF export to `pdf-lib`, and shipped the website/docs assets.
+
+## Supported Locales
+
+`en`, `es`, `fr`, `de`, `it`, `pt_BR`, `ru`, `ja`, `ko`, `zh_CN`, `ar`, `hi`, `tr`, `nl`, `pl`, `vi`, `sv`, `id`
 
 ## Tech Stack
 
-- **Framework**: WXT (Web Extension Tools)
-- **UI**: React 18 + TypeScript
-- **Styling**: Tailwind CSS
-- **Icons**: Lucide React
-- **PDF**: jsPDF + jsPDF-AutoTable
-- **State**: Zustand
-- **Build**: Vite
+- `Framework:` WXT
+- `UI:` React 18 + TypeScript
+- `Styling:` Tailwind CSS v4
+- `Icons:` Lucide React
+- `PDF Export:` pdf-lib
+- `Utilities:` date-fns, uuid
+- `Build:` Vite + Terser
 
 ## Development
 
 ### Prerequisites
 
 - Node.js 18+
-- npm or pnpm
+- npm
 
 ### Setup
 
 ```bash
-# Install dependencies
 npm install
-
-# Start development server
 npm run dev
 ```
 
-This will:
-
-1. Build the extension
-2. Watch for changes
-3. Open the browser with the extension loaded
-
-### Build for Production
+### Build
 
 ```bash
-# Build for Chrome (also works for Brave, Opera, Vivaldi)
+# Chrome / Chromium
 npm run build
 
-# Build for Microsoft Edge
+# Microsoft Edge
 npm run build:edge
 
-# Build all browsers at once
+# Firefox
+npm run build:firefox
+
+# All configured browser builds
 npm run build:all
 ```
 
-### Create ZIP for Distribution
+### Package
 
 ```bash
-# Package for Chrome Web Store (also works for Brave, Opera, Vivaldi)
+# Chrome / Chromium
 npm run zip
 
-# Package for Microsoft Edge Add-ons
+# Microsoft Edge
 npm run zip:edge
 
-# Package all browsers at once
+# Firefox
+npm run zip:firefox
+
+# All configured browser packages
 npm run zip:all
 ```
 
-### Browser Compatibility
+## Browser Notes
 
-| Browser        | Build Command        | Store              |
-| -------------- | -------------------- | ------------------ |
-| Chrome         | `npm run build`      | Chrome Web Store   |
-| Microsoft Edge | `npm run build:edge` | Edge Add-ons       |
-| Brave          | `npm run build`      | Chrome Web Store\* |
-| Opera          | `npm run build`      | Chrome Web Store\* |
-| Vivaldi        | `npm run build`      | Chrome Web Store\* |
-
-\*Chromium-based browsers use the same build as Chrome.
-
-> **Note:** Safari requires a separate native wrapper and Apple Developer account. Not currently supported.
+- `Chrome / Chromium browsers:` primary target
+- `Microsoft Edge:` supported via dedicated build/package commands
+- `Firefox:` build scripts are available in the repo
 
 ## Project Structure
 
-```
+```text
 redirectwise/
 ├── entrypoints/
-│   ├── popup/              # Popup UI (React)
-│   │   ├── App.tsx
-│   │   ├── main.tsx
-│   │   ├── index.html
-│   │   └── style.css
-│   ├── dashboard/          # Full-page dashboard
-│   │   ├── Dashboard.tsx
-│   │   ├── main.tsx
-│   │   ├── index.html
-│   │   └── style.css
-│   └── background.ts       # Service worker
-├── components/             # React components
-│   ├── Header.tsx
-│   ├── ChainScoreCard.tsx
-│   ├── RedirectPath.tsx
-│   ├── RedirectItemCard.tsx
-│   ├── HeadersList.tsx
-│   ├── CopyButtons.tsx
-│   └── EmptyState.tsx
-├── utils/                  # Utilities
-│   ├── storage.ts          # Chrome storage helpers
-│   └── pdf-export.ts       # PDF generation
-├── types/                  # TypeScript types
-│   └── redirect.ts
+│   ├── background.ts
+│   ├── popup/
+│   ├── sidepanel/
+│   └── dashboard/
+├── components/
+├── utils/
+├── types/
 ├── public/
-│   └── icons/              # Extension icons
-├── wxt.config.ts           # WXT configuration
-├── tailwind.config.js
+│   ├── _locales/
+│   └── icons/
+├── assets/
+├── website/
+├── wxt.config.ts
 └── package.json
 ```
 
 ## How It Works
 
-1. **Background Script** (`background.ts`)
+1. `Background service worker`
+   Captures main-frame navigations with `webRequest` and `webNavigation`, records redirect hops, headers, IPs, status codes, and timing metadata, then broadcasts live updates to the UI.
+2. `Popup`
+   Shows the current tab’s redirect journey, chain score, copy/export actions, and detailed per-hop inspection.
+3. `Sidepanel`
+   Acts as a continuous live monitor so you can keep browsing and watch redirect activity update in real time.
+4. `Dashboard`
+   Stores and reviews redirect history with filters, favorites, analytics, and PDF export.
 
-   - Listens to `webRequest.onHeadersReceived` events
-   - Tracks redirect chains per tab with timing
-   - Stores path data in memory and saves to history
-   - Calculates chain health score
-
-2. **Popup** (`popup/`)
-
-   - Queries background script for current tab's path
-   - Displays chain health score and issues
-   - Renders the redirect chain visually
-   - Provides copy and export functionality
-
-3. **Dashboard** (`dashboard/`)
-   - Full-page history management
-   - Search, filter, and sort entries
-   - Export individual or bulk PDFs
-   - Dark mode support
-
-## 📄 License
+## License
 
 Distributed under the MIT License. See `LICENSE` for more information.
