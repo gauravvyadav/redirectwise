@@ -14,7 +14,7 @@ Track redirects, uncover hidden ad/tracking hops, and review the full redirect j
   </a>
 </p>
 
-Latest tagged release: `v1.4.1`
+Latest tagged release: `v1.4.2`
 
 ## Features
 
