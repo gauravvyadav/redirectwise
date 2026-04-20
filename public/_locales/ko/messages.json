@@ -1,9 +1,10 @@
 {
   "extensionName": {
-    "message": "RedirectWise: HTTP 리디렉션 검사기 및 SEO 감사 도구"
+    "message": "RedirectWise: URL 리다이렉트 검사기",
+    "description": "Name of the extension"
   },
   "extensionDesc": {
-    "message": "영구 대시보드로 리디렉션을 추적하고 숨겨진 광고 링크를 감지하세요. 팝업 및 사이드 패널이 포함된 실시간 SEO 검사기."
+    "message": "영구 대시보드로 리디렉션을 추적하고 숨겨진 광고 링크를 감지하세요."
   },
   "emptyStateSpecialPageTitle": {
     "message": "이 페이지는 추적할 수 없습니다"
@@ -18,7 +19,7 @@
     "message": "리디렉션 경로를 캡처하려면 URL로 이동하거나 페이지를 새로고침하세요."
   },
   "headerSubtitle": {
-    "message": "리디렉션 경로 분석기"
+    "message": "URL 리다이렉트 검사기"
   },
   "headerLightMode": {
     "message": "라이트 모드"
@@ -37,27 +38,6 @@
   },
   "headerClearPath": {
     "message": "경로 지우기"
-  },
-  "scoreGradeA": {
-    "message": "우수! 최적의 리디렉션 체인입니다."
-  },
-  "scoreGradeB": {
-    "message": "양호. 약간의 개선이 가능합니다."
-  },
-  "scoreGradeC": {
-    "message": "보통. 일부 문제가 있습니다."
-  },
-  "scoreGradeD": {
-    "message": "불량. 중대한 문제가 발견되었습니다."
-  },
-  "scoreGradeF": {
-    "message": "위험. 심각한 문제가 감지되었습니다."
-  },
-  "scoreIssueSingle": {
-    "message": "문제"
-  },
-  "scoreIssuePlural": {
-    "message": "문제"
   },
   "copyPathAs": {
     "message": "경로 복사:"
@@ -131,9 +111,6 @@
   "monitoringLabel": {
     "message": "모니터링:"
   },
-  "scoreLabel": {
-    "message": "점수:"
-  },
   "autoScroll": {
     "message": "자동 스크롤"
   },
@@ -152,15 +129,6 @@
   "generalSettings": {
     "message": "일반 설정"
   },
-  "chainScoreAnalysis": {
-    "message": "체인 점수 분석"
-  },
-  "aiIntegrations": {
-    "message": "AI 통합"
-  },
-  "soon": {
-    "message": "곧 출시"
-  },
   "darkModeAppearance": {
     "message": "다크 모드 외관"
   },
@@ -169,9 +137,6 @@
   },
   "sortByDate": {
     "message": "날짜순 정렬"
-  },
-  "sortByScore": {
-    "message": "점수순 정렬"
   },
   "sortByRedirects": {
     "message": "리디렉션순 정렬"
@@ -199,12 +164,6 @@
   },
   "deleteEntry": {
     "message": "삭제"
-  },
-  "issuesFound": {
-    "message": "발견된 문제"
-  },
-  "recommendations": {
-    "message": "추천 사항"
   },
   "success": {
     "message": "성공"
@@ -236,9 +195,6 @@
   "entrySingle": {
     "message": "항목"
   },
-  "avgScore": {
-    "message": "평균 점수"
-  },
   "filterAll": {
     "message": "전체"
   },
@@ -253,36 +209,6 @@
   },
   "useHeaderButton": {
     "message": "헤더 버튼 사용"
-  },
-  "chainScoreVisibility": {
-    "message": "체인 점수 표시"
-  },
-  "chainScoreVisibilityDesc": {
-    "message": "확장 프로그램에서 리디렉션 분석 지표가 표시되는 위치를 제어합니다."
-  },
-  "extensionPopup": {
-    "message": "확장 팝업"
-  },
-  "extensionPopupDesc": {
-    "message": "도구 모음에서 확장 아이콘 클릭 시 분석 카드를 표시합니다."
-  },
-  "sidepanelMonitor": {
-    "message": "사이드패널 실시간 모니터"
-  },
-  "sidepanelMonitorDesc": {
-    "message": "활성 모니터링 패널 상단에 점수 요약을 삽입합니다."
-  },
-  "dashboardCenter": {
-    "message": "대시보드 센터"
-  },
-  "dashboardCenterDesc": {
-    "message": "색상 배지, 문제 알림 및 추천 사항이 포함된 전체 시각적 점수 UI를 렌더링합니다."
-  },
-  "aiPoweredInsights": {
-    "message": "AI 기반 인사이트"
-  },
-  "aiPoweredInsightsDesc": {
-    "message": "복잡한 리디렉션 패턴과 SEO 위험을 자동으로 분석하는 AI 기능을 구축 중입니다. 곧 출시됩니다."
   },
   "hopSingle": {
     "message": "홉"
@@ -305,9 +231,6 @@
   "totalLabel": {
     "message": "총"
   },
-  "impactLabel": {
-    "message": "영향"
-  },
   "redirectChain": {
     "message": "리디렉션 체인"
   },
@@ -328,5 +251,26 @@
   },
   "categoryContent": {
     "message": "콘텐츠"
+  },
+  "imageFormat": {
+    "message": "이미지"
+  },
+  "exportingImage": {
+    "message": "내보내는 중..."
+  },
+  "exportToImage": {
+    "message": "이미지로 내보내기"
+  },
+  "favoriteLabel": {
+    "message": "즐겨찾기"
+  },
+  "favoritedLabel": {
+    "message": "즐겨찾기됨"
+  },
+  "cancelLabel": {
+    "message": "취소"
+  },
+  "clearLabel": {
+    "message": "지우기"
   }
 }

@@ -1,9 +1,10 @@
 {
   "extensionName": {
-    "message": "RedirectWise: HTTP रीडायरेक्ट और SEO ऑडिट"
+    "message": "RedirectWise: यूआरएल रीडायरेक्ट चेकर",
+    "description": "Name of the extension"
   },
   "extensionDesc": {
-    "message": "एक स्थायी डैशबोर्ड के साथ रीडायरेक्ट ट्रैक करें और छिपे हुए विज्ञापन लिंक पकड़ें। पॉपअप और साइड पैनल के साथ रियल-टाइम SEO चेकर।"
+    "message": "एक स्थायी डैशबोर्ड के साथ रीडायरेक्ट ट्रैक करें और छिपे हुए विज्ञापन लिंक पकड़ें।"
   },
   "emptyStateSpecialPageTitle": {
     "message": "इस पेज को ट्रैक नहीं किया जा सकता"
@@ -18,7 +19,7 @@
     "message": "रीडायरेक्ट पथ कैप्चर करने के लिए किसी URL पर जाएं या पेज रिफ्रेश करें।"
   },
   "headerSubtitle": {
-    "message": "रीडायरेक्ट पथ विश्लेषक"
+    "message": "यूआरएल रीडायरेक्ट चेकर"
   },
   "headerLightMode": {
     "message": "लाइट मोड"
@@ -37,27 +38,6 @@
   },
   "headerClearPath": {
     "message": "पथ साफ़ करें"
-  },
-  "scoreGradeA": {
-    "message": "उत्कृष्ट! इष्टतम रीडायरेक्ट चेन।"
-  },
-  "scoreGradeB": {
-    "message": "अच्छा। मामूली सुधार संभव।"
-  },
-  "scoreGradeC": {
-    "message": "ठीक। कुछ समस्याएं हैं।"
-  },
-  "scoreGradeD": {
-    "message": "खराब। महत्वपूर्ण समस्याएं पाई गईं।"
-  },
-  "scoreGradeF": {
-    "message": "गंभीर। बड़ी समस्याएं पाई गईं।"
-  },
-  "scoreIssueSingle": {
-    "message": "समस्या"
-  },
-  "scoreIssuePlural": {
-    "message": "समस्याएं"
   },
   "copyPathAs": {
     "message": "पथ कॉपी करें:"
@@ -131,9 +111,6 @@
   "monitoringLabel": {
     "message": "मॉनिटरिंग:"
   },
-  "scoreLabel": {
-    "message": "स्कोर:"
-  },
   "autoScroll": {
     "message": "ऑटो-स्क्रॉल"
   },
@@ -152,15 +129,6 @@
   "generalSettings": {
     "message": "सामान्य सेटिंग्स"
   },
-  "chainScoreAnalysis": {
-    "message": "चेन स्कोर विश्लेषण"
-  },
-  "aiIntegrations": {
-    "message": "AI इंटीग्रेशन"
-  },
-  "soon": {
-    "message": "जल्द आ रहा है"
-  },
   "darkModeAppearance": {
     "message": "डार्क मोड रूप"
   },
@@ -169,9 +137,6 @@
   },
   "sortByDate": {
     "message": "तारीख के अनुसार"
-  },
-  "sortByScore": {
-    "message": "स्कोर के अनुसार"
   },
   "sortByRedirects": {
     "message": "रीडायरेक्ट के अनुसार"
@@ -199,12 +164,6 @@
   },
   "deleteEntry": {
     "message": "हटाएं"
-  },
-  "issuesFound": {
-    "message": "समस्याएं मिलीं"
-  },
-  "recommendations": {
-    "message": "सुझाव"
   },
   "success": {
     "message": "सफल"
@@ -236,9 +195,6 @@
   "entrySingle": {
     "message": "प्रविष्टि"
   },
-  "avgScore": {
-    "message": "औसत स्कोर"
-  },
   "filterAll": {
     "message": "सभी"
   },
@@ -253,36 +209,6 @@
   },
   "useHeaderButton": {
     "message": "हेडर बटन उपयोग करें"
-  },
-  "chainScoreVisibility": {
-    "message": "चेन स्कोर दृश्यता"
-  },
-  "chainScoreVisibilityDesc": {
-    "message": "नियंत्रित करें कि एक्सटेंशन में रीडायरेक्ट विश्लेषण मेट्रिक्स कहाँ दिखाई दें।"
-  },
-  "extensionPopup": {
-    "message": "एक्सटेंशन पॉपअप"
-  },
-  "extensionPopupDesc": {
-    "message": "टूलबार में एक्सटेंशन आइकन पर क्लिक करते समय विश्लेषण कार्ड दिखाएं।"
-  },
-  "sidepanelMonitor": {
-    "message": "साइडपैनल रियलटाइम मॉनिटर"
-  },
-  "sidepanelMonitorDesc": {
-    "message": "सक्रिय मॉनिटरिंग पैन के शीर्ष पर स्कोर सारांश डालें।"
-  },
-  "dashboardCenter": {
-    "message": "डैशबोर्ड केंद्र"
-  },
-  "dashboardCenterDesc": {
-    "message": "रंगीन बैज, समस्या अलर्ट और कार्रवाई योग्य सुझावों सहित पूर्ण विज़ुअल स्कोर UI प्रस्तुत करें।"
-  },
-  "aiPoweredInsights": {
-    "message": "AI-संचालित अंतर्दृष्टि"
-  },
-  "aiPoweredInsightsDesc": {
-    "message": "हम जटिल रीडायरेक्ट पैटर्न और SEO जोखिमों का स्वचालित विश्लेषण करने के लिए AI क्षमताएं विकसित कर रहे हैं। जल्द आ रहा है।"
   },
   "hopSingle": {
     "message": "हॉप"
@@ -305,9 +231,6 @@
   "totalLabel": {
     "message": "कुल"
   },
-  "impactLabel": {
-    "message": "प्रभाव"
-  },
   "redirectChain": {
     "message": "रीडायरेक्ट चेन"
   },
@@ -328,5 +251,26 @@
   },
   "categoryContent": {
     "message": "सामग्री"
+  },
+  "imageFormat": {
+    "message": "इमेज"
+  },
+  "exportingImage": {
+    "message": "निर्यात किया जा रहा है..."
+  },
+  "exportToImage": {
+    "message": "इमेज निर्यात करें"
+  },
+  "favoriteLabel": {
+    "message": "पसंदीदा"
+  },
+  "favoritedLabel": {
+    "message": "पसंदीदा किया गया"
+  },
+  "cancelLabel": {
+    "message": "रद्द करें"
+  },
+  "clearLabel": {
+    "message": "साफ़ करें"
   }
 }

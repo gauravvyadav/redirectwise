@@ -1,30 +1,9 @@
 import clsx from 'clsx';
 import { format } from 'date-fns';
-import {
-  Activity,
-  AlertTriangle,
-  ArrowRight,
-  CheckCircle2,
-  ChevronDown,
-  ChevronRight,
-  Clock,
-  ExternalLink,
-  Moon,
-  RefreshCw,
-  Sun,
-  Trash2,
-  XCircle,
-} from 'lucide-react';
+import { Activity, Clock, Moon, RefreshCw, Sun, Trash2 } from 'lucide-react';
 import { Fragment, useCallback, useEffect, useRef, useState } from 'react';
-import HeadersList from '../../components/HeadersList';
-import Logo from '../../components/Logo';
-import {
-  ChainScore,
-  RedirectItem,
-  calculateChainScore,
-  calculateGapDuration,
-  formatDuration,
-} from '../../types/redirect';
+import RedirectItemCard from '../../components/RedirectItemCard';
+import { RedirectItem, calculateGapDuration, formatDuration } from '../../types/redirect';
 import { Settings, getSettings, saveSettings } from '../../utils/storage';
 
 interface LiveRedirect extends RedirectItem {
@@ -229,6 +208,11 @@ export default function Sidepanel() {
           isActive: true,
         };
 
+        // Prevent duplicate items
+        if (session.path.some(x => x.id === item.id)) {
+          return prev;
+        }
+
         // Add new item to path with isNew flag for CSS animation
         const newItem: LiveRedirect = { ...item, isNew: true };
         session.path = [...session.path, newItem];
@@ -298,9 +282,6 @@ export default function Sidepanel() {
   };
 
   const activeSession = activeTabId ? sessions.get(activeTabId) : null;
-  const chainScore: ChainScore | null = activeSession?.path.length
-    ? calculateChainScore(activeSession.path)
-    : null;
 
   const formatTime = (timestamp: number) => {
     return format(timestamp, 'HH:mm:ss.SSS');
@@ -315,41 +296,43 @@ export default function Sidepanel() {
     <div
       className={clsx(
         'h-screen flex flex-col overflow-hidden',
-        darkMode ? 'bg-slate-900 text-white' : 'bg-slate-50 text-gray-900'
+        darkMode ? 'bg-slate-900 text-white' : 'bg-white text-gray-900'
       )}
     >
-      {/* Header - Popup Style */}
-      <header className="bg-linear-to-r from-blue-600 to-blue-700 text-white px-4 py-3 shadow-md">
+      {/* Header - Compact Functional Style */}
+      <header className="bg-linear-to-r from-blue-600 to-blue-700 text-white px-4 py-3 rounded-lg">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Logo size={32} />
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-lg font-semibold leading-tight">{chrome.i18n.getMessage('extensionName').split(':')[0]}</h1>
-                <span
-                  className={clsx(
-                    'text-xs px-1.5 py-0.5 rounded-full flex items-center gap-1',
-                    isMonitoring ? 'bg-green-400/20 text-green-100' : 'bg-white/10 text-white/70'
-                  )}
-                >
-                  <span
-                    className={clsx(
-                      'w-1.5 h-1.5 rounded-full',
-                      isMonitoring ? 'bg-green-400 animate-pulse-live' : 'bg-white/50'
-                    )}
-                  />
-                  {isMonitoring ? chrome.i18n.getMessage('live') : chrome.i18n.getMessage('paused')}
-                </span>
-              </div>
-              <p className="text-xs text-blue-200">{chrome.i18n.getMessage('realtimeMonitor')}</p>
-            </div>
+            <span className="text-xs font-semibold tracking-wide text-white">
+              {chrome.i18n.getMessage('realtimeMonitor')}
+            </span>
+            <span
+              className={clsx(
+                'text-[10px] px-2 py-0.5 rounded-full flex items-center gap-1 shrink-0 font-medium border',
+                isMonitoring
+                  ? 'bg-green-500/20 text-green-200 border-green-300/30'
+                  : 'bg-white/10 text-blue-100 border-white/20'
+              )}
+            >
+              <span
+                className={clsx(
+                  'w-1 h-1 rounded-full',
+                  isMonitoring ? 'bg-green-400 animate-pulse-live' : 'bg-blue-200'
+                )}
+              />
+              {isMonitoring ? chrome.i18n.getMessage('live') : chrome.i18n.getMessage('paused')}
+            </span>
           </div>
 
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-0.5">
             <button
               onClick={() => setIsMonitoring(!isMonitoring)}
-              className="p-2 hover:bg-white/10 rounded-lg transition-colors"
-              title={isMonitoring ? chrome.i18n.getMessage('pauseMonitoring') : chrome.i18n.getMessage('resumeMonitoring')}
+              className="p-2 rounded-lg hover:bg-white/10 transition-colors"
+              title={
+                isMonitoring
+                  ? chrome.i18n.getMessage('pauseMonitoring')
+                  : chrome.i18n.getMessage('resumeMonitoring')
+              }
             >
               {isMonitoring ? (
                 <Activity className="w-4 h-4 text-green-300" />
@@ -360,7 +343,7 @@ export default function Sidepanel() {
 
             <button
               onClick={clearSessions}
-              className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+              className="p-2 rounded-lg hover:bg-white/10 transition-colors"
               title={chrome.i18n.getMessage('clearSessions')}
             >
               <Trash2 className="w-4 h-4" />
@@ -368,7 +351,7 @@ export default function Sidepanel() {
 
             <button
               onClick={toggleDarkMode}
-              className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+              className="p-2 rounded-lg hover:bg-white/10 transition-colors"
               title={chrome.i18n.getMessage('toggleDarkMode')}
             >
               {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
@@ -378,50 +361,17 @@ export default function Sidepanel() {
 
         {/* Active Tab Info - Show current tab URL */}
         {(activeSession?.url || activeTabUrl) && (
-          <div className="mt-2 text-xs truncate px-2 py-1.5 rounded bg-white/10">
+          <div className="mt-1.5 text-xs truncate px-2 py-1 rounded bg-white/10 text-blue-100 border border-white/10">
             <span className="text-blue-200">{chrome.i18n.getMessage('monitoringLabel')} </span>
-            <span className="font-medium">
+            <span className="font-medium text-white">
               {truncateUrl(activeSession?.url || activeTabUrl, 50)}
             </span>
-          </div>
-        )}
-
-        {/* Chain Score Summary - Slim Header Version */}
-        {chainScore && settings?.showChainScoreInSidepanel !== false && (
-          <div className="mt-2 flex items-center justify-between text-xs px-2 py-1.5 rounded bg-white/10">
-            <div className="flex items-center gap-2">
-              <span className="text-blue-200">{chrome.i18n.getMessage('scoreLabel')}</span>
-              <span
-                className={clsx(
-                  'font-bold px-1.5 py-0.5 rounded text-[10px]',
-                  chainScore.grade === 'A' && 'bg-green-500 text-white',
-                  chainScore.grade === 'B' && 'bg-lime-500 text-slate-900',
-                  chainScore.grade === 'C' && 'bg-yellow-500 text-slate-900',
-                  chainScore.grade === 'D' && 'bg-orange-500 text-white',
-                  chainScore.grade === 'F' && 'bg-red-500 text-white'
-                )}
-              >
-                {chainScore.grade}
-              </span>
-              <span className="font-semibold">{chainScore.score}/100</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <span className="text-white/80">
-                {activeSession?.path.length || 0} {(activeSession?.path.length || 0) !== 1 ? chrome.i18n.getMessage('hopsPlural') : chrome.i18n.getMessage('hopSingle')}
-              </span>
-              {chainScore.issues.length > 0 && (
-                <span className="flex items-center gap-1 text-yellow-300 font-medium">
-                  <AlertTriangle className="w-3.5 h-3.5" />
-                  {chainScore.issues.length} {chainScore.issues.length === 1 ? chrome.i18n.getMessage('scoreIssueSingle') : chrome.i18n.getMessage('scoreIssuePlural')}
-                </span>
-              )}
-            </div>
           </div>
         )}
       </header>
 
       {/* Redirect Stream */}
-      <div ref={scrollRef} className="flex-1 overflow-y-auto px-3 py-3 flex flex-col gap-2 pb-6">
+      <div ref={scrollRef} className="flex-1 overflow-y-auto px-1 py-3 flex flex-col gap-2 pb-6">
         {!activeSession || activeSession.path.length === 0 ? (
           <div
             className={clsx(
@@ -442,209 +392,60 @@ export default function Sidepanel() {
             <p
               className={clsx('text-sm font-medium', darkMode ? 'text-slate-300' : 'text-gray-600')}
             >
-              {isMonitoring ? chrome.i18n.getMessage('waitingForRedirects') : chrome.i18n.getMessage('monitoringPaused')}
+              {isMonitoring
+                ? chrome.i18n.getMessage('waitingForRedirects')
+                : chrome.i18n.getMessage('monitoringPaused')}
             </p>
             <p className={clsx('text-xs mt-1', darkMode ? 'text-slate-500' : 'text-gray-400')}>
               {chrome.i18n.getMessage('navigateRealtimeMessage')}
             </p>
           </div>
         ) : (
-          activeSession.path.map((item, index) => {
-            const delayMs =
-              index > 0 ? calculateGapDuration(activeSession.path[index - 1], item) : null;
-
-            return (
-              <Fragment key={item.id}>
-                {index > 0 && delayMs != null && (
-                  <div className="flex justify-center py-1 relative z-20">
-                    <span
-                      className={clsx(
-                        'text-[10px] px-2 py-0.5 rounded-full flex items-center gap-1 border',
-                        darkMode
-                          ? 'bg-slate-800 text-slate-400 border-slate-700'
-                          : 'bg-white text-slate-500 border-slate-200'
-                      )}
-                      title={`Time passed between previous request finishing and this request starting`}
-                    >
-                      <Clock className="w-3 h-3" />
-                      {formatDuration(delayMs)} gap
-                    </span>
-                  </div>
+          <div className="relative">
+            {activeSession.path.length > 1 && (
+              <div
+                className={clsx(
+                  'absolute left-7 top-6 bottom-6 w-0.5 z-0',
+                  darkMode ? 'bg-slate-800' : 'bg-slate-200'
                 )}
-                <div
-                  className={clsx(
-                    'rounded-xl border transition-colors',
-                    item.isNew && 'animate-highlight',
-                    darkMode
-                      ? 'bg-slate-800 border-slate-700 hover:border-slate-600'
-                      : 'bg-white border-gray-200 hover:border-gray-300'
-                  )}
-                >
-                  {/* Compact View */}
-                  <button
-                    onClick={() => toggleExpanded(item.id)}
-                    className="w-full px-3 py-2 flex items-center gap-2 text-left"
-                  >
-                    <div
-                      className={clsx(
-                        'w-2.5 h-2.5 rounded-full shrink-0',
-                        getStatusColor(item.status_code)
-                      )}
-                    />
+              />
+            )}
+            <div className="flex flex-col gap-2 relative z-10">
+              {activeSession.path.map((item, index) => {
+                const delayMs =
+                  index > 0 ? calculateGapDuration(activeSession.path[index - 1], item) : null;
 
-                    <span
-                      className={clsx(
-                        'text-xs font-mono w-5 h-5 rounded-full flex items-center justify-center',
-                        darkMode ? 'bg-slate-700 text-slate-400' : 'bg-gray-100 text-gray-500'
-                      )}
-                    >
-                      {index + 1}
-                    </span>
-
-                    <span className="flex-1" />
-
-                    <span
-                      className={clsx(
-                        'text-xs font-mono font-bold px-1.5 py-0.5 rounded',
-                        item.status_code >= 200 &&
-                          item.status_code < 300 &&
-                          'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
-                        item.status_code >= 300 &&
-                          item.status_code < 400 &&
-                          'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
-                        item.status_code >= 400 &&
-                          'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
-                      )}
-                    >
-                      {item.status_code}
-                    </span>
-
-                    {item.timing && (
-                      <span
-                        className={clsx(
-                          'text-[10px] shrink-0 px-1.5 py-0.5 rounded',
-                          darkMode ? 'bg-slate-700 text-slate-400' : 'bg-gray-100 text-gray-500'
-                        )}
-                      >
-                        {formatDuration(item.timing.duration)}
-                      </span>
-                    )}
-
-                    <span
-                      className={clsx(
-                        'text-[10px] shrink-0 px-1.5 py-0.5 rounded',
-                        darkMode ? 'bg-slate-700 text-slate-400' : 'bg-gray-100 text-gray-500'
-                      )}
-                    >
-                      {formatTime(item.timestamp)}
-                    </span>
-
-                    {expandedItems.has(item.id) ? (
-                      <ChevronDown className="w-4 h-4 text-gray-400" />
-                    ) : (
-                      <ChevronRight className="w-4 h-4 text-gray-400" />
-                    )}
-                  </button>
-
-                  <p
-                    className={clsx(
-                      'px-3 pb-2 text-xs break-all font-mono',
-                      darkMode ? 'text-slate-400' : 'text-gray-600'
-                    )}
-                  >
-                    {item.url}
-                  </p>
-
-                  {/* Expanded Details */}
-                  {expandedItems.has(item.id) && (
-                    <div
-                      className={clsx(
-                        'px-3 pb-3 pt-2 text-xs space-y-2 border-t',
-                        darkMode
-                          ? 'border-slate-700 bg-slate-800/50'
-                          : 'border-gray-100 bg-gray-50/50'
-                      )}
-                    >
-                      {/* Full URL */}
-                      <div className="flex items-start gap-2">
-                        <span className="text-gray-500 w-14 shrink-0">URL:</span>
-                        <a
-                          href={item.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-500 hover:underline break-all flex items-center gap-1"
+                return (
+                  <Fragment key={item.id}>
+                    {index > 0 && delayMs != null && (
+                      <div className="flex pl-16 py-1 relative z-20">
+                        <span
+                          className={clsx(
+                            'text-[10px] px-2 py-0.5 rounded-full flex items-center gap-1 border',
+                            darkMode
+                              ? 'bg-slate-800 text-slate-400 border-slate-700'
+                              : 'bg-white text-slate-500 border-slate-200'
+                          )}
+                          title={`Time passed between previous request finishing and this request starting`}
                         >
-                          {item.url}
-                          <ExternalLink className="w-3 h-3 shrink-0" />
-                        </a>
-                      </div>
-
-                      {/* Status */}
-                      <div className="flex items-center gap-2">
-                        <span className="text-gray-500 w-14">Status:</span>
-                        <span className="flex items-center gap-1">
-                          {item.status_code >= 200 && item.status_code < 300 && (
-                            <CheckCircle2 className="w-3 h-3 text-green-500" />
-                          )}
-                          {item.status_code >= 300 && item.status_code < 400 && (
-                            <ArrowRight className="w-3 h-3 text-amber-500" />
-                          )}
-                          {item.status_code >= 400 && <XCircle className="w-3 h-3 text-red-500" />}
-                          {item.status_line}
+                          <Clock className="w-3 h-3" />
+                          {formatDuration(delayMs)} gap
                         </span>
                       </div>
-
-                      {/* Redirect Type */}
-                      {item.redirect_type && (
-                        <div className="flex items-center gap-2">
-                          <span className="text-gray-500 w-14">Type:</span>
-                          <span
-                            className={clsx(
-                              'px-1.5 py-0.5 rounded text-[10px] uppercase font-medium',
-                              item.redirect_type === 'permanent' &&
-                                'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300',
-                              item.redirect_type === 'temporary' &&
-                                'bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300',
-                              item.redirect_type === 'hsts' &&
-                                'bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300'
-                            )}
-                          >
-                            {item.redirect_type}
-                          </span>
-                        </div>
-                      )}
-
-                      {/* Timing */}
-                      {item.timing && (
-                        <div className="flex items-center gap-2">
-                          <span className="text-gray-500 w-14">Time:</span>
-                          <span className="flex items-center gap-1">
-                            <Clock className="w-3 h-3 text-gray-400" />
-                            {formatDuration(item.timing.duration)}
-                          </span>
-                        </div>
-                      )}
-
-                      {/* Redirect URL */}
-                      {item.redirect_url && (
-                        <div className="flex items-start gap-2">
-                          <span className="text-gray-500 w-14 shrink-0">To:</span>
-                          <span className="text-blue-500 break-all">{item.redirect_url}</span>
-                        </div>
-                      )}
-
-                      {/* Enhanced Headers Details */}
-                      {item.headers && item.headers.length > 0 && (
-                        <div className="mt-3 pt-3 border-t border-slate-200 dark:border-slate-700">
-                          <HeadersList headers={item.headers} ip={item.ip} darkMode={darkMode} />
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-              </Fragment>
-            );
-          })
+                    )}
+                    <RedirectItemCard
+                      item={item}
+                      index={index}
+                      isLast={index === activeSession.path.length - 1}
+                      isExpanded={expandedItems.has(item.id)}
+                      onToggle={() => toggleExpanded(item.id)}
+                      darkMode={darkMode}
+                    />
+                  </Fragment>
+                );
+              })}
+            </div>
+          </div>
         )}
         <div ref={bottomRef} className="h-1 shrink-0" />
       </div>
@@ -670,7 +471,10 @@ export default function Sidepanel() {
         <span
           className={clsx('px-2 py-0.5 rounded-full', darkMode ? 'bg-slate-700' : 'bg-gray-100')}
         >
-          {sessions.size} {sessions.size !== 1 ? chrome.i18n.getMessage('sessionsPlural') : chrome.i18n.getMessage('sessionSingle')}
+          {sessions.size}{' '}
+          {sessions.size !== 1
+            ? chrome.i18n.getMessage('sessionsPlural')
+            : chrome.i18n.getMessage('sessionSingle')}
         </span>
       </footer>
     </div>

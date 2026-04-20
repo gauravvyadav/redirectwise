@@ -1,10 +1,16 @@
 {
   "name": "redirectwise",
-  "description": "Track redirects & catch hidden ad links with a persistent history dashboard. Real-time SEO checker with popup & sidepanel.",
-  "keywords": ["chrome-extension", "edge-extension", "browser-extension", "redirect-checker", "seo-tool", "http-redirect"],
+  "description": "Track redirects & catch hidden ad links with a persistent history dashboard. Real-time redirect checker with popup & sidepanel.",
+  "keywords": [
+    "chrome-extension",
+    "edge-extension",
+    "browser-extension",
+    "redirect-checker",
+    "http-redirect"
+  ],
   "private": true,
   "license": "MIT",
-  "version": "1.4.2",
+  "version": "1.5.0",
   "type": "module",
   "scripts": {
     "dev": "wxt",
@@ -41,6 +47,6 @@
     "tailwindcss": "^4.1.17",
     "terser": "^5.44.1",
     "typescript": "^5.6.3",
-    "wxt": "^0.20.11"
+    "wxt": "^0.20.27"
   }
 }

@@ -1,23 +1,19 @@
-import { LayoutDashboard, Moon, PanelRight, RefreshCw, Sun, Trash2 } from 'lucide-react';
+import { LayoutDashboard, Moon, PanelRight, RefreshCw, Sun } from 'lucide-react';
 import Logo from './Logo';
 
 interface HeaderProps {
   onRefresh: () => void;
-  onClear: () => void;
   onToggleDarkMode: () => void;
   onOpenDashboard: () => void;
   onOpenSidepanel?: () => void;
-  hasPath: boolean;
   darkMode: boolean;
 }
 
 export default function Header({
   onRefresh,
-  onClear,
   onToggleDarkMode,
   onOpenDashboard,
   onOpenSidepanel,
-  hasPath,
   darkMode,
 }: HeaderProps) {
   return (
@@ -64,16 +60,6 @@ export default function Header({
         >
           <RefreshCw className="w-4 h-4" />
         </button>
-
-        {hasPath && (
-          <button
-            onClick={onClear}
-            className="p-2 hover:bg-white/10 rounded-lg transition-colors"
-            title={chrome.i18n.getMessage('headerClearPath')}
-          >
-            <Trash2 className="w-4 h-4" />
-          </button>
-        )}
       </div>
     </header>
   );

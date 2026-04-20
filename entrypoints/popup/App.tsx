@@ -1,24 +1,22 @@
 import clsx from 'clsx';
 import { AlertTriangle } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import ChainScoreCard from '../../components/ChainScoreCard';
+
 import CopyButtons from '../../components/CopyButtons';
 import EmptyState from '../../components/EmptyState';
 import Header from '../../components/Header';
 import RedirectPath from '../../components/RedirectPath';
 import {
-  ChainScore,
   RedirectItem,
-  calculateChainScore,
   calculateTotalDuration,
   generateId,
 } from '../../types/redirect';
 import { exportToPDF } from '../../utils/pdf-export';
+import { exportToImage } from '../../utils/image-export';
 import { Settings, getSettings, saveSettings } from '../../utils/storage';
 
 export default function App() {
   const [redirectPath, setRedirectPath] = useState<RedirectItem[]>([]);
-  const [chainScore, setChainScore] = useState<ChainScore | null>(null);
   const [loading, setLoading] = useState(true);
   const [navigationError, setNavigationError] = useState<string | null>(null);
   const [currentUrl, setCurrentUrl] = useState('');
@@ -45,7 +43,10 @@ export default function App() {
         message.tabId === currentTabId.current &&
         message.item
       ) {
-        setRedirectPath(prev => [...prev, message.item!]);
+        setRedirectPath(prev => {
+          if (prev.some(x => x.id === message.item!.id)) return prev;
+          return [...prev, message.item!];
+        });
       }
 
       if (
@@ -68,8 +69,6 @@ export default function App() {
 
       if (message.name === 'navigationStart' && message.tabId === currentTabId.current) {
         setNavigationError(null);
-        setRedirectPath([]);
-        setLoading(true);
       }
     };
 
@@ -85,13 +84,7 @@ export default function App() {
     }
   }, [darkMode]);
 
-  useEffect(() => {
-    if (redirectPath.length > 0) {
-      setChainScore(calculateChainScore(redirectPath));
-    } else {
-      setChainScore(null);
-    }
-  }, [redirectPath]);
+
 
   const loadSettings = async () => {
     const s = await getSettings();
@@ -189,7 +182,7 @@ export default function App() {
   };
 
   const handleExportPDF = useCallback(async () => {
-    if (redirectPath.length === 0 || !chainScore) return;
+    if (redirectPath.length === 0) return;
 
     const totalTime = calculateTotalDuration(redirectPath);
     const redirectCount = redirectPath.filter(
@@ -202,42 +195,60 @@ export default function App() {
       finalUrl: redirectPath[redirectPath.length - 1]?.url || '',
       path: redirectPath,
       timestamp: Date.now(),
-      chainScore,
       totalTime,
       redirectCount,
     };
 
     await exportToPDF(entry);
-  }, [redirectPath, chainScore]);
+  }, [redirectPath]);
+
+  const handleExportImage = useCallback(async () => {
+    if (redirectPath.length === 0) return;
+
+    const totalTime = calculateTotalDuration(redirectPath);
+    const redirectCount = redirectPath.filter(
+      p => p.type === 'server_redirect' || p.type === 'client_redirect'
+    ).length;
+
+    const entry = {
+      id: generateId(),
+      originalUrl: redirectPath[0]?.url || '',
+      finalUrl: redirectPath[redirectPath.length - 1]?.url || '',
+      path: redirectPath,
+      timestamp: Date.now(),
+      totalTime,
+      redirectCount,
+    };
+
+    await exportToImage(entry);
+  }, [redirectPath]);
 
   return (
     <div
       className={clsx(
         'flex flex-col w-full h-[600px] transition-colors',
-        darkMode ? 'bg-slate-900' : 'bg-slate-50'
+        darkMode ? 'bg-slate-900' : 'bg-white'
       )}
     >
       {/* Fixed header section */}
       <div className="shrink-0">
         <Header
           onRefresh={handleRefresh}
-          onClear={handleClear}
           onToggleDarkMode={handleToggleDarkMode}
           onOpenDashboard={handleOpenDashboard}
           onOpenSidepanel={handleOpenSidepanel}
-          hasPath={redirectPath.length > 0}
           darkMode={darkMode}
         />
 
-        {chainScore && settings?.showChainScoreInPopup !== false && (
-          <ChainScoreCard score={chainScore} darkMode={darkMode} />
-        )}
+
 
         {redirectPath.length > 0 && (
           <CopyButtons
             redirectPath={redirectPath}
             darkMode={darkMode}
             onExportPDF={handleExportPDF}
+            onExportImage={handleExportImage}
+            onClear={handleClear}
           />
         )}
       </div>

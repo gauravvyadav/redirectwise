@@ -1,9 +1,10 @@
 {
   "extensionName": {
-    "message": "RedirectWise: Verificador de Redirecciones HTTP y Auditoría SEO"
+    "message": "RedirectWise: Verificador de redireccionamiento URL",
+    "description": "Name of the extension"
   },
   "extensionDesc": {
-    "message": "Rastrea redirecciones y detecta enlaces ocultos de anuncios con un panel persistente. Verificador SEO en tiempo real con popup y panel lateral."
+    "message": "Rastrea redirecciones y detecta enlaces ocultos de anuncios con un panel persistente."
   },
   "emptyStateSpecialPageTitle": {
     "message": "No se puede rastrear esta página"
@@ -18,7 +19,7 @@
     "message": "Navega a una URL o actualiza la página para capturar su ruta de redirección."
   },
   "headerSubtitle": {
-    "message": "Analizador de Rutas de Redirección"
+    "message": "Verificador de redireccionamiento URL"
   },
   "headerLightMode": {
     "message": "Modo claro"
@@ -37,27 +38,6 @@
   },
   "headerClearPath": {
     "message": "Limpiar ruta"
-  },
-  "scoreGradeA": {
-    "message": "¡Excelente! Cadena de redirección óptima."
-  },
-  "scoreGradeB": {
-    "message": "Bueno. Mejoras menores posibles."
-  },
-  "scoreGradeC": {
-    "message": "Regular. Algunos problemas por resolver."
-  },
-  "scoreGradeD": {
-    "message": "Deficiente. Problemas significativos encontrados."
-  },
-  "scoreGradeF": {
-    "message": "Crítico. Problemas graves detectados."
-  },
-  "scoreIssueSingle": {
-    "message": "problema"
-  },
-  "scoreIssuePlural": {
-    "message": "problemas"
   },
   "copyPathAs": {
     "message": "Copiar ruta como:"
@@ -131,9 +111,6 @@
   "monitoringLabel": {
     "message": "Monitoreando:"
   },
-  "scoreLabel": {
-    "message": "Puntuación:"
-  },
   "autoScroll": {
     "message": "Auto-desplazamiento"
   },
@@ -152,15 +129,6 @@
   "generalSettings": {
     "message": "Configuración General"
   },
-  "chainScoreAnalysis": {
-    "message": "Análisis de Puntuación de Cadena"
-  },
-  "aiIntegrations": {
-    "message": "Integraciones de IA"
-  },
-  "soon": {
-    "message": "Próximamente"
-  },
   "darkModeAppearance": {
     "message": "Apariencia en Modo Oscuro"
   },
@@ -169,9 +137,6 @@
   },
   "sortByDate": {
     "message": "Ordenar por Fecha"
-  },
-  "sortByScore": {
-    "message": "Ordenar por Puntuación"
   },
   "sortByRedirects": {
     "message": "Ordenar por Redirecciones"
@@ -199,12 +164,6 @@
   },
   "deleteEntry": {
     "message": "Eliminar"
-  },
-  "issuesFound": {
-    "message": "Problemas Encontrados"
-  },
-  "recommendations": {
-    "message": "Recomendaciones"
   },
   "success": {
     "message": "Éxito"
@@ -236,9 +195,6 @@
   "entrySingle": {
     "message": "entrada"
   },
-  "avgScore": {
-    "message": "puntaje promedio"
-  },
   "filterAll": {
     "message": "Todos"
   },
@@ -253,36 +209,6 @@
   },
   "useHeaderButton": {
     "message": "Usar botón del encabezado"
-  },
-  "chainScoreVisibility": {
-    "message": "Visibilidad de Puntuación"
-  },
-  "chainScoreVisibilityDesc": {
-    "message": "Controla dónde se muestran las métricas de análisis de redirecciones en la extensión."
-  },
-  "extensionPopup": {
-    "message": "Popup de la Extensión"
-  },
-  "extensionPopupDesc": {
-    "message": "Mostrar la tarjeta de análisis al hacer clic en el icono de la extensión, mostrando grado y tiempo."
-  },
-  "sidepanelMonitor": {
-    "message": "Monitor en Panel Lateral"
-  },
-  "sidepanelMonitorDesc": {
-    "message": "Inyectar el resumen de puntuación en la parte superior del panel de monitoreo activo."
-  },
-  "dashboardCenter": {
-    "message": "Centro del Panel"
-  },
-  "dashboardCenterDesc": {
-    "message": "Renderizar la interfaz visual completa incluyendo insignias de colores, alertas y recomendaciones."
-  },
-  "aiPoweredInsights": {
-    "message": "Análisis con IA"
-  },
-  "aiPoweredInsightsDesc": {
-    "message": "Estamos construyendo capacidades de IA para analizar patrones complejos de redirección y riesgos SEO automáticamente. Muy pronto."
   },
   "hopSingle": {
     "message": "salto"
@@ -305,9 +231,6 @@
   "totalLabel": {
     "message": "total"
   },
-  "impactLabel": {
-    "message": "Impacto"
-  },
   "redirectChain": {
     "message": "Cadena de Redirección"
   },
@@ -328,5 +251,26 @@
   },
   "categoryContent": {
     "message": "Contenido"
+  },
+  "imageFormat": {
+    "message": "Imagen"
+  },
+  "exportingImage": {
+    "message": "Exportando..."
+  },
+  "exportToImage": {
+    "message": "Exportar a imagen"
+  },
+  "favoriteLabel": {
+    "message": "Favorito"
+  },
+  "favoritedLabel": {
+    "message": "Agregado a favoritos"
+  },
+  "cancelLabel": {
+    "message": "Cancelar"
+  },
+  "clearLabel": {
+    "message": "Limpiar"
   }
 }

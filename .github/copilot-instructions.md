@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-RedirectWise is a cross-browser extension (Chrome, Edge, Firefox) that tracks HTTP redirect chains and provides SEO analysis. Built with WXT framework, React 18, TypeScript, and Tailwind CSS.
+RedirectWise is a cross-browser extension (Chrome, Edge, Firefox) that tracks HTTP redirect chains. Built with WXT framework, React 18, TypeScript, and Tailwind CSS.
 
 ## Architecture
 
@@ -22,8 +22,7 @@ RedirectWise is a cross-browser extension (Chrome, Edge, Firefox) that tracks HT
 ### Key Types (`types/redirect.ts`)
 
 - **`RedirectItem`** - Single redirect hop with URL, status, headers, timing
-- **`HistoryEntry`** - Saved chain with `ChainScore`, metadata, favorites
-- **`ChainScore`** - SEO grade (A-F) with issues/recommendations
+- **`HistoryEntry`** - Saved chain with metadata, favorites
 
 ## Development Commands
 
@@ -65,23 +64,13 @@ chrome.runtime.sendMessage({ name: 'getTabPath', tabId: tab.id });
 // Background always returns true to keep channel open for async
 ```
 
-### Chain Score Calculation
-
-SEO scoring in `calculateChainScore()` deducts points for:
-
-- Each redirect: -10 points
-- > 3 redirects: -15 additional
-- 302/307 temporary: -5 each
-- Client-side redirects: -15 each
-- HTTP (non-HTTPS): -10
-
 ## File Conventions
 
 - Components in `components/` are reusable across popup and dashboard
 - Chrome API types from `@types/chrome`
 - Icons exclusively from `lucide-react`
 - Date formatting via `date-fns`
-- PDF generation uses `jspdf` + `jspdf-autotable`
+- PDF generation uses `pdf-lib`
 
 ## WXT-Specific Notes
 

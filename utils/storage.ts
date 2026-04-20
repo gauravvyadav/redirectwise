@@ -4,7 +4,6 @@ import { v4 as uuidv4 } from 'uuid';
 import {
   HistoryEntry,
   RedirectItem,
-  calculateChainScore,
   calculateTotalDuration,
 } from '../types/redirect';
 
@@ -16,18 +15,12 @@ export interface Settings {
   darkMode: boolean;
   autoSaveHistory: boolean;
   maxHistoryEntries: number;
-  showChainScoreInPopup: boolean;
-  showChainScoreInSidepanel: boolean;
-  showChainScoreInDashboard: boolean;
 }
 
 const defaultSettings: Settings = {
   darkMode: false,
   autoSaveHistory: true,
   maxHistoryEntries: MAX_HISTORY_ENTRIES,
-  showChainScoreInPopup: true,
-  showChainScoreInSidepanel: true,
-  showChainScoreInDashboard: true,
 };
 
 // Get all history entries
@@ -50,7 +43,6 @@ export async function saveHistoryEntry(path: RedirectItem[]): Promise<HistoryEnt
 
     const originalUrl = path[0]?.url || '';
     const finalUrl = path[path.length - 1]?.url || originalUrl;
-    const chainScore = calculateChainScore(path);
 
     // Calculate total time
     const totalTime = calculateTotalDuration(path);
@@ -59,20 +51,49 @@ export async function saveHistoryEntry(path: RedirectItem[]): Promise<HistoryEnt
       p => p.type === 'server_redirect' || p.type === 'client_redirect'
     ).length;
 
-    const entry: HistoryEntry = {
+    // Try to merge with an existing recent entry if it is a subpath of this path
+    let merged = false;
+    const scanLimit = Math.min(history.length, 5);
+    for (let i = 0; i < scanLimit; i++) {
+      const recentEntry = history[i];
+      if (
+        recentEntry.path.length < path.length &&
+        Math.abs(Date.now() - recentEntry.timestamp) < 5 * 60 * 1000 &&
+        recentEntry.path.every((item, idx) => item.id === path[idx]?.id)
+      ) {
+        // Update the existing entry in place
+        recentEntry.path = path;
+        recentEntry.finalUrl = finalUrl;
+        recentEntry.totalTime = totalTime;
+        recentEntry.redirectCount = redirectCount;
+        recentEntry.timestamp = Date.now();
+
+        // Move this updated entry to the top of the history list (most recent activity)
+        if (i > 0) {
+          history.splice(i, 1);
+          history.unshift(recentEntry);
+        }
+        merged = true;
+        console.log('[RedirectWise] Merged path into existing history entry:', recentEntry.id);
+        break;
+      }
+    }
+
+    const entry: HistoryEntry = merged ? history[0] : {
       id: uuidv4(),
       originalUrl,
       finalUrl,
       path,
       timestamp: Date.now(),
-      chainScore,
       totalTime,
       redirectCount,
       isFavorite: false,
     };
 
-    // Add to beginning of array
-    history.unshift(entry);
+    if (!merged) {
+      // Add to beginning of array
+      history.unshift(entry);
+    }
 
     // Limit history size
     const trimmedHistory = history.slice(0, MAX_HISTORY_ENTRIES);
@@ -178,23 +199,17 @@ export async function searchHistory(query: string): Promise<HistoryEntry[]> {
 export async function getHistoryStats() {
   const history = await getHistory();
 
-  const gradeDistribution: Record<string, number> = { A: 0, B: 0, C: 0, D: 0, F: 0 };
   let totalRedirects = 0;
-  let totalScore = 0;
   let favorites = 0;
 
   for (const entry of history) {
     totalRedirects += entry.redirectCount;
-    totalScore += entry.chainScore.score;
-    gradeDistribution[entry.chainScore.grade]++;
     if (entry.isFavorite) favorites++;
   }
 
   return {
     totalEntries: history.length,
     totalRedirects,
-    avgScore: history.length > 0 ? Math.round(totalScore / history.length) : 0,
-    gradeDistribution,
     favorites,
   };
 }

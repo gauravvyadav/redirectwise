@@ -1,9 +1,10 @@
 {
   "extensionName": {
-    "message": "RedirectWise: Проверка редиректов и SEO"
+    "message": "RedirectWise: Проверка перенаправлений URL",
+    "description": "Name of the extension"
   },
   "extensionDesc": {
-    "message": "Отслеживайте редиректы и обнаруживайте скрытые рекламные ссылки с постоянной панелью. SEO-проверка в реальном времени с popup и боковой панелью."
+    "message": "Отслеживайте редиректы и обнаруживайте скрытые рекламные ссылки с постоянной панелью."
   },
   "emptyStateSpecialPageTitle": {
     "message": "Невозможно отслеживать эту страницу"
@@ -18,7 +19,7 @@
     "message": "Перейдите по URL или обновите страницу, чтобы записать путь редиректов."
   },
   "headerSubtitle": {
-    "message": "Анализатор путей редиректов"
+    "message": "Проверка перенаправлений URL"
   },
   "headerLightMode": {
     "message": "Светлый режим"
@@ -37,27 +38,6 @@
   },
   "headerClearPath": {
     "message": "Очистить путь"
-  },
-  "scoreGradeA": {
-    "message": "Отлично! Оптимальная цепочка редиректов."
-  },
-  "scoreGradeB": {
-    "message": "Хорошо. Возможны небольшие улучшения."
-  },
-  "scoreGradeC": {
-    "message": "Удовлетворительно. Есть проблемы."
-  },
-  "scoreGradeD": {
-    "message": "Плохо. Обнаружены серьёзные проблемы."
-  },
-  "scoreGradeF": {
-    "message": "Критично. Обнаружены серьёзные ошибки."
-  },
-  "scoreIssueSingle": {
-    "message": "проблема"
-  },
-  "scoreIssuePlural": {
-    "message": "проблем"
   },
   "copyPathAs": {
     "message": "Копировать путь как:"
@@ -131,9 +111,6 @@
   "monitoringLabel": {
     "message": "Мониторинг:"
   },
-  "scoreLabel": {
-    "message": "Оценка:"
-  },
   "autoScroll": {
     "message": "Автопрокрутка"
   },
@@ -152,15 +129,6 @@
   "generalSettings": {
     "message": "Общие настройки"
   },
-  "chainScoreAnalysis": {
-    "message": "Анализ оценки цепочки"
-  },
-  "aiIntegrations": {
-    "message": "ИИ-интеграции"
-  },
-  "soon": {
-    "message": "Скоро"
-  },
   "darkModeAppearance": {
     "message": "Оформление тёмного режима"
   },
@@ -169,9 +137,6 @@
   },
   "sortByDate": {
     "message": "По дате"
-  },
-  "sortByScore": {
-    "message": "По оценке"
   },
   "sortByRedirects": {
     "message": "По редиректам"
@@ -199,12 +164,6 @@
   },
   "deleteEntry": {
     "message": "Удалить"
-  },
-  "issuesFound": {
-    "message": "Обнаружены проблемы"
-  },
-  "recommendations": {
-    "message": "Рекомендации"
   },
   "success": {
     "message": "Успех"
@@ -236,9 +195,6 @@
   "entrySingle": {
     "message": "запись"
   },
-  "avgScore": {
-    "message": "ср. оценка"
-  },
   "filterAll": {
     "message": "Все"
   },
@@ -253,36 +209,6 @@
   },
   "useHeaderButton": {
     "message": "Использовать кнопку в заголовке"
-  },
-  "chainScoreVisibility": {
-    "message": "Видимость оценки цепочки"
-  },
-  "chainScoreVisibilityDesc": {
-    "message": "Управляйте отображением метрик анализа редиректов в расширении."
-  },
-  "extensionPopup": {
-    "message": "Всплывающее окно"
-  },
-  "extensionPopupDesc": {
-    "message": "Показывать карту анализа при нажатии на значок расширения."
-  },
-  "sidepanelMonitor": {
-    "message": "Боковая панель мониторинга"
-  },
-  "sidepanelMonitorDesc": {
-    "message": "Добавить сводку оценки в верхней части активной панели мониторинга."
-  },
-  "dashboardCenter": {
-    "message": "Центр панели"
-  },
-  "dashboardCenterDesc": {
-    "message": "Отображать полный визуальный интерфейс оценки с цветными значками, оповещениями и рекомендациями."
-  },
-  "aiPoweredInsights": {
-    "message": "ИИ-аналитика"
-  },
-  "aiPoweredInsightsDesc": {
-    "message": "Мы разрабатываем возможности ИИ для автоматического анализа сложных паттернов редиректов. Скоро."
   },
   "hopSingle": {
     "message": "хоп"
@@ -305,9 +231,6 @@
   "totalLabel": {
     "message": "всего"
   },
-  "impactLabel": {
-    "message": "Влияние"
-  },
   "redirectChain": {
     "message": "Цепочка редиректов"
   },
@@ -328,5 +251,26 @@
   },
   "categoryContent": {
     "message": "Контент"
+  },
+  "imageFormat": {
+    "message": "Изображение"
+  },
+  "exportingImage": {
+    "message": "Экспорт..."
+  },
+  "exportToImage": {
+    "message": "Экспорт в изображение"
+  },
+  "favoriteLabel": {
+    "message": "Избранное"
+  },
+  "favoritedLabel": {
+    "message": "В избранном"
+  },
+  "cancelLabel": {
+    "message": "Отмена"
+  },
+  "clearLabel": {
+    "message": "Очистить"
   }
 }

@@ -14,14 +14,13 @@ Track redirects, uncover hidden ad/tracking hops, and review the full redirect j
   </a>
 </p>
 
-Latest tagged release: `v1.4.2`
+Latest tagged release: `v1.5.0`
 
 ## Features
 
 - `Popup redirect inspector` for the current tab with a full hop-by-hop path view
 - `Realtime sidepanel monitor` that keeps tracking redirects continuously while you browse
 - `Accurate timing insights` with per-hop duration, inter-hop gap timing, and user-friendly time formatting
-- `SEO chain score` with grades, issues, and recommendations
 - `Persistent history dashboard` with search, sort, filters, favorites, and notes-ready metadata
 - `Export tools` for text, CSV, individual PDFs, and bulk PDF history export
 - `Header inspection` for response headers, IP addresses, caching, content, and security details
@@ -32,14 +31,14 @@ Latest tagged release: `v1.4.2`
 
 ## Release Highlights
 
+- `v1.5.0`
+  Added PNG image export, redesigned popup actions layout, custom delete confirmation dialog, synced brand name (RedirectWise) and slogan (URL Redirect Checker) across all locales, and removed all SEO-related feature text.
 - `v1.4.x`
   Added full i18n coverage, expanded language support to 18 locales, improved dashboard refresh behavior, fixed history persistence, and polished redirect timing/gap display.
-- `v1.3.0`
-  Improved SEO scoring and analysis quality.
 - `v1.2.0`
-  Optimized performance, synchronized redirect recording, improved sidepanel auto-scroll, and redesigned dashboard settings around chain score controls.
+  Optimized performance, synchronized redirect recording, and improved sidepanel auto-scroll.
 - `v1.1.0`
-  Improved scoring logic and UI polish.
+  Improved UI polish.
 - `v1.0.x`
   Added the extension badge, enhanced URL/header details, moved PDF export to `pdf-lib`, and shipped the website/docs assets.
 
@@ -135,7 +134,7 @@ redirectwise/
 1. `Background service worker`
    Captures main-frame navigations with `webRequest` and `webNavigation`, records redirect hops, headers, IPs, status codes, and timing metadata, then broadcasts live updates to the UI.
 2. `Popup`
-   Shows the current tab’s redirect journey, chain score, copy/export actions, and detailed per-hop inspection.
+   Shows the current tab’s redirect journey, copy/export actions, and detailed per-hop inspection.
 3. `Sidepanel`
    Acts as a continuous live monitor so you can keep browsing and watch redirect activity update in real time.
 4. `Dashboard`

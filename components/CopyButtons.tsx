@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { Check, Copy, FileDown, FileSpreadsheet } from 'lucide-react';
+import { Check, Copy, FileDown, FileSpreadsheet, FileImage, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { RedirectItem } from '../types/redirect';
 
@@ -7,6 +7,8 @@ interface CopyButtonsProps {
   redirectPath: RedirectItem[];
   darkMode?: boolean;
   onExportPDF?: () => Promise<void>;
+  onExportImage?: () => Promise<void>;
+  onClear?: () => void;
 }
 
 type CopyFormat = 'text' | 'csv';
@@ -15,9 +17,12 @@ export default function CopyButtons({
   redirectPath,
   darkMode = false,
   onExportPDF,
+  onExportImage,
+  onClear,
 }: CopyButtonsProps) {
   const [copiedFormat, setCopiedFormat] = useState<CopyFormat | null>(null);
   const [exporting, setExporting] = useState(false);
+  const [exportingImage, setExportingImage] = useState(false);
 
   const generateTextOutput = (): string => {
     return redirectPath
@@ -29,8 +34,8 @@ export default function CopyButtons({
             item.redirect_type === 'permanent'
               ? 'Permanent'
               : item.redirect_type === 'hsts'
-              ? 'HSTS'
-              : 'Temporary';
+                ? 'HSTS'
+                : 'Temporary';
           statusString = `${item.status_code}: ${redirectType} redirect to ${item.redirect_url}`;
         }
 
@@ -94,26 +99,35 @@ export default function CopyButtons({
     }
   };
 
+  const handleExportImage = async () => {
+    if (exportingImage || !onExportImage) return;
+
+    setExportingImage(true);
+    try {
+      await onExportImage();
+    } catch (error) {
+      console.error('Failed to export image:', error);
+    } finally {
+      setExportingImage(false);
+    }
+  };
+
   return (
     <div
       className={clsx(
-        'flex items-center gap-2 px-4 py-2 mt-3 border-y',
+        'w-full flex items-center gap-2 px-4 py-2',
         darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'
       )}
     >
-      <span className={clsx('text-xs mr-auto', darkMode ? 'text-slate-400' : 'text-slate-500')}>
-        {chrome.i18n.getMessage('copyPathAs')}
-      </span>
-
       <button
         onClick={() => handleCopy('text')}
         className={clsx(
-          'flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all',
+          'flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all',
           copiedFormat === 'text'
             ? 'bg-green-100 text-green-700'
             : darkMode
-            ? 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-            : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+              ? 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+              : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
         )}
       >
         {copiedFormat === 'text' ? (
@@ -132,12 +146,12 @@ export default function CopyButtons({
       <button
         onClick={() => handleCopy('csv')}
         className={clsx(
-          'flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all',
+          'flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all',
           copiedFormat === 'csv'
             ? 'bg-green-100 text-green-700'
             : darkMode
-            ? 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-            : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+              ? 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+              : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
         )}
       >
         {copiedFormat === 'csv' ? (
@@ -154,25 +168,59 @@ export default function CopyButtons({
       </button>
 
       {onExportPDF && (
-        <>
-          <div className={clsx('w-px h-5', darkMode ? 'bg-slate-600' : 'bg-slate-300')} />
-
-          <button
-            onClick={handleExportPDF}
-            disabled={exporting}
-            className={clsx(
-              'flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all',
-              exporting
-                ? 'bg-blue-100 text-blue-700 cursor-wait'
-                : darkMode
+        <button
+          onClick={handleExportPDF}
+          disabled={exporting}
+          className={clsx(
+            'flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all',
+            exporting
+              ? 'bg-blue-100 text-blue-700 cursor-wait'
+              : darkMode
                 ? 'bg-blue-600 text-white hover:bg-blue-500'
                 : 'bg-blue-500 text-white hover:bg-blue-600'
-            )}
-          >
-            <FileDown className={clsx('w-3.5 h-3.5', exporting && 'animate-bounce')} />
-            {exporting ? chrome.i18n.getMessage('exportingPdf') : chrome.i18n.getMessage('pdfFormat')}
-          </button>
-        </>
+          )}
+        >
+          <FileDown className={clsx('w-3.5 h-3.5', exporting && 'animate-bounce')} />
+          {exporting
+            ? chrome.i18n.getMessage('exportingPdf')
+            : chrome.i18n.getMessage('pdfFormat')}
+        </button>
+      )}
+
+      {onExportImage && (
+        <button
+          onClick={handleExportImage}
+          disabled={exportingImage}
+          className={clsx(
+            'flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all',
+            exportingImage
+              ? 'bg-blue-100 text-blue-700 cursor-wait'
+              : darkMode
+                ? 'bg-blue-600 text-white hover:bg-blue-500'
+                : 'bg-blue-500 text-white hover:bg-blue-600'
+          )}
+        >
+          <FileImage className={clsx('w-3.5 h-3.5', exportingImage && 'animate-bounce')} />
+          {exportingImage
+            ? chrome.i18n.getMessage('exportingImage')
+            : chrome.i18n.getMessage('imageFormat')}
+        </button>
+      )}
+
+      {onClear && (
+        <button
+          onClick={onClear}
+          className={clsx(
+            'flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all border',
+            darkMode
+              ? 'bg-slate-800 border-slate-700 text-red-400 hover:text-red-300 hover:bg-slate-700'
+              : 'bg-white border-slate-200 text-red-500 hover:text-red-600 hover:bg-red-50/50'
+          )}
+          title={chrome.i18n.getMessage('headerClearPath')}
+        >
+          <Trash2 className="w-3.5 h-3.5" />
+          {chrome.i18n.getMessage('clearLabel')}
+        </button>
       )}
     </div>
   );

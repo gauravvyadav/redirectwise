@@ -1,4 +1,5 @@
 import clsx from 'clsx';
+import { format } from 'date-fns';
 import {
   ArrowRight,
   ChevronDown,
@@ -40,6 +41,14 @@ export default function RedirectItemCard({
     setTimeout(() => setCopied(false), 1500);
   };
 
+  const formatTime = (timestamp: number) => {
+    try {
+      return format(timestamp, 'HH:mm:ss.SSS');
+    } catch {
+      return '';
+    }
+  };
+
   const getStatusColor = () => {
     if (item.statusObject.isSuccess) return 'bg-green-500';
     if (item.statusObject.isRedirect) return 'bg-amber-500';
@@ -68,8 +77,8 @@ export default function RedirectItemCard({
       return item.redirect_type === 'permanent'
         ? chrome.i18n.getMessage('permanentRedirect')
         : item.redirect_type === 'hsts'
-        ? chrome.i18n.getMessage('hstsRedirect')
-        : chrome.i18n.getMessage('temporaryRedirect');
+          ? chrome.i18n.getMessage('hstsRedirect')
+          : chrome.i18n.getMessage('temporaryRedirect');
     }
     return item.status_line;
   };
@@ -127,7 +136,7 @@ export default function RedirectItemCard({
         </div>
 
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1">
+          <div className="flex items-center gap-2 mb-1.5 flex-wrap">
             <span
               className={clsx(
                 'font-medium text-sm',
@@ -136,10 +145,10 @@ export default function RedirectItemCard({
             >
               {getStatusLabel()}
             </span>
-            <span className="flex-1" />
+            <span className="grow min-w-1" />
             <span
               className={clsx(
-                'text-xs font-medium px-1.5 py-0.5 rounded',
+                'text-xs font-medium px-1.5 py-0.5 rounded shrink-0',
                 item.statusObject.isSuccess &&
                   (darkMode ? 'bg-green-900/50 text-green-300' : 'bg-green-100 text-green-700'),
                 item.statusObject.isRedirect &&
@@ -155,11 +164,21 @@ export default function RedirectItemCard({
             {item.timing && (
               <span
                 className={clsx(
-                  'text-xs px-1.5 py-0.5 rounded',
+                  'text-xs px-1.5 py-0.5 rounded shrink-0',
                   darkMode ? 'bg-slate-700 text-slate-300' : 'bg-slate-200 text-slate-600'
                 )}
               >
                 {formatDuration(item.timing.duration)}
+              </span>
+            )}
+            {item.timestamp && (
+              <span
+                className={clsx(
+                  'text-[10px] font-mono px-1.5 py-0.5 rounded shrink-0',
+                  darkMode ? 'bg-slate-700 text-slate-400' : 'bg-slate-100 text-slate-500'
+                )}
+              >
+                {formatTime(item.timestamp)}
               </span>
             )}
             {quickIndicators.map((indicator, i) => (
@@ -261,7 +280,8 @@ export default function RedirectItemCard({
                   : 'bg-purple-50 border border-purple-200 text-purple-700'
               )}
             >
-              <strong>{chrome.i18n.getMessage('hstsRedirect')}:</strong> {chrome.i18n.getMessage('hstsRedirectDesc')}
+              <strong>{chrome.i18n.getMessage('hstsRedirect')}:</strong>{' '}
+              {chrome.i18n.getMessage('hstsRedirectDesc')}
             </div>
           )}
         </div>

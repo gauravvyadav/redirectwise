@@ -1,9 +1,10 @@
 {
   "extensionName": {
-    "message": "RedirectWise: HTTP-Weiterleitungsprüfer & SEO-Audit-Tool"
+    "message": "RedirectWise: URL-Weiterleitungsprüfer",
+    "description": "Name of the extension"
   },
   "extensionDesc": {
-    "message": "Verfolgen Sie Weiterleitungen und erkennen Sie versteckte Werbelinks mit einem persistenten Dashboard. Echtzeit-SEO-Prüfer mit Popup & Seitenpanel."
+    "message": "Verfolgen Sie Weiterleitungen und erkennen Sie versteckte Werbelinks mit einem persistenten Dashboard."
   },
   "emptyStateSpecialPageTitle": {
     "message": "Diese Seite kann nicht verfolgt werden"
@@ -18,7 +19,7 @@
     "message": "Navigieren Sie zu einer URL oder aktualisieren Sie die Seite, um den Weiterleitungspfad zu erfassen."
   },
   "headerSubtitle": {
-    "message": "Weiterleitungspfad-Analysator"
+    "message": "URL-Weiterleitungsprüfer"
   },
   "headerLightMode": {
     "message": "Heller Modus"
@@ -37,27 +38,6 @@
   },
   "headerClearPath": {
     "message": "Pfad löschen"
-  },
-  "scoreGradeA": {
-    "message": "Ausgezeichnet! Optimale Weiterleitungskette."
-  },
-  "scoreGradeB": {
-    "message": "Gut. Kleine Verbesserungen möglich."
-  },
-  "scoreGradeC": {
-    "message": "Befriedigend. Einige Probleme zu beheben."
-  },
-  "scoreGradeD": {
-    "message": "Mangelhaft. Erhebliche Probleme gefunden."
-  },
-  "scoreGradeF": {
-    "message": "Kritisch. Schwerwiegende Probleme erkannt."
-  },
-  "scoreIssueSingle": {
-    "message": "Problem"
-  },
-  "scoreIssuePlural": {
-    "message": "Probleme"
   },
   "copyPathAs": {
     "message": "Pfad kopieren als:"
@@ -131,9 +111,6 @@
   "monitoringLabel": {
     "message": "Überwachung:"
   },
-  "scoreLabel": {
-    "message": "Bewertung:"
-  },
   "autoScroll": {
     "message": "Auto-Scrollen"
   },
@@ -152,15 +129,6 @@
   "generalSettings": {
     "message": "Allgemeine Einstellungen"
   },
-  "chainScoreAnalysis": {
-    "message": "Kettenanalyse-Bewertung"
-  },
-  "aiIntegrations": {
-    "message": "KI-Integrationen"
-  },
-  "soon": {
-    "message": "Bald"
-  },
   "darkModeAppearance": {
     "message": "Dunkler Modus Erscheinung"
   },
@@ -169,9 +137,6 @@
   },
   "sortByDate": {
     "message": "Nach Datum sortieren"
-  },
-  "sortByScore": {
-    "message": "Nach Bewertung sortieren"
   },
   "sortByRedirects": {
     "message": "Nach Weiterleitungen sortieren"
@@ -199,12 +164,6 @@
   },
   "deleteEntry": {
     "message": "Löschen"
-  },
-  "issuesFound": {
-    "message": "Probleme gefunden"
-  },
-  "recommendations": {
-    "message": "Empfehlungen"
   },
   "success": {
     "message": "Erfolg"
@@ -236,9 +195,6 @@
   "entrySingle": {
     "message": "Eintrag"
   },
-  "avgScore": {
-    "message": "Ø Bewertung"
-  },
   "filterAll": {
     "message": "Alle"
   },
@@ -253,36 +209,6 @@
   },
   "useHeaderButton": {
     "message": "Header-Button verwenden"
-  },
-  "chainScoreVisibility": {
-    "message": "Kettenbewertung Sichtbarkeit"
-  },
-  "chainScoreVisibilityDesc": {
-    "message": "Steuern Sie, wo die Weiterleitungsanalyse-Metriken angezeigt werden."
-  },
-  "extensionPopup": {
-    "message": "Erweiterungs-Popup"
-  },
-  "extensionPopupDesc": {
-    "message": "Analysekarte beim Klicken auf das Erweiterungssymbol anzeigen."
-  },
-  "sidepanelMonitor": {
-    "message": "Seitenpanel Echtzeit-Monitor"
-  },
-  "sidepanelMonitorDesc": {
-    "message": "Bewertungszusammenfassung am oberen Rand des aktiven Überwachungsbereichs einfügen."
-  },
-  "dashboardCenter": {
-    "message": "Dashboard-Zentrale"
-  },
-  "dashboardCenterDesc": {
-    "message": "Vollständige visuelle Bewertungs-UI mit farbigen Abzeichen, Warnungen und Empfehlungen rendern."
-  },
-  "aiPoweredInsights": {
-    "message": "KI-gestützte Einblicke"
-  },
-  "aiPoweredInsightsDesc": {
-    "message": "Wir entwickeln derzeit lokale KI-Funktionen zur automatischen Analyse komplexer Weiterleitungsmuster. Kommt sehr bald."
   },
   "hopSingle": {
     "message": "Hop"
@@ -305,9 +231,6 @@
   "totalLabel": {
     "message": "gesamt"
   },
-  "impactLabel": {
-    "message": "Auswirkung"
-  },
   "redirectChain": {
     "message": "Weiterleitungskette"
   },
@@ -328,5 +251,26 @@
   },
   "categoryContent": {
     "message": "Inhalt"
+  },
+  "imageFormat": {
+    "message": "Bild"
+  },
+  "exportingImage": {
+    "message": "Exportieren..."
+  },
+  "exportToImage": {
+    "message": "Als Bild exportieren"
+  },
+  "favoriteLabel": {
+    "message": "Favorit"
+  },
+  "favoritedLabel": {
+    "message": "Favorisiert"
+  },
+  "cancelLabel": {
+    "message": "Abbrechen"
+  },
+  "clearLabel": {
+    "message": "Löschen"
   }
 }

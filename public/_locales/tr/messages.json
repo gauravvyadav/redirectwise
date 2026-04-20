@@ -1,9 +1,10 @@
 {
   "extensionName": {
-    "message": "RedirectWise: HTTP Yönlendirme Denetleyicisi ve SEO Denetim Aracı"
+    "message": "RedirectWise: URL Yönlendirme Denetleyicisi",
+    "description": "Name of the extension"
   },
   "extensionDesc": {
-    "message": "Kalıcı bir pano ile yönlendirmeleri takip edin ve gizli reklam bağlantılarını yakalayın. Popup ve yan panel ile gerçek zamanlı SEO denetleyicisi."
+    "message": "Kalıcı bir pano ile yönlendirmeleri takip edin ve gizli reklam bağlantılarını yakalayın."
   },
   "emptyStateSpecialPageTitle": {
     "message": "Bu sayfa izlenemiyor"
@@ -18,7 +19,7 @@
     "message": "Yönlendirme yolunu yakalamak için bir URL'ye gidin veya sayfayı yenileyin."
   },
   "headerSubtitle": {
-    "message": "Yönlendirme Yolu Analizörü"
+    "message": "URL Yönlendirme Denetleyicisi"
   },
   "headerLightMode": {
     "message": "Açık mod"
@@ -37,27 +38,6 @@
   },
   "headerClearPath": {
     "message": "Yolu temizle"
-  },
-  "scoreGradeA": {
-    "message": "Mükemmel! Optimal yönlendirme zinciri."
-  },
-  "scoreGradeB": {
-    "message": "İyi. Küçük iyileştirmeler mümkün."
-  },
-  "scoreGradeC": {
-    "message": "Orta. Bazı sorunlar mevcut."
-  },
-  "scoreGradeD": {
-    "message": "Kötü. Önemli sorunlar bulundu."
-  },
-  "scoreGradeF": {
-    "message": "Kritik. Büyük sorunlar tespit edildi."
-  },
-  "scoreIssueSingle": {
-    "message": "sorun"
-  },
-  "scoreIssuePlural": {
-    "message": "sorun"
   },
   "copyPathAs": {
     "message": "Yolu kopyala:"
@@ -131,9 +111,6 @@
   "monitoringLabel": {
     "message": "İzleniyor:"
   },
-  "scoreLabel": {
-    "message": "Puan:"
-  },
   "autoScroll": {
     "message": "Otomatik kaydırma"
   },
@@ -152,15 +129,6 @@
   "generalSettings": {
     "message": "Genel Ayarlar"
   },
-  "chainScoreAnalysis": {
-    "message": "Zincir Puanı Analizi"
-  },
-  "aiIntegrations": {
-    "message": "Yapay Zeka Entegrasyonları"
-  },
-  "soon": {
-    "message": "Yakında"
-  },
   "darkModeAppearance": {
     "message": "Koyu Mod Görünümü"
   },
@@ -169,9 +137,6 @@
   },
   "sortByDate": {
     "message": "Tarihe Göre Sırala"
-  },
-  "sortByScore": {
-    "message": "Puana Göre Sırala"
   },
   "sortByRedirects": {
     "message": "Yönlendirmelere Göre Sırala"
@@ -199,12 +164,6 @@
   },
   "deleteEntry": {
     "message": "Sil"
-  },
-  "issuesFound": {
-    "message": "Bulunan Sorunlar"
-  },
-  "recommendations": {
-    "message": "Öneriler"
   },
   "success": {
     "message": "Başarılı"
@@ -236,9 +195,6 @@
   "entrySingle": {
     "message": "kayıt"
   },
-  "avgScore": {
-    "message": "ort. puan"
-  },
   "filterAll": {
     "message": "Tümü"
   },
@@ -253,36 +209,6 @@
   },
   "useHeaderButton": {
     "message": "Başlık düğmesini kullan"
-  },
-  "chainScoreVisibility": {
-    "message": "Zincir Puanı Görünürlüğü"
-  },
-  "chainScoreVisibilityDesc": {
-    "message": "Yönlendirme analiz metriklerinin uzantıda nerede gösterileceğini kontrol edin."
-  },
-  "extensionPopup": {
-    "message": "Uzantı Popup"
-  },
-  "extensionPopupDesc": {
-    "message": "Araç çubuğundaki uzantı simgesine tıklandığında analiz kartını göster."
-  },
-  "sidepanelMonitor": {
-    "message": "Yan Panel Gerçek Zamanlı Monitör"
-  },
-  "sidepanelMonitorDesc": {
-    "message": "Aktif izleme panelinin üstüne puan özetini ekle."
-  },
-  "dashboardCenter": {
-    "message": "Pano Merkezi"
-  },
-  "dashboardCenterDesc": {
-    "message": "Renkli rozetler, sorun uyarıları ve öneriler dahil tam görsel puan arayüzünü oluştur."
-  },
-  "aiPoweredInsights": {
-    "message": "Yapay Zeka Analizleri"
-  },
-  "aiPoweredInsightsDesc": {
-    "message": "Karmaşık yönlendirme kalıplarını ve SEO risklerini otomatik analiz etmek için yapay zeka yetenekleri geliştiriyoruz. Çok yakında."
   },
   "hopSingle": {
     "message": "atlama"
@@ -305,9 +231,6 @@
   "totalLabel": {
     "message": "toplam"
   },
-  "impactLabel": {
-    "message": "Etki"
-  },
   "redirectChain": {
     "message": "Yönlendirme Zinciri"
   },
@@ -328,5 +251,26 @@
   },
   "categoryContent": {
     "message": "İçerik"
+  },
+  "imageFormat": {
+    "message": "Resim"
+  },
+  "exportingImage": {
+    "message": "Dışa aktarılıyor..."
+  },
+  "exportToImage": {
+    "message": "Resim olarak dışa aktar"
+  },
+  "favoriteLabel": {
+    "message": "Favori"
+  },
+  "favoritedLabel": {
+    "message": "Favorilere eklendi"
+  },
+  "cancelLabel": {
+    "message": "İptal"
+  },
+  "clearLabel": {
+    "message": "Temizle"
   }
 }

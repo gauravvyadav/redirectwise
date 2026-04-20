@@ -1,5 +1,6 @@
-import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'wxt';
+import tailwindcss from '@tailwindcss/vite';
+import pkg from './package.json';
 
 export default defineConfig({
   modules: ['@wxt-dev/module-react'],
@@ -7,7 +8,7 @@ export default defineConfig({
     default_locale: 'en',
     name: '__MSG_extensionName__',
     description: '__MSG_extensionDesc__',
-    version: '1.4.2',
+    version: pkg.version,
     permissions: ['webRequest', 'webNavigation', 'tabs', 'storage', 'sidePanel'],
     host_permissions: ['<all_urls>'],
     icons: {

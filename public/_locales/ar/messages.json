@@ -1,9 +1,10 @@
 {
   "extensionName": {
-    "message": "RedirectWise: فحص إعادة التوجيه و SEO"
+    "message": "RedirectWise: متحقّق تحويلات الروابط",
+    "description": "Name of the extension"
   },
   "extensionDesc": {
-    "message": "تتبع عمليات إعادة التوجيه واكتشف روابط الإعلانات المخفية مع لوحة تحكم دائمة. فاحص SEO في الوقت الفعلي مع نافذة منبثقة ولوحة جانبية."
+    "message": "تتبع عمليات إعادة التوجيه واكتشف روابط الإعلانات المخفية مع لوحة تحكم دائمة."
   },
   "emptyStateSpecialPageTitle": {
     "message": "لا يمكن تتبع هذه الصفحة"
@@ -18,7 +19,7 @@
     "message": "انتقل إلى عنوان URL أو قم بتحديث الصفحة لالتقاط مسار إعادة التوجيه."
   },
   "headerSubtitle": {
-    "message": "محلل مسارات إعادة التوجيه"
+    "message": "متحقق تحويلات الروابط"
   },
   "headerLightMode": {
     "message": "الوضع الفاتح"
@@ -37,27 +38,6 @@
   },
   "headerClearPath": {
     "message": "مسح المسار"
-  },
-  "scoreGradeA": {
-    "message": "ممتاز! سلسلة إعادة توجيه مثالية."
-  },
-  "scoreGradeB": {
-    "message": "جيد. تحسينات طفيفة ممكنة."
-  },
-  "scoreGradeC": {
-    "message": "مقبول. بعض المشاكل تحتاج حل."
-  },
-  "scoreGradeD": {
-    "message": "ضعيف. تم العثور على مشاكل كبيرة."
-  },
-  "scoreGradeF": {
-    "message": "حرج. تم اكتشاف مشاكل خطيرة."
-  },
-  "scoreIssueSingle": {
-    "message": "مشكلة"
-  },
-  "scoreIssuePlural": {
-    "message": "مشاكل"
   },
   "copyPathAs": {
     "message": "نسخ المسار كـ:"
@@ -131,9 +111,6 @@
   "monitoringLabel": {
     "message": "المراقبة:"
   },
-  "scoreLabel": {
-    "message": "النتيجة:"
-  },
   "autoScroll": {
     "message": "تمرير تلقائي"
   },
@@ -152,15 +129,6 @@
   "generalSettings": {
     "message": "الإعدادات العامة"
   },
-  "chainScoreAnalysis": {
-    "message": "تحليل نتيجة السلسلة"
-  },
-  "aiIntegrations": {
-    "message": "تكامل الذكاء الاصطناعي"
-  },
-  "soon": {
-    "message": "قريباً"
-  },
   "darkModeAppearance": {
     "message": "مظهر الوضع الداكن"
   },
@@ -169,9 +137,6 @@
   },
   "sortByDate": {
     "message": "ترتيب حسب التاريخ"
-  },
-  "sortByScore": {
-    "message": "ترتيب حسب النتيجة"
   },
   "sortByRedirects": {
     "message": "ترتيب حسب التوجيهات"
@@ -199,12 +164,6 @@
   },
   "deleteEntry": {
     "message": "حذف"
-  },
-  "issuesFound": {
-    "message": "مشاكل تم العثور عليها"
-  },
-  "recommendations": {
-    "message": "التوصيات"
   },
   "success": {
     "message": "نجاح"
@@ -236,9 +195,6 @@
   "entrySingle": {
     "message": "إدخال"
   },
-  "avgScore": {
-    "message": "متوسط النتيجة"
-  },
   "filterAll": {
     "message": "الكل"
   },
@@ -253,36 +209,6 @@
   },
   "useHeaderButton": {
     "message": "استخدم زر العنوان"
-  },
-  "chainScoreVisibility": {
-    "message": "رؤية نتيجة السلسلة"
-  },
-  "chainScoreVisibilityDesc": {
-    "message": "تحكم في مكان عرض مقاييس تحليل إعادة التوجيه في الإضافة."
-  },
-  "extensionPopup": {
-    "message": "نافذة الإضافة المنبثقة"
-  },
-  "extensionPopupDesc": {
-    "message": "عرض بطاقة التحليل عند النقر على أيقونة الإضافة في شريط الأدوات."
-  },
-  "sidepanelMonitor": {
-    "message": "مراقب اللوحة الجانبية"
-  },
-  "sidepanelMonitorDesc": {
-    "message": "إدراج ملخص النتيجة في أعلى لوحة المراقبة النشطة."
-  },
-  "dashboardCenter": {
-    "message": "مركز لوحة التحكم"
-  },
-  "dashboardCenterDesc": {
-    "message": "عرض واجهة النتائج المرئية الكاملة مع الشارات الملونة والتنبيهات والتوصيات."
-  },
-  "aiPoweredInsights": {
-    "message": "تحليلات الذكاء الاصطناعي"
-  },
-  "aiPoweredInsightsDesc": {
-    "message": "نحن نبني قدرات الذكاء الاصطناعي لتحليل أنماط إعادة التوجيه المعقدة ومخاطر SEO تلقائياً. قريباً جداً."
   },
   "hopSingle": {
     "message": "قفزة"
@@ -305,9 +231,6 @@
   "totalLabel": {
     "message": "إجمالي"
   },
-  "impactLabel": {
-    "message": "التأثير"
-  },
   "redirectChain": {
     "message": "سلسلة إعادة التوجيه"
   },
@@ -328,5 +251,26 @@
   },
   "categoryContent": {
     "message": "المحتوى"
+  },
+  "imageFormat": {
+    "message": "صورة"
+  },
+  "exportingImage": {
+    "message": "جاري التصدير..."
+  },
+  "exportToImage": {
+    "message": "تصدير كصورة"
+  },
+  "favoriteLabel": {
+    "message": "المفضلة"
+  },
+  "favoritedLabel": {
+    "message": "مضاف للمفضلة"
+  },
+  "cancelLabel": {
+    "message": "إلغاء"
+  },
+  "clearLabel": {
+    "message": "مسح"
   }
 }

@@ -2,7 +2,6 @@
 import { format } from 'date-fns';
 import { Color, PDFDocument, PDFFont, StandardFonts, rgb } from 'pdf-lib';
 import {
-  ChainScore,
   HistoryEntry,
   RedirectItem,
   calculateGapDuration,
@@ -12,8 +11,6 @@ import {
 interface PDFExportOptions {
   title?: string;
   includeHeaders?: boolean;
-  includeScore?: boolean;
-  includeRecommendations?: boolean;
 }
 
 const COLORS = {
@@ -42,22 +39,7 @@ async function loadLogo(): Promise<ArrayBuffer | null> {
   }
 }
 
-function getGradeColor(grade: ChainScore['grade']): Color {
-  switch (grade) {
-    case 'A':
-      return COLORS.success;
-    case 'B':
-      return rgb(132 / 255, 204 / 255, 22 / 255); // Lime
-    case 'C':
-      return COLORS.warning;
-    case 'D':
-      return rgb(249 / 255, 115 / 255, 22 / 255); // Orange
-    case 'F':
-      return COLORS.error;
-    default:
-      return COLORS.dark;
-  }
-}
+
 
 function getStatusColor(statusCode: number): Color {
   if (statusCode >= 200 && statusCode < 300) return COLORS.success;
@@ -150,8 +132,6 @@ export async function exportToPDF(
 ): Promise<void> {
   const {
     title = 'Redirect Chain Analysis',
-    includeScore = true,
-    includeRecommendations = true,
   } = options;
 
   const pdfDoc = await PDFDocument.create();
@@ -239,40 +219,9 @@ export async function exportToPDF(
     color: COLORS.light,
   });
 
-  // Grade Circle
-  const scoreX = 50;
-  const scoreY = yPos - summaryBoxHeight / 2 + 5;
-  const gradeColor = getGradeColor(entry.chainScore.grade);
-
-  page.drawCircle({
-    x: scoreX,
-    y: scoreY - 2,
-    size: 20,
-    color: gradeColor,
-  });
-
-  const gradeWidth = fontBold.widthOfTextAtSize(entry.chainScore.grade, 24);
-  page.drawText(entry.chainScore.grade, {
-    x: scoreX - gradeWidth / 2,
-    y: scoreY - 10,
-    size: 24,
-    font: fontBold,
-    color: COLORS.white,
-  });
-
-  const scoreText = `Score: ${entry.chainScore.score}/100`;
-  const scoreWidth = fontBold.widthOfTextAtSize(scoreText, 10);
-  page.drawText(scoreText, {
-    x: scoreX - scoreWidth / 2,
-    y: scoreY - 35,
-    size: 10,
-    font: fontBold,
-    color: COLORS.dark,
-  });
-
   // Summary URL Stats
-  const statsX = 100;
-  const maxUrlWidth = PAGE_WIDTH - 250;
+  const statsX = 30;
+  const maxUrlWidth = PAGE_WIDTH - 180;
 
   page.drawText('ORIGINAL URL', {
     x: statsX,
@@ -283,7 +232,7 @@ export async function exportToPDF(
   });
   let origUrl = entry.originalUrl;
   if (fontBold.widthOfTextAtSize(origUrl, 9) > maxUrlWidth) {
-    origUrl = origUrl.substring(0, 50) + '...';
+    origUrl = origUrl.substring(0, 70) + '...';
   }
   page.drawText(origUrl, { x: statsX, y: yPos - 27, size: 9, font: fontBold, color: COLORS.dark });
 
@@ -296,7 +245,7 @@ export async function exportToPDF(
   });
   let finalUrl = entry.finalUrl;
   if (fontBold.widthOfTextAtSize(finalUrl, 9) > maxUrlWidth) {
-    finalUrl = finalUrl.substring(0, 50) + '...';
+    finalUrl = finalUrl.substring(0, 70) + '...';
   }
   page.drawText(finalUrl, { x: statsX, y: yPos - 54, size: 9, font: fontBold, color: COLORS.dark });
 
@@ -499,86 +448,7 @@ export async function exportToPDF(
 
   yPos -= 30;
 
-  // ========== ANALYTICS & RECOMMENDATIONS ==========
-  if (includeScore && entry.chainScore.issues.length > 0) {
-    checkPageBreak(50);
-    page.drawText('Analysis & Issues', {
-      x: 15,
-      y: yPos,
-      size: 16,
-      font: fontBold,
-      color: COLORS.dark,
-    });
-    yPos -= 20;
 
-    entry.chainScore.issues.forEach(issue => {
-      checkPageBreak(30);
-      const iconColor =
-        issue.type === 'error'
-          ? COLORS.error
-          : issue.type === 'warning'
-            ? COLORS.warning
-            : COLORS.success;
-
-      page.drawCircle({ x: 20, y: yPos + 3, size: 4, color: iconColor });
-      page.drawText(issue.message, {
-        x: 30,
-        y: yPos,
-        size: 11,
-        font: fontNormal,
-        color: COLORS.dark,
-      });
-      page.drawText(`Impact: ${issue.impact.toUpperCase()}`, {
-        x: 30,
-        y: yPos - 12,
-        size: 9,
-        font: fontNormal,
-        color: COLORS.textSecondary,
-      });
-
-      yPos -= 30;
-    });
-    yPos -= 10;
-  }
-
-  if (includeRecommendations && entry.chainScore.recommendations.length > 0) {
-    checkPageBreak(50);
-    page.drawText('Recommendations', {
-      x: 15,
-      y: yPos,
-      size: 16,
-      font: fontBold,
-      color: COLORS.dark,
-    });
-    yPos -= 20;
-
-    entry.chainScore.recommendations.forEach((rec, idx) => {
-      const recLines = wrapText(rec, PAGE_WIDTH - 60, fontNormal, 11);
-      const height = recLines.length * 14 + 10;
-      checkPageBreak(height);
-
-      page.drawCircle({ x: 20, y: yPos + 4, size: 8, color: COLORS.primary });
-      page.drawText((idx + 1).toString(), {
-        x: 17.5,
-        y: yPos + 1,
-        size: 9,
-        font: fontBold,
-        color: COLORS.white,
-      });
-
-      recLines.forEach((line, lIdx) => {
-        page.drawText(line, {
-          x: 35,
-          y: yPos - lIdx * 14,
-          size: 11,
-          font: fontNormal,
-          color: COLORS.dark,
-        });
-      });
-
-      yPos -= height;
-    });
-  }
 
   // Add Page Numbers
   const pageCount = pdfDoc.getPageCount();
@@ -643,7 +513,6 @@ export async function exportHistoryToPDF(entries: HistoryEntry[]): Promise<void>
   yPos = PAGE_HEIGHT - 70;
 
   // Summary
-  const avgScore = entries.reduce((acc, e) => acc + e.chainScore.score, 0) / entries.length;
   const totalRedirects = entries.reduce((acc, e) => acc + e.redirectCount, 0);
 
   page.drawRectangle({
@@ -653,22 +522,15 @@ export async function exportHistoryToPDF(entries: HistoryEntry[]): Promise<void>
     height: 30,
     color: COLORS.light,
   });
-  page.drawText(`Average Score: ${Math.round(avgScore)}`, {
+  page.drawText(`Total Redirects: ${totalRedirects}`, {
     x: 25,
     y: yPos - 20,
     size: 12,
     font: fontBold,
     color: COLORS.dark,
   });
-  page.drawText(`Total Redirects: ${totalRedirects}`, {
-    x: 200,
-    y: yPos - 20,
-    size: 12,
-    font: fontBold,
-    color: COLORS.dark,
-  });
   page.drawText(`Entries: ${entries.length}`, {
-    x: 400,
+    x: 200,
     y: yPos - 20,
     size: 12,
     font: fontBold,
@@ -678,8 +540,8 @@ export async function exportHistoryToPDF(entries: HistoryEntry[]): Promise<void>
   yPos -= 50;
 
   // Table Headers
-  const colWidths = [100, 50, 50, 150, 150];
-  const cols = ['Date', 'Grade', 'Redir', 'Original URL', 'Final URL'];
+  const colWidths = [100, 60, 175, 175];
+  const cols = ['Date', 'Redir', 'Original URL', 'Final URL'];
   let currentX = 15;
 
   page.drawRectangle({
@@ -716,20 +578,10 @@ export async function exportHistoryToPDF(entries: HistoryEntry[]): Promise<void>
     }
 
     const dateStr = format(entry.timestamp, 'MM/dd/yy HH:mm');
-    const gradeColor = getGradeColor(entry.chainScore.grade);
 
     let cx = 15;
     page.drawText(dateStr, { x: cx + 2, y: yPos, size: 9, font: fontNormal, color: COLORS.dark });
     cx += colWidths[0];
-
-    page.drawText(entry.chainScore.grade, {
-      x: cx + 15,
-      y: yPos,
-      size: 9,
-      font: fontBold,
-      color: gradeColor,
-    });
-    cx += colWidths[1];
 
     page.drawText(entry.redirectCount.toString(), {
       x: cx + 15,
@@ -738,18 +590,18 @@ export async function exportHistoryToPDF(entries: HistoryEntry[]): Promise<void>
       font: fontNormal,
       color: COLORS.dark,
     });
-    cx += colWidths[2];
+    cx += colWidths[1];
 
     // Truncate URLs
     let orig =
-      entry.originalUrl.length > 30
-        ? entry.originalUrl.substring(0, 30) + '...'
+      entry.originalUrl.length > 35
+        ? entry.originalUrl.substring(0, 35) + '...'
         : entry.originalUrl;
     page.drawText(orig, { x: cx + 2, y: yPos, size: 9, font: fontNormal, color: COLORS.dark });
-    cx += colWidths[3];
+    cx += colWidths[2];
 
     let final =
-      entry.finalUrl.length > 30 ? entry.finalUrl.substring(0, 30) + '...' : entry.finalUrl;
+      entry.finalUrl.length > 35 ? entry.finalUrl.substring(0, 35) + '...' : entry.finalUrl;
     page.drawText(final, { x: cx + 2, y: yPos, size: 9, font: fontNormal, color: COLORS.dark });
 
     yPos -= 16;

@@ -1,9 +1,10 @@
 {
   "extensionName": {
-    "message": "RedirectWise: HTTPリダイレクトチェッカー＆SEO監査ツール"
+    "message": "RedirectWise: URLリダイレクトチェッカー",
+    "description": "Name of the extension"
   },
   "extensionDesc": {
-    "message": "永続的なダッシュボードでリダイレクトを追跡し、隠された広告リンクを検出します。ポップアップとサイドパネルを備えたリアルタイムSEOチェッカー。"
+    "message": "永続的なダッシュボードでリダイレクトを追跡し、隠された広告リンクを検出します。"
   },
   "emptyStateSpecialPageTitle": {
     "message": "このページは追跡できません"
@@ -18,7 +19,7 @@
     "message": "リダイレクトパスをキャプチャするには、URLに移動するかページを更新してください。"
   },
   "headerSubtitle": {
-    "message": "リダイレクトパス分析"
+    "message": "URLリダイレクトチェッカー"
   },
   "headerLightMode": {
     "message": "ライトモード"
@@ -37,27 +38,6 @@
   },
   "headerClearPath": {
     "message": "パスをクリア"
-  },
-  "scoreGradeA": {
-    "message": "優秀！最適なリダイレクトチェーンです。"
-  },
-  "scoreGradeB": {
-    "message": "良好。軽微な改善が可能です。"
-  },
-  "scoreGradeC": {
-    "message": "普通。いくつかの問題があります。"
-  },
-  "scoreGradeD": {
-    "message": "不良。重大な問題が見つかりました。"
-  },
-  "scoreGradeF": {
-    "message": "危険。深刻な問題が検出されました。"
-  },
-  "scoreIssueSingle": {
-    "message": "件の問題"
-  },
-  "scoreIssuePlural": {
-    "message": "件の問題"
   },
   "copyPathAs": {
     "message": "パスをコピー："
@@ -131,9 +111,6 @@
   "monitoringLabel": {
     "message": "監視中："
   },
-  "scoreLabel": {
-    "message": "スコア："
-  },
   "autoScroll": {
     "message": "自動スクロール"
   },
@@ -152,15 +129,6 @@
   "generalSettings": {
     "message": "一般設定"
   },
-  "chainScoreAnalysis": {
-    "message": "チェーンスコア分析"
-  },
-  "aiIntegrations": {
-    "message": "AI統合"
-  },
-  "soon": {
-    "message": "近日公開"
-  },
   "darkModeAppearance": {
     "message": "ダークモード外観"
   },
@@ -169,9 +137,6 @@
   },
   "sortByDate": {
     "message": "日付順"
-  },
-  "sortByScore": {
-    "message": "スコア順"
   },
   "sortByRedirects": {
     "message": "リダイレクト数順"
@@ -199,12 +164,6 @@
   },
   "deleteEntry": {
     "message": "削除"
-  },
-  "issuesFound": {
-    "message": "問題が見つかりました"
-  },
-  "recommendations": {
-    "message": "推奨事項"
   },
   "success": {
     "message": "成功"
@@ -236,9 +195,6 @@
   "entrySingle": {
     "message": "件"
   },
-  "avgScore": {
-    "message": "平均スコア"
-  },
   "filterAll": {
     "message": "すべて"
   },
@@ -253,36 +209,6 @@
   },
   "useHeaderButton": {
     "message": "ヘッダーボタンを使用"
-  },
-  "chainScoreVisibility": {
-    "message": "チェーンスコア表示"
-  },
-  "chainScoreVisibilityDesc": {
-    "message": "リダイレクト分析指標の表示場所を制御します。"
-  },
-  "extensionPopup": {
-    "message": "拡張機能ポップアップ"
-  },
-  "extensionPopupDesc": {
-    "message": "ツールバーの拡張機能アイコンをクリック時に分析カードを表示。"
-  },
-  "sidepanelMonitor": {
-    "message": "サイドパネルリアルタイムモニター"
-  },
-  "sidepanelMonitorDesc": {
-    "message": "アクティブな監視パネルの上部にスコアサマリーを挿入。"
-  },
-  "dashboardCenter": {
-    "message": "ダッシュボードセンター"
-  },
-  "dashboardCenterDesc": {
-    "message": "カラーバッジ、問題アラート、推奨事項を含む完全なスコアUIを表示。"
-  },
-  "aiPoweredInsights": {
-    "message": "AI分析"
-  },
-  "aiPoweredInsightsDesc": {
-    "message": "複雑なリダイレクトパターンとSEOリスクを自動分析するAI機能を構築中です。近日公開。"
   },
   "hopSingle": {
     "message": "ホップ"
@@ -305,9 +231,6 @@
   "totalLabel": {
     "message": "合計"
   },
-  "impactLabel": {
-    "message": "影響"
-  },
   "redirectChain": {
     "message": "リダイレクトチェーン"
   },
@@ -328,5 +251,26 @@
   },
   "categoryContent": {
     "message": "コンテンツ"
+  },
+  "imageFormat": {
+    "message": "画像"
+  },
+  "exportingImage": {
+    "message": "エクスポート中..."
+  },
+  "exportToImage": {
+    "message": "画像としてエクスポート"
+  },
+  "favoriteLabel": {
+    "message": "お気に入り"
+  },
+  "favoritedLabel": {
+    "message": "お気に入り済み"
+  },
+  "cancelLabel": {
+    "message": "キャンセル"
+  },
+  "clearLabel": {
+    "message": "クリア"
   }
 }

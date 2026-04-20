@@ -1,16 +1,17 @@
 import clsx from 'clsx';
 import { format, formatDistanceToNow } from 'date-fns';
 import {
-  AlertTriangle,
   ArrowRight,
-  CheckCircle,
+  Check,
   ChevronDown,
   ChevronUp,
   Clock,
+  Copy,
   Download,
   ExternalLink,
+  FileImage,
+  FileSpreadsheet,
   Globe,
-  Info,
   Menu,
   Moon,
   RefreshCw,
@@ -22,11 +23,12 @@ import {
   Trash2,
   Zap,
 } from 'lucide-react';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import HeadersList from '../../components/HeadersList';
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Logo from '../../components/Logo';
-import { ChainScore, HistoryEntry, formatDuration } from '../../types/redirect';
+import RedirectItemCard from '../../components/RedirectItemCard';
+import { HistoryEntry, RedirectItem, calculateGapDuration, formatDuration } from '../../types/redirect';
 import { exportHistoryToPDF, exportToPDF } from '../../utils/pdf-export';
+import { exportToImage } from '../../utils/image-export';
 import {
   Settings as AppSettings,
   clearHistory,
@@ -41,8 +43,6 @@ import {
 interface Stats {
   totalEntries: number;
   totalRedirects: number;
-  avgScore: number;
-  gradeDistribution: Record<string, number>;
   favorites: number;
 }
 
@@ -53,16 +53,16 @@ export default function Dashboard() {
   const [darkMode, setDarkMode] = useState(false);
   const [settings, setSettings] = useState<AppSettings | null>(null);
   const [currentView, setCurrentView] = useState<'history' | 'settings'>('history');
-  const [settingsActiveTab, setSettingsActiveTab] = useState<'chainScore' | 'general' | 'ai'>(
-    'chainScore'
-  );
+  const [settingsActiveTab, setSettingsActiveTab] = useState<'general'>('general');
   const [loading, setLoading] = useState(true);
   const [selectedEntry, setSelectedEntry] = useState<HistoryEntry | null>(null);
-  const [filter, setFilter] = useState<'all' | 'favorites' | ChainScore['grade']>('all');
-  const [sortBy, setSortBy] = useState<'date' | 'score' | 'redirects'>('date');
+  const [filter, setFilter] = useState<'all' | 'favorites'>('all');
+  const [sortBy, setSortBy] = useState<'date' | 'redirects'>('date');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const detailPanelRef = useRef<HTMLDivElement>(null);
+  const [deleteTarget, setDeleteTarget] = useState<'single' | 'all' | null>(null);
+  const [entryToDelete, setEntryToDelete] = useState<string | null>(null);
 
   const loadData = async () => {
     setLoading(true);
@@ -92,11 +92,9 @@ export default function Dashboard() {
       );
     }
 
-    // Grade/favorites filter
+    // Favorites filter
     if (filter === 'favorites') {
       filtered = filtered.filter(entry => entry.isFavorite);
-    } else if (['A', 'B', 'C', 'D', 'F'].includes(filter)) {
-      filtered = filtered.filter(entry => entry.chainScore.grade === filter);
     }
 
     // Sort
@@ -105,9 +103,6 @@ export default function Dashboard() {
       switch (sortBy) {
         case 'date':
           comparison = a.timestamp - b.timestamp;
-          break;
-        case 'score':
-          comparison = a.chainScore.score - b.chainScore.score;
           break;
         case 'redirects':
           comparison = a.redirectCount - b.redirectCount;
@@ -142,16 +137,11 @@ export default function Dashboard() {
   }, [filteredHistory, selectedEntry]);
 
   const handleDelete = useCallback(
-    async (id: string) => {
-      if (confirm(chrome.i18n.getMessage('confirmDeleteEntry'))) {
-        await deleteHistoryEntry(id);
-        if (selectedEntry?.id === id) {
-          setSelectedEntry(null);
-        }
-        await loadData();
-      }
+    (id: string) => {
+      setEntryToDelete(id);
+      setDeleteTarget('single');
     },
-    [selectedEntry]
+    []
   );
 
   const handleToggleFavorite = useCallback(
@@ -166,16 +156,36 @@ export default function Dashboard() {
     [selectedEntry]
   );
 
-  const handleClearAll = useCallback(async () => {
-    if (confirm(chrome.i18n.getMessage('confirmClearAll'))) {
+  const handleClearAll = useCallback(() => {
+    setDeleteTarget('all');
+  }, []);
+
+  const confirmDelete = async () => {
+    if (deleteTarget === 'single' && entryToDelete) {
+      await deleteHistoryEntry(entryToDelete);
+      if (selectedEntry?.id === entryToDelete) {
+        setSelectedEntry(null);
+      }
+      await loadData();
+    } else if (deleteTarget === 'all') {
       await clearHistory();
       setSelectedEntry(null);
       await loadData();
     }
-  }, []);
+    closeDeleteModal();
+  };
+
+  const closeDeleteModal = () => {
+    setDeleteTarget(null);
+    setEntryToDelete(null);
+  };
 
   const handleExportPDF = async (entry: HistoryEntry) => {
     await exportToPDF(entry);
+  };
+
+  const handleExportImage = async (entry: HistoryEntry) => {
+    await exportToImage(entry);
   };
 
   const handleExportAllPDF = async () => {
@@ -195,41 +205,11 @@ export default function Dashboard() {
     await saveSettings({ [key]: newSettings[key] });
   };
 
-  const getGradeColor = (grade: ChainScore['grade']) => {
-    switch (grade) {
-      case 'A':
-        return 'text-green-500 bg-green-100 dark:bg-green-900/30';
-      case 'B':
-        return 'text-lime-500 bg-lime-100 dark:bg-lime-900/30';
-      case 'C':
-        return 'text-amber-500 bg-amber-100 dark:bg-amber-900/30';
-      case 'D':
-        return 'text-orange-500 bg-orange-100 dark:bg-orange-900/30';
-      case 'F':
-        return 'text-red-500 bg-red-100 dark:bg-red-900/30';
-    }
-  };
-
-  const getGradeBgColor = (grade: ChainScore['grade']) => {
-    switch (grade) {
-      case 'A':
-        return 'bg-green-500';
-      case 'B':
-        return 'bg-lime-500';
-      case 'C':
-        return 'bg-amber-500';
-      case 'D':
-        return 'bg-orange-500';
-      case 'F':
-        return 'bg-red-500';
-    }
-  };
-
   return (
     <div
       className={clsx(
         'h-screen flex flex-col transition-colors',
-        darkMode ? 'bg-slate-900 text-slate-100' : 'bg-slate-100 text-slate-900'
+        darkMode ? 'bg-slate-900 text-slate-100' : 'bg-white text-slate-900'
       )}
     >
       {/* Top Header */}
@@ -250,15 +230,15 @@ export default function Dashboard() {
             >
               <Menu className="w-5 h-5" />
             </button>
-            
-            <div 
+
+            <div
               className="flex items-center gap-2 cursor-pointer group"
               onClick={() => window.location.reload()}
               title={chrome.i18n.getMessage('headerRefresh')}
             >
               <Logo size={32} />
               <h1 className="text-lg font-bold leading-tight group-hover:text-blue-500 transition-colors">
-                {chrome.i18n.getMessage("extensionName").split(":")[0]}
+                {chrome.i18n.getMessage('extensionName').split(':')[0]}
               </h1>
             </div>
           </div>
@@ -274,9 +254,6 @@ export default function Dashboard() {
                 <span>
                   <strong>{stats.totalEntries}</strong> {chrome.i18n.getMessage('entriesLabel')}
                 </span>
-                <span>
-                  <strong>{stats.avgScore}</strong> {chrome.i18n.getMessage('avgScore')}
-                </span>
               </div>
             )}
             <button
@@ -287,7 +264,11 @@ export default function Dashboard() {
                   (darkMode ? 'bg-slate-700 text-blue-400' : 'bg-slate-200 text-blue-600'),
                 darkMode ? 'hover:bg-slate-700' : 'hover:bg-slate-100'
               )}
-              title={currentView === 'history' ? chrome.i18n.getMessage('settingsTitle') : chrome.i18n.getMessage('backToHistory')}
+              title={
+                currentView === 'history'
+                  ? chrome.i18n.getMessage('settingsTitle')
+                  : chrome.i18n.getMessage('backToHistory')
+              }
             >
               <Settings className="w-5 h-5" />
             </button>
@@ -378,22 +359,6 @@ export default function Dashboard() {
                 >
                   <Star className="w-3 h-3" /> {chrome.i18n.getMessage('filterFav')}
                 </button>
-                {(['A', 'B', 'C', 'D', 'F'] as const).map(grade => (
-                  <button
-                    key={grade}
-                    onClick={() => setFilter(filter === grade ? 'all' : grade)}
-                    className={clsx(
-                      'w-8 py-1.5 rounded-md text-xs font-bold transition-colors',
-                      filter === grade
-                        ? getGradeBgColor(grade) + ' text-white'
-                        : darkMode
-                          ? 'bg-slate-700 hover:bg-slate-600'
-                          : 'bg-slate-100 hover:bg-slate-200'
-                    )}
-                  >
-                    {grade}
-                  </button>
-                ))}
               </div>
 
               {/* Sort & Actions */}
@@ -407,7 +372,6 @@ export default function Dashboard() {
                   )}
                 >
                   <option value="date">{chrome.i18n.getMessage('sortByDate')}</option>
-                  <option value="score">{chrome.i18n.getMessage('sortByScore')}</option>
                   <option value="redirects">{chrome.i18n.getMessage('sortByRedirects')}</option>
                 </select>
                 <button
@@ -453,7 +417,10 @@ export default function Dashboard() {
                   : 'text-slate-500 border-slate-200 bg-slate-50'
               )}
             >
-              {filteredHistory.length} {filteredHistory.length === 1 ? chrome.i18n.getMessage('entrySingle') : chrome.i18n.getMessage('entriesLabel')}
+              {filteredHistory.length}{' '}
+              {filteredHistory.length === 1
+                ? chrome.i18n.getMessage('entrySingle')
+                : chrome.i18n.getMessage('entriesLabel')}
               {searchQuery && ` ${chrome.i18n.getMessage('matchingLabel')} "${searchQuery}"`}
             </div>
 
@@ -467,7 +434,9 @@ export default function Dashboard() {
                 <div className="flex flex-col items-center justify-center h-32 text-center p-4">
                   <Clock className="w-10 h-10 mb-2 text-slate-300" />
                   <p className={clsx('text-sm', darkMode ? 'text-slate-400' : 'text-slate-500')}>
-                    {searchQuery || filter !== 'all' ? chrome.i18n.getMessage('noMatches') : chrome.i18n.getMessage('noHistoryYet')}
+                    {searchQuery || filter !== 'all'
+                      ? chrome.i18n.getMessage('noMatches')
+                      : chrome.i18n.getMessage('noHistoryYet')}
                   </p>
                 </div>
               ) : (
@@ -495,9 +464,7 @@ export default function Dashboard() {
           </aside>
 
           {/* Right Panel - Details */}
-          <main
-            className={clsx('flex-1 overflow-hidden', darkMode ? 'bg-slate-900' : 'bg-slate-100')}
-          >
+          <main className={clsx('flex-1 overflow-hidden', darkMode ? 'bg-slate-900' : 'bg-white')}>
             {selectedEntry ? (
               <div ref={detailPanelRef} className="h-full">
                 <DetailPanel
@@ -505,6 +472,7 @@ export default function Dashboard() {
                   darkMode={darkMode}
                   settings={settings}
                   onExportPDF={() => handleExportPDF(selectedEntry)}
+                  onExportImage={() => handleExportImage(selectedEntry)}
                   onToggleFavorite={() => handleToggleFavorite(selectedEntry)}
                   onDelete={() => handleDelete(selectedEntry.id)}
                   onBack={() => setSidebarCollapsed(false)}
@@ -520,9 +488,11 @@ export default function Dashboard() {
                 >
                   <Globe className="w-10 h-10 text-slate-300" />
                 </div>
-                <h3 className="text-lg font-medium mb-1">{chrome.i18n.getMessage("selectAnEntry")}</h3>
+                <h3 className="text-lg font-medium mb-1">
+                  {chrome.i18n.getMessage('selectAnEntry')}
+                </h3>
                 <p className={clsx('text-sm', darkMode ? 'text-slate-400' : 'text-slate-500')}>
-                  {chrome.i18n.getMessage("chooseRedirectToView")}
+                  {chrome.i18n.getMessage('chooseRedirectToView')}
                 </p>
               </div>
             )}
@@ -538,6 +508,57 @@ export default function Dashboard() {
           setActiveTab={setSettingsActiveTab}
           onToggleSetting={handleToggleSetting}
         />
+      )}
+
+      {/* Custom Delete Confirmation Modal */}
+      {deleteTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
+            onClick={closeDeleteModal}
+          />
+          <div
+            className={clsx(
+              'relative max-w-sm w-full rounded-xl border p-6 shadow-2xl transition-all transform scale-100 z-10',
+              darkMode ? 'bg-slate-800 border-slate-700 text-slate-100' : 'bg-white border-slate-200 text-slate-900'
+            )}
+          >
+            <h3 className="text-base font-semibold mb-2">
+              {deleteTarget === 'all'
+                ? chrome.i18n.getMessage('clearAllHistory') || 'Clear All History'
+                : chrome.i18n.getMessage('deleteEntry') || 'Delete Entry'}
+            </h3>
+            
+            <p className={clsx('text-sm mb-6', darkMode ? 'text-slate-400' : 'text-slate-500')}>
+              {deleteTarget === 'all'
+                ? chrome.i18n.getMessage('confirmClearAll')
+                : chrome.i18n.getMessage('confirmDeleteEntry')}
+            </p>
+            
+            <div className="flex items-center justify-end gap-3">
+              <button
+                onClick={closeDeleteModal}
+                className={clsx(
+                  'px-4 py-2 rounded-lg border text-sm font-medium transition-colors cursor-pointer',
+                  darkMode
+                    ? 'border-slate-700 hover:bg-slate-700 text-slate-300'
+                    : 'border-slate-200 hover:bg-slate-50 text-slate-700'
+                )}
+              >
+                {chrome.i18n.getMessage('cancelLabel') || 'Cancel'}
+              </button>
+              
+              <button
+                onClick={confirmDelete}
+                className="px-4 py-2 rounded-lg text-sm font-medium bg-red-500 hover:bg-red-600 text-white transition-colors cursor-pointer"
+              >
+                {deleteTarget === 'all'
+                  ? chrome.i18n.getMessage('clearAllHistory').split(' ')[0] || 'Clear'
+                  : chrome.i18n.getMessage('deleteEntry') || 'Delete'}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
@@ -558,7 +579,7 @@ function SettingsViewUI({ settings, darkMode, activeTab, setActiveTab, onToggleS
             darkMode ? 'border-slate-700' : 'border-slate-200'
           )}
         >
-          {chrome.i18n.getMessage("settingsTitle")}
+          {chrome.i18n.getMessage('settingsTitle')}
         </div>
         <div className="flex-1 p-2 space-y-1">
           <button
@@ -574,57 +595,21 @@ function SettingsViewUI({ settings, darkMode, activeTab, setActiveTab, onToggleS
                   : 'hover:bg-slate-100 text-slate-600'
             )}
           >
-            {chrome.i18n.getMessage("generalSettings")}
-          </button>
-          <button
-            onClick={() => setActiveTab('chainScore')}
-            className={clsx(
-              'w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors',
-              activeTab === 'chainScore'
-                ? darkMode
-                  ? 'bg-blue-900/30 text-blue-400'
-                  : 'bg-blue-50 text-blue-600'
-                : darkMode
-                  ? 'hover:bg-slate-700 text-slate-300'
-                  : 'hover:bg-slate-100 text-slate-600'
-            )}
-          >
-            {chrome.i18n.getMessage("chainScoreAnalysis")}
-          </button>
-          <button
-            onClick={() => setActiveTab('ai')}
-            className={clsx(
-              'w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors flex justify-between tracking-tight',
-              activeTab === 'ai'
-                ? darkMode
-                  ? 'bg-purple-900/30 text-purple-400'
-                  : 'bg-purple-50 text-purple-600'
-                : darkMode
-                  ? 'hover:bg-slate-700 text-slate-300'
-                  : 'hover:bg-slate-100 text-slate-600'
-            )}
-          >
-            {chrome.i18n.getMessage("aiIntegrations")}
-            <span
-              className={clsx(
-                'text-[10px] px-1.5 py-0.5 rounded-full uppercase',
-                darkMode ? 'bg-purple-900/50 text-purple-300' : 'bg-purple-100 text-purple-600'
-              )}
-            >
-              {chrome.i18n.getMessage("soon")}
-            </span>
+            {chrome.i18n.getMessage('generalSettings')}
           </button>
         </div>
       </aside>
       <main
         className={clsx(
           'flex-1 overflow-y-auto p-6 md:p-10',
-          darkMode ? 'bg-slate-900' : 'bg-slate-50'
+          darkMode ? 'bg-slate-900' : 'bg-white'
         )}
       >
         {activeTab === 'general' && (
           <div className="max-w-3xl">
-            <h2 className="text-2xl font-semibold mb-6">{chrome.i18n.getMessage("generalSettings")}</h2>
+            <h2 className="text-2xl font-semibold mb-6">
+              {chrome.i18n.getMessage('generalSettings')}
+            </h2>
             <div
               className={clsx(
                 'rounded-xl border p-6 flex items-center justify-between',
@@ -632,7 +617,7 @@ function SettingsViewUI({ settings, darkMode, activeTab, setActiveTab, onToggleS
               )}
             >
               <div>
-                <h3 className="font-medium">{chrome.i18n.getMessage("darkModeAppearance")}</h3>
+                <h3 className="font-medium">{chrome.i18n.getMessage('darkModeAppearance')}</h3>
                 <p className={clsx('text-sm mt-1', darkMode ? 'text-slate-400' : 'text-slate-500')}>
                   {chrome.i18n.getMessage('darkModeDesc')}
                 </p>
@@ -646,110 +631,6 @@ function SettingsViewUI({ settings, darkMode, activeTab, setActiveTab, onToggleS
                 {chrome.i18n.getMessage('useHeaderButton')}
               </span>
             </div>
-          </div>
-        )}
-        {activeTab === 'chainScore' && (
-          <div className="max-w-3xl">
-            <h2 className="text-2xl font-semibold mb-2">{chrome.i18n.getMessage('chainScoreVisibility')}</h2>
-            <p className={clsx('text-sm mb-6', darkMode ? 'text-slate-400' : 'text-slate-500')}>
-              {chrome.i18n.getMessage('chainScoreVisibilityDesc')}
-            </p>
-
-            <div className="space-y-4">
-              <div
-                className={clsx(
-                  'rounded-xl border p-6 flex flex-col justify-center',
-                  darkMode ? 'border-slate-700 bg-slate-800/50' : 'border-slate-200 bg-white'
-                )}
-              >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <span className="font-medium text-base">{chrome.i18n.getMessage('extensionPopup')}</span>
-                    <p
-                      className={clsx(
-                        'text-sm mt-1 mb-2',
-                        darkMode ? 'text-slate-400' : 'text-slate-500'
-                      )}
-                    >
-                      {chrome.i18n.getMessage('extensionPopupDesc')}
-                    </p>
-                  </div>
-                  <ToggleSwitch
-                    checked={settings.showChainScoreInPopup}
-                    onChange={() => onToggleSetting('showChainScoreInPopup')}
-                    darkMode={darkMode}
-                  />
-                </div>
-              </div>
-
-              <div
-                className={clsx(
-                  'rounded-xl border p-6 flex flex-col justify-center',
-                  darkMode ? 'border-slate-700 bg-slate-800/50' : 'border-slate-200 bg-white'
-                )}
-              >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <span className="font-medium text-base">{chrome.i18n.getMessage('sidepanelMonitor')}</span>
-                    <p
-                      className={clsx(
-                        'text-sm mt-1 mb-2',
-                        darkMode ? 'text-slate-400' : 'text-slate-500'
-                      )}
-                    >
-                      {chrome.i18n.getMessage('sidepanelMonitorDesc')}
-                    </p>
-                  </div>
-                  <ToggleSwitch
-                    checked={settings.showChainScoreInSidepanel}
-                    onChange={() => onToggleSetting('showChainScoreInSidepanel')}
-                    darkMode={darkMode}
-                  />
-                </div>
-              </div>
-
-              <div
-                className={clsx(
-                  'rounded-xl border p-6 flex flex-col justify-center',
-                  darkMode ? 'border-slate-700 bg-slate-800/50' : 'border-slate-200 bg-white'
-                )}
-              >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <span className="font-medium text-base">{chrome.i18n.getMessage('dashboardCenter')}</span>
-                    <p
-                      className={clsx(
-                        'text-sm mt-1 mb-2',
-                        darkMode ? 'text-slate-400' : 'text-slate-500'
-                      )}
-                    >
-                      {chrome.i18n.getMessage('dashboardCenterDesc')}
-                    </p>
-                  </div>
-                  <ToggleSwitch
-                    checked={settings.showChainScoreInDashboard}
-                    onChange={() => onToggleSetting('showChainScoreInDashboard')}
-                    darkMode={darkMode}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-        {activeTab === 'ai' && (
-          <div className="max-w-3xl flex flex-col items-center justify-center h-64 text-center mx-auto">
-            <div
-              className={clsx(
-                'w-16 h-16 rounded-2xl flex items-center justify-center mb-4',
-                darkMode ? 'bg-purple-900/30' : 'bg-purple-100'
-              )}
-            >
-              <Zap className="w-8 h-8 text-purple-500" />
-            </div>
-            <h2 className="text-2xl font-bold mb-2">{chrome.i18n.getMessage('aiPoweredInsights')}</h2>
-            <p className={clsx('max-w-md', darkMode ? 'text-slate-400' : 'text-slate-500')}>
-              {chrome.i18n.getMessage('aiPoweredInsightsDesc')}
-            </p>
           </div>
         )}
       </main>
@@ -804,21 +685,6 @@ function HistoryListItem({
   onToggleFavorite: () => void;
   onDelete: () => void;
 }) {
-  const getGradeBgColor = (grade: ChainScore['grade']) => {
-    switch (grade) {
-      case 'A':
-        return 'bg-green-500';
-      case 'B':
-        return 'bg-lime-500';
-      case 'C':
-        return 'bg-amber-500';
-      case 'D':
-        return 'bg-orange-500';
-      case 'F':
-        return 'bg-red-500';
-    }
-  };
-
   const getHostname = (url: string) => {
     if (!url) return 'Unknown';
     try {
@@ -843,18 +709,6 @@ function HistoryListItem({
       )}
     >
       <div className="flex items-start gap-3">
-        {/* Grade Badge */}
-        {settings?.showChainScoreInDashboard !== false && (
-          <div
-            className={clsx(
-              'w-9 h-9 rounded-lg flex items-center justify-center text-white font-bold text-sm shrink-0',
-              getGradeBgColor(entry.chainScore.grade)
-            )}
-          >
-            {entry.chainScore.grade}
-          </div>
-        )}
-
         {/* Content */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-0.5">
@@ -872,7 +726,10 @@ function HistoryListItem({
             <span
               className={clsx('px-1.5 py-0.5 rounded', darkMode ? 'bg-slate-700' : 'bg-slate-200')}
             >
-              {entry.redirectCount} {entry.redirectCount !== 1 ? chrome.i18n.getMessage('hopsPlural') : chrome.i18n.getMessage('hopSingle')}
+              {entry.redirectCount}{' '}
+              {entry.redirectCount !== 1
+                ? chrome.i18n.getMessage('hopsPlural')
+                : chrome.i18n.getMessage('hopSingle')}
             </span>
             <span className={darkMode ? 'text-slate-500' : 'text-slate-400'}>
               {formatDistanceToNow(entry.timestamp, { addSuffix: true })}
@@ -923,6 +780,7 @@ function DetailPanel({
   darkMode,
   settings,
   onExportPDF,
+  onExportImage,
   onToggleFavorite,
   onDelete,
   onBack,
@@ -931,11 +789,82 @@ function DetailPanel({
   darkMode: boolean;
   settings: AppSettings | null;
   onExportPDF: () => void;
+  onExportImage: () => void;
   onToggleFavorite: () => void;
   onDelete: () => void;
   onBack: () => void;
 }) {
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
+  const [copiedText, setCopiedText] = useState(false);
+  const [copiedCsv, setCopiedCsv] = useState(false);
+
+  const generateTextOutput = (path: RedirectItem[]): string => {
+    return path
+      .map((item, idx) => {
+        let statusString = `${item.status_code}: ${item.status_line}`;
+
+        if (item.type === 'server_redirect') {
+          const redirectType =
+            item.redirect_type === 'permanent'
+              ? 'Permanent'
+              : item.redirect_type === 'hsts'
+                ? 'HSTS'
+                : 'Temporary';
+          statusString = `${item.status_code}: ${redirectType} redirect to ${item.redirect_url}`;
+        }
+
+        return `${idx + 1}. ${item.url} - ${statusString}`;
+      })
+      .join('\n');
+  };
+
+  const generateCsvOutput = (path: RedirectItem[]): string => {
+    const headers = 'Status Code\tURL\tIP\tPage Type\tRedirect Type\tRedirect URL';
+
+    const rows = path.map(item => {
+      let redirectType = item.redirect_type || '';
+      if (item.status_code === 301 || item.status_code === 308) {
+        redirectType = 'permanent';
+      } else if (item.status_code > 301 && item.status_code < 400) {
+        redirectType = 'temporary';
+      }
+
+      const redirectUrl = item.redirect_url || 'none';
+
+      return [
+        item.status_code,
+        item.url,
+        item.ip || 'Unknown',
+        item.type,
+        redirectType,
+        redirectUrl,
+      ].join('\t');
+    });
+
+    return [headers, ...rows].join('\n');
+  };
+
+  const handleCopyText = async () => {
+    try {
+      const content = generateTextOutput(entry.path);
+      await navigator.clipboard.writeText(content);
+      setCopiedText(true);
+      setTimeout(() => setCopiedText(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy text:', err);
+    }
+  };
+
+  const handleCopyCsv = async () => {
+    try {
+      const content = generateCsvOutput(entry.path);
+      await navigator.clipboard.writeText(content);
+      setCopiedCsv(true);
+      setTimeout(() => setCopiedCsv(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy CSV:', err);
+    }
+  };
 
   const toggleExpanded = (id: string) => {
     setExpandedItems(prev => {
@@ -949,38 +878,12 @@ function DetailPanel({
     });
   };
 
-  const getGradeBgColor = (grade: ChainScore['grade']) => {
-    switch (grade) {
-      case 'A':
-        return 'bg-green-500';
-      case 'B':
-        return 'bg-lime-500';
-      case 'C':
-        return 'bg-amber-500';
-      case 'D':
-        return 'bg-orange-500';
-      case 'F':
-        return 'bg-red-500';
-    }
-  };
-
   const getStatusColor = (statusCode: number) => {
     if (statusCode >= 200 && statusCode < 300) return 'bg-green-500';
     if (statusCode >= 300 && statusCode < 400) return 'bg-amber-500';
     if (statusCode >= 400 && statusCode < 500) return 'bg-red-500';
     if (statusCode >= 500) return 'bg-red-600';
     return 'bg-slate-500';
-  };
-
-  const getIssueIcon = (type: 'error' | 'warning' | 'info') => {
-    switch (type) {
-      case 'error':
-        return <AlertTriangle className="w-4 h-4 text-red-500" />;
-      case 'warning':
-        return <AlertTriangle className="w-4 h-4 text-amber-500" />;
-      case 'info':
-        return <CheckCircle className="w-4 h-4 text-green-500" />;
-    }
   };
 
   return (
@@ -1002,19 +905,6 @@ function DetailPanel({
           >
             <ArrowRight className="w-5 h-5 rotate-180" />
           </button>
-
-          {/* Score Circle */}
-          {settings?.showChainScoreInDashboard !== false && (
-            <div
-              className={clsx(
-                'w-14 h-14 rounded-xl flex flex-col items-center justify-center text-white shrink-0',
-                getGradeBgColor(entry.chainScore.grade)
-              )}
-            >
-              <span className="text-2xl font-bold leading-none">{entry.chainScore.grade}</span>
-              <span className="text-xs opacity-80">{entry.chainScore.score}</span>
-            </div>
-          )}
 
           {/* URL Info */}
           <div className="flex-1 min-w-0">
@@ -1044,7 +934,10 @@ function DetailPanel({
                   darkMode ? 'bg-slate-700' : 'bg-slate-200'
                 )}
               >
-                {entry.redirectCount} {entry.redirectCount !== 1 ? chrome.i18n.getMessage('redirectsPlural') : chrome.i18n.getMessage('redirectSingle')}
+                {entry.redirectCount}{' '}
+                {entry.redirectCount !== 1
+                  ? chrome.i18n.getMessage('redirectsPlural')
+                  : chrome.i18n.getMessage('redirectSingle')}
               </span>
               <span className={darkMode ? 'text-slate-500' : 'text-slate-400'}>
                 {format(entry.timestamp, "MMM d, yyyy 'at' h:mm a")}
@@ -1068,33 +961,87 @@ function DetailPanel({
             <button
               onClick={onToggleFavorite}
               className={clsx(
-                'p-2 rounded-lg transition-colors',
+                'flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium border transition-colors',
                 entry.isFavorite
-                  ? 'text-amber-500'
+                  ? 'bg-amber-50 border-amber-200 text-amber-600 dark:bg-amber-950/30 dark:border-amber-800 dark:text-amber-300'
                   : darkMode
-                    ? 'text-slate-400 hover:text-slate-200'
-                    : 'text-slate-400 hover:text-slate-600'
+                    ? 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-slate-100'
+                    : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-800'
               )}
-              title={entry.isFavorite ? chrome.i18n.getMessage('removeFromFavorites') : chrome.i18n.getMessage('addToFavorites')}
             >
               {entry.isFavorite ? (
-                <Star className="w-5 h-5 fill-current" />
+                <Star className="w-3.5 h-3.5 fill-current text-amber-500" />
               ) : (
-                <StarOff className="w-5 h-5" />
+                <StarOff className="w-3.5 h-3.5" />
               )}
+              <span>
+                {entry.isFavorite
+                  ? chrome.i18n.getMessage('favoritedLabel')
+                  : chrome.i18n.getMessage('favoriteLabel')}
+              </span>
             </button>
+            {/* Copy Text */}
+            <button
+              onClick={handleCopyText}
+              className={clsx(
+                'flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium border transition-colors',
+                copiedText
+                  ? 'bg-green-50 border-green-200 text-green-700 dark:bg-green-900/30 dark:border-green-800 dark:text-green-300'
+                  : darkMode
+                    ? 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-slate-100'
+                    : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-800'
+              )}
+            >
+              {copiedText ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+              <span>{copiedText ? chrome.i18n.getMessage('copied') : chrome.i18n.getMessage('textFormat')}</span>
+            </button>
+
+            {/* Copy CSV */}
+            <button
+              onClick={handleCopyCsv}
+              className={clsx(
+                'flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium border transition-colors',
+                copiedCsv
+                  ? 'bg-green-50 border-green-200 text-green-700 dark:bg-green-900/30 dark:border-green-800 dark:text-green-300'
+                  : darkMode
+                    ? 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-slate-100'
+                    : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-800'
+              )}
+            >
+              {copiedCsv ? <Check className="w-3.5 h-3.5" /> : <FileSpreadsheet className="w-3.5 h-3.5" />}
+              <span>{copiedCsv ? chrome.i18n.getMessage('copied') : chrome.i18n.getMessage('csvFormat')}</span>
+            </button>
+
+            {/* Export PDF */}
             <button
               onClick={onExportPDF}
               className={clsx(
-                'p-2 rounded-lg transition-colors',
+                'flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium border transition-colors',
                 darkMode
-                  ? 'text-slate-400 hover:text-slate-200'
-                  : 'text-slate-400 hover:text-slate-600'
+                  ? 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-slate-100'
+                  : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-800'
               )}
-              title={chrome.i18n.getMessage('exportToPdf')}
             >
-              <Download className="w-5 h-5" />
+              <Download className="w-3.5 h-3.5" />
+              <span>{chrome.i18n.getMessage('pdfFormat')}</span>
             </button>
+
+            {/* Export Image */}
+            <button
+              onClick={onExportImage}
+              className={clsx(
+                'flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium border transition-colors',
+                darkMode
+                  ? 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-slate-100'
+                  : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-800'
+              )}
+            >
+              <FileImage className="w-3.5 h-3.5" />
+              <span>{chrome.i18n.getMessage('imageFormat')}</span>
+            </button>
+
+            <div className={clsx('w-px h-5 mx-1', darkMode ? 'bg-slate-700' : 'bg-slate-200')} />
+
             <button
               onClick={onDelete}
               className="p-2 rounded-lg text-red-400 hover:text-red-500 transition-colors"
@@ -1108,84 +1055,6 @@ function DetailPanel({
 
       {/* Panel Content - Scrollable */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {/* Issues Section */}
-        {settings?.showChainScoreInDashboard !== false && entry.chainScore.issues.length > 0 && (
-          <section
-            className={clsx(
-              'rounded-xl p-4 border',
-              darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'
-            )}
-          >
-            <h3 className="font-medium mb-3 flex items-center gap-2">
-              <AlertTriangle className="w-4 h-4 text-amber-500" />
-              {chrome.i18n.getMessage('issuesFound')} ({entry.chainScore.issues.length})
-            </h3>
-            <div className="space-y-2">
-              {entry.chainScore.issues.map((issue, idx) => (
-                <div
-                  key={idx}
-                  className={clsx(
-                    'flex items-start gap-3 p-3 rounded-lg',
-                    issue.type === 'error' && (darkMode ? 'bg-red-900/20' : 'bg-red-50'),
-                    issue.type === 'warning' && (darkMode ? 'bg-amber-900/20' : 'bg-amber-50'),
-                    issue.type === 'info' && (darkMode ? 'bg-green-900/20' : 'bg-green-50')
-                  )}
-                >
-                  {getIssueIcon(issue.type)}
-                  <div className="flex-1">
-                    <p
-                      className={clsx(
-                        'text-sm',
-                        issue.type === 'error' && (darkMode ? 'text-red-400' : 'text-red-700'),
-                        issue.type === 'warning' &&
-                          (darkMode ? 'text-amber-400' : 'text-amber-700'),
-                        issue.type === 'info' && (darkMode ? 'text-green-400' : 'text-green-700')
-                      )}
-                    >
-                      {issue.message}
-                    </p>
-                    <span
-                      className={clsx('text-xs', darkMode ? 'text-slate-500' : 'text-slate-400')}
-                    >
-                      {chrome.i18n.getMessage('impactLabel')}: {issue.impact}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* Recommendations Section */}
-        {settings?.showChainScoreInDashboard !== false &&
-          entry.chainScore.recommendations.length > 0 && (
-            <section
-              className={clsx(
-                'rounded-xl p-4 border',
-                darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'
-              )}
-            >
-              <h3 className="font-medium mb-3 flex items-center gap-2">
-                <Info className="w-4 h-4 text-blue-500" />
-                {chrome.i18n.getMessage('recommendations')}
-              </h3>
-              <ul className="space-y-2">
-                {entry.chainScore.recommendations.map((rec, idx) => (
-                  <li
-                    key={idx}
-                    className={clsx(
-                      'flex items-start gap-2 text-sm',
-                      darkMode ? 'text-slate-300' : 'text-slate-600'
-                    )}
-                  >
-                    <span className="text-blue-500 mt-0.5">→</span>
-                    {rec}
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )}
-
         {/* Redirect Chain Section */}
         <section
           className={clsx(
@@ -1195,157 +1064,52 @@ function DetailPanel({
         >
           <h3 className="font-medium mb-3 flex items-center gap-2">
             <ArrowRight className="w-4 h-4" />
-            {chrome.i18n.getMessage('redirectChain')} ({entry.path.length} {chrome.i18n.getMessage('stepsLabel')})
+            {chrome.i18n.getMessage('redirectChain')} ({entry.path.length}{' '}
+            {chrome.i18n.getMessage('stepsLabel')})
           </h3>
-          <div className="space-y-0">
-            {entry.path.map((item, idx) => (
-              <div key={item.id} className="relative flex">
-                {/* Timeline column */}
-                <div className="flex flex-col items-center mr-3">
-                  {/* Step Number Circle */}
-                  <div
-                    className={clsx(
-                      'w-9 h-9 rounded-full flex items-center justify-center text-white text-sm font-medium shrink-0 z-10',
-                      getStatusColor(item.status_code)
-                    )}
-                  >
-                    {idx + 1}
-                  </div>
-                  {/* Connector Line */}
-                  {idx < entry.path.length - 1 && (
-                    <div
-                      className={clsx(
-                        'w-0.5 grow min-h-5',
-                        darkMode ? 'bg-slate-600' : 'bg-slate-300'
-                      )}
-                    />
-                  )}
-                </div>
+          <div className="relative">
+            {entry.path.length > 1 && (
+              <div
+                className={clsx(
+                  'absolute left-7 top-6 bottom-6 w-0.5 z-0',
+                  darkMode ? 'bg-slate-700' : 'bg-slate-200'
+                )}
+              />
+            )}
+            <div className="flex flex-col gap-2 relative z-10">
+              {entry.path.map((item, idx) => {
+                const delayMs = idx > 0 ? calculateGapDuration(entry.path[idx - 1], item) : null;
 
-                {/* Content */}
-                <div
-                  className={clsx('flex-1 min-w-0', idx < entry.path.length - 1 ? 'pb-4' : 'pb-0')}
-                >
-                  {/* Clickable header */}
-                  <button
-                    onClick={() => toggleExpanded(item.id)}
-                    className={clsx(
-                      'w-full text-left p-2 -ml-2 rounded-lg transition-colors',
-                      darkMode ? 'hover:bg-slate-700/50' : 'hover:bg-slate-100'
-                    )}
-                  >
-                    <div className="flex items-start gap-2">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1 flex-wrap">
-                          <span
-                            className={clsx(
-                              'font-medium text-sm',
-                              darkMode ? 'text-slate-200' : 'text-slate-800'
-                            )}
-                          >
-                            {item.type === 'server_redirect'
-                              ? item.redirect_type === 'permanent'
-                                ? chrome.i18n.getMessage('permanentRedirect')
-                                : item.redirect_type === 'hsts'
-                                  ? chrome.i18n.getMessage('hstsRedirect')
-                                  : chrome.i18n.getMessage('temporaryRedirect')
-                              : item.statusObject?.isSuccess
-                                ? chrome.i18n.getMessage('success')
-                                : item.status_line}
-                          </span>
-                          <span className="flex-1" />
-                          <span
-                            className={clsx(
-                              'px-2 py-0.5 rounded text-xs font-medium',
-                              item.statusObject?.isSuccess &&
-                                (darkMode
-                                  ? 'bg-green-900/50 text-green-300'
-                                  : 'bg-green-100 text-green-700'),
-                              item.statusObject?.isRedirect &&
-                                (darkMode
-                                  ? 'bg-amber-900/50 text-amber-300'
-                                  : 'bg-amber-100 text-amber-700'),
-                              (item.statusObject?.isClientError ||
-                                item.statusObject?.isServerError) &&
-                                (darkMode
-                                  ? 'bg-red-900/50 text-red-300'
-                                  : 'bg-red-100 text-red-700')
-                            )}
-                          >
-                            {item.status_code}
-                          </span>
-                          {item.timing && (
-                            <span
-                              className={clsx(
-                                'px-2 py-0.5 rounded text-xs',
-                                darkMode
-                                  ? 'bg-slate-700 text-slate-300'
-                                  : 'bg-slate-200 text-slate-600'
-                              )}
-                            >
-                              {formatDuration(item.timing.duration)}
-                            </span>
-                          )}
-                          {item.type === 'server_redirect' && item.redirect_type && (
-                            <span
-                              className={clsx(
-                                'px-2 py-0.5 rounded text-xs',
-                                darkMode ? 'bg-slate-700' : 'bg-slate-200'
-                              )}
-                            >
-                              {item.redirect_type}
-                            </span>
-                          )}
-                          {expandedItems.has(item.id) ? (
-                            <ChevronUp className="w-4 h-4 text-slate-400" />
-                          ) : (
-                            <ChevronDown className="w-4 h-4 text-slate-400" />
-                          )}
-                        </div>
-                        <p
+                return (
+                  <Fragment key={item.id}>
+                    {idx > 0 && delayMs != null && (
+                      <div className="flex pl-16 py-1 relative z-20">
+                        <span
                           className={clsx(
-                            'text-sm break-all',
-                            darkMode ? 'text-slate-300' : 'text-slate-700'
+                            'text-[10px] px-2 py-0.5 rounded-full flex items-center gap-1 border',
+                            darkMode
+                              ? 'bg-slate-800 text-slate-400 border-slate-700'
+                              : 'bg-white text-slate-500 border-slate-200'
                           )}
+                          title={`Time passed between previous request finishing and this request starting`}
                         >
-                          {item.url}
-                        </p>
+                          <Clock className="w-3 h-3" />
+                          {formatDuration(delayMs)} gap
+                        </span>
                       </div>
-
-                      {/* External Link */}
-                      <a
-                        href={item.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={e => e.stopPropagation()}
-                        className={clsx(
-                          'p-1 rounded transition-colors shrink-0',
-                          darkMode
-                            ? 'text-slate-500 hover:text-slate-300'
-                            : 'text-slate-400 hover:text-slate-600'
-                        )}
-                      >
-                        <ExternalLink className="w-4 h-4" />
-                      </a>
-                    </div>
-                  </button>
-
-                  {/* Expanded Details */}
-                  {expandedItems.has(item.id) && (
-                    <div
-                      className={clsx(
-                        'mt-3 p-3 rounded-lg border',
-                        darkMode
-                          ? 'bg-slate-700/50 border-slate-600'
-                          : 'bg-slate-50 border-slate-200'
-                      )}
-                    >
-                      <HeadersList headers={item.headers} ip={item.ip} darkMode={darkMode} />
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
+                    )}
+                    <RedirectItemCard
+                      item={item}
+                      index={idx}
+                      isLast={idx === entry.path.length - 1}
+                      isExpanded={expandedItems.has(item.id)}
+                      onToggle={() => toggleExpanded(item.id)}
+                      darkMode={darkMode}
+                    />
+                  </Fragment>
+                );
+              })}
+            </div>
           </div>
         </section>
 
@@ -1356,8 +1120,8 @@ function DetailPanel({
             darkMode ? 'text-slate-500' : 'text-slate-400'
           )}
         >
-          {chrome.i18n.getMessage('capturedLabel')}: {format(entry.timestamp, "MMMM d, yyyy 'at' h:mm:ss a")} • ID:{' '}
-          {entry.id.substring(0, 8)}
+          {chrome.i18n.getMessage('capturedLabel')}:{' '}
+          {format(entry.timestamp, "MMMM d, yyyy 'at' h:mm:ss a")} • ID: {entry.id.substring(0, 8)}
         </div>
       </div>
     </div>

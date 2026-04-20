@@ -1,9 +1,10 @@
 {
   "extensionName": {
-    "message": "RedirectWise: HTTP重定向检查器和SEO审计工具"
+    "message": "RedirectWise: URL重定向检查器",
+    "description": "Name of the extension"
   },
   "extensionDesc": {
-    "message": "使用持久化仪表板追踪重定向并捕获隐藏的广告链接。带弹出窗口和侧面板的实时SEO检查器。"
+    "message": "使用持久化仪表板追踪重定向并捕获隐藏的广告链接。"
   },
   "emptyStateSpecialPageTitle": {
     "message": "无法追踪此页面"
@@ -18,7 +19,7 @@
     "message": "导航到URL或刷新页面以捕获其重定向路径。"
   },
   "headerSubtitle": {
-    "message": "重定向路径分析器"
+    "message": "URL重定向检查器"
   },
   "headerLightMode": {
     "message": "浅色模式"
@@ -37,27 +38,6 @@
   },
   "headerClearPath": {
     "message": "清除路径"
-  },
-  "scoreGradeA": {
-    "message": "优秀！最佳重定向链。"
-  },
-  "scoreGradeB": {
-    "message": "良好。可进行小幅改进。"
-  },
-  "scoreGradeC": {
-    "message": "一般。存在一些问题。"
-  },
-  "scoreGradeD": {
-    "message": "较差。发现重大问题。"
-  },
-  "scoreGradeF": {
-    "message": "严重。检测到重大问题。"
-  },
-  "scoreIssueSingle": {
-    "message": "个问题"
-  },
-  "scoreIssuePlural": {
-    "message": "个问题"
   },
   "copyPathAs": {
     "message": "复制路径为："
@@ -131,9 +111,6 @@
   "monitoringLabel": {
     "message": "监控中："
   },
-  "scoreLabel": {
-    "message": "评分："
-  },
   "autoScroll": {
     "message": "自动滚动"
   },
@@ -152,15 +129,6 @@
   "generalSettings": {
     "message": "常规设置"
   },
-  "chainScoreAnalysis": {
-    "message": "链评分分析"
-  },
-  "aiIntegrations": {
-    "message": "AI集成"
-  },
-  "soon": {
-    "message": "即将推出"
-  },
   "darkModeAppearance": {
     "message": "深色模式外观"
   },
@@ -169,9 +137,6 @@
   },
   "sortByDate": {
     "message": "按日期排序"
-  },
-  "sortByScore": {
-    "message": "按评分排序"
   },
   "sortByRedirects": {
     "message": "按重定向排序"
@@ -199,12 +164,6 @@
   },
   "deleteEntry": {
     "message": "删除"
-  },
-  "issuesFound": {
-    "message": "发现问题"
-  },
-  "recommendations": {
-    "message": "建议"
   },
   "success": {
     "message": "成功"
@@ -236,9 +195,6 @@
   "entrySingle": {
     "message": "条记录"
   },
-  "avgScore": {
-    "message": "平均分"
-  },
   "filterAll": {
     "message": "全部"
   },
@@ -253,36 +209,6 @@
   },
   "useHeaderButton": {
     "message": "使用顶部按钮"
-  },
-  "chainScoreVisibility": {
-    "message": "链评分可见性"
-  },
-  "chainScoreVisibilityDesc": {
-    "message": "控制重定向分析指标在扩展中的显示位置。"
-  },
-  "extensionPopup": {
-    "message": "扩展弹出窗口"
-  },
-  "extensionPopupDesc": {
-    "message": "点击工具栏中的扩展图标时显示分析卡片。"
-  },
-  "sidepanelMonitor": {
-    "message": "侧面板实时监控"
-  },
-  "sidepanelMonitorDesc": {
-    "message": "在活动监控面板顶部注入评分摘要。"
-  },
-  "dashboardCenter": {
-    "message": "仪表板中心"
-  },
-  "dashboardCenterDesc": {
-    "message": "渲染完整的视觉评分UI，包括彩色徽章、问题提醒和建议。"
-  },
-  "aiPoweredInsights": {
-    "message": "AI智能分析"
-  },
-  "aiPoweredInsightsDesc": {
-    "message": "我们正在构建AI功能来自动分析复杂的重定向模式和SEO风险。即将推出。"
   },
   "hopSingle": {
     "message": "跳"
@@ -305,9 +231,6 @@
   "totalLabel": {
     "message": "总计"
   },
-  "impactLabel": {
-    "message": "影响"
-  },
   "redirectChain": {
     "message": "重定向链"
   },
@@ -328,5 +251,26 @@
   },
   "categoryContent": {
     "message": "内容"
+  },
+  "imageFormat": {
+    "message": "图片"
+  },
+  "exportingImage": {
+    "message": "导出中..."
+  },
+  "exportToImage": {
+    "message": "导出为图片"
+  },
+  "favoriteLabel": {
+    "message": "收藏"
+  },
+  "favoritedLabel": {
+    "message": "已收藏"
+  },
+  "cancelLabel": {
+    "message": "取消"
+  },
+  "clearLabel": {
+    "message": "清除"
   }
 }

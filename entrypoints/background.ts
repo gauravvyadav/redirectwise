@@ -113,16 +113,29 @@ async function clearTabPath(tabId: number): Promise<void> {
 
 async function addRedirectItem(
   tabId: number,
-  item: Partial<RedirectItem> & { timing?: Partial<RedirectTiming> },
+  item: Partial<Omit<RedirectItem, 'timing'>> & { timing?: Partial<RedirectTiming> },
   options?: { requestId?: string; eventTime?: number }
 ): Promise<RedirectItem> {
   const tabPath = await getOrCreateTabPath(tabId);
   const metadata = options?.requestId ? requestMetadata.get(options.requestId) : undefined;
-  const rawStartTime = item.timing?.startTime ?? metadata?.startTime ?? options?.eventTime ?? Date.now();
+  const rawStartTime =
+    item.timing?.startTime ?? metadata?.startTime ?? options?.eventTime ?? Date.now();
   const rawEndTime = item.timing?.endTime ?? options?.eventTime ?? Date.now();
   const startTime = Math.round(rawStartTime);
   const endTime = Math.max(startTime, Math.round(rawEndTime));
   const duration = Math.max(0, Math.round(item.timing?.duration ?? endTime - startTime));
+
+  const duplicate = tabPath.path.find(
+    existing =>
+      existing.url === (item.url || '') &&
+      existing.status_code === (item.status_code || 0) &&
+      Math.abs(existing.timestamp - endTime) < 500
+  );
+
+  if (duplicate) {
+    console.log('[RedirectWise] Ignored duplicate redirect item:', item.url, item.status_code);
+    return duplicate;
+  }
 
   const fullItem: RedirectItem = {
     id: generateId(),
@@ -227,7 +240,7 @@ export default defineBackground(() => {
   }
 
   // Open welcome page on installation
-  chrome.runtime.onInstalled.addListener((details) => {
+  chrome.runtime.onInstalled.addListener(details => {
     if (details.reason === 'install') {
       chrome.tabs.create({ url: 'https://redirectwise.gauravlabs.com/welcome.html' });
     }
