@@ -3,27 +3,27 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>RedirectWise: HTTP Redirect Checker & SEO Audit Tool</title>
+    <title>RedirectWise: URL Redirect Checker & Redirect Chain Analyzer</title>
     <meta
       name="description"
-      content="Track HTTP redirects, analyze SEO impact, and optimize your redirect chains in real-time. Free browser extension for Chrome and Edge."
+      content="Trace HTTP redirects, perform deep redirect audits, and map out 301 and 302 redirect paths in real-time. Designed for experts to audit website migrations. 18 languages supported!"
     />
     <meta
       name="keywords"
-      content="redirect checker, HTTP redirect checker, SEO audit tool, redirect chain analyzer, 301 redirect checker, URL redirect checker, link hop tracking, check redirect path, website health tool, redirect debug, browser extension, Chrome extension, Edge add-on, SEO extension"
+      content="redirect checker, HTTP redirect checker, redirect audit tool, redirect chain analyzer, 301 redirect checker, URL redirect checker, link hop tracking, check redirect path, website health tool, redirect debug, browser extension, Chrome extension, Edge add-on, redirect extension, redirect trace, HTTP header checker, affiliate link tracker"
     />
-    <meta property="og:title" content="RedirectWise: HTTP Redirect Checker & SEO Audit Tool" />
+    <meta property="og:title" content="RedirectWise: URL Redirect Checker & Redirect Chain Analyzer" />
     <meta
       property="og:description"
-      content="Track HTTP redirects, analyze SEO impact, and optimize your redirect chains in real-time. Free browser extension for Chrome and Edge."
+      content="Trace HTTP redirects, perform deep redirect audits, and map out redirect paths in real-time. 18 languages supported!"
     />
     <meta property="og:url" content="https://redirectwise.gauravlabs.com" />
     <meta property="og:type" content="website" />
     <meta property="og:image" content="https://redirectwise.gauravlabs.com/assets/preview.png" />
-    
+
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="RedirectWise: HTTP Redirect Checker & SEO Audit Tool" />
-    <meta name="twitter:description" content="Track HTTP redirects, analyze SEO impact, and optimize your redirect chains in real-time. Free browser extension." />
+    <meta name="twitter:title" content="RedirectWise: URL Redirect Checker & Redirect Chain Analyzer" />
+    <meta name="twitter:description" content="Trace HTTP redirects, perform deep redirect audits, and map out redirect paths in real-time. 18 languages!" />
     <meta name="twitter:image" content="https://redirectwise.gauravlabs.com/assets/preview.png" />
 
     <script type="application/ld+json">
@@ -33,7 +33,7 @@
       "name": "RedirectWise",
       "operatingSystem": "Chrome, Edge",
       "applicationCategory": "BrowserExtension",
-      "description": "Track HTTP redirects, analyze SEO impact, and optimize your redirect chains in real-time. Free browser extension.",
+      "description": "The ultimate URL Redirect Checker and Redirect Chain Analyzer. Trace HTTP redirects, perform deep audits, and map out 301 and 302 redirect paths in real-time. Supports 18 languages.",
       "offers": {
         "@type": "Offer",
         "price": "0",
@@ -47,31 +47,45 @@
       "@type": "FAQPage",
       "mainEntity": [{
         "@type": "Question",
-        "name": "What is a Redirect Checker?",
+        "name": "What is RedirectWise?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "A redirect checker is a tool that allows you to see the complete path a URL takes before arriving at the final destination. It helps trace 301, 302, and meta refresh redirects."
+          "text": "RedirectWise is the ultimate URL Redirect Checker and Redirect Chain Analyzer tool. It instantly traces HTTP redirects, performs deep audits, and maps out 301, 302, 307, 308, JavaScript redirects, Meta Refreshes, and HSTS redirect paths in real-time."
+        }
+      }, {
+        "@type": "Question",
+        "name": "How many languages does RedirectWise support?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "RedirectWise now supports 18 languages including English, Hindi, Spanish, Arabic, Portuguese, Dutch, Polish, Vietnamese, Swedish, Indonesian, and more!"
         }
       }, {
         "@type": "Question",
         "name": "Can it catch hidden ad redirects & page refreshes?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Unlike basic tools that wipe history when a page reloads, RedirectWise features a Persistent History Dashboard. Even if an ad forcefully redirects you or a page refreshes, the full redirect chain remains safely recorded for the active tab."
+          "text": "Unlike basic tools that wipe history when a page reloads, RedirectWise features a Persistent History Dashboard. It securely logs up to 2,000 URLs in a persistent dashboard. Even if an ad forcefully redirects you or a page refreshes, the full redirect chain remains safely recorded."
         }
       }, {
         "@type": "Question",
-        "name": "Why do redirect chains hurt SEO?",
+        "name": "What health features does RedirectWise provide?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Long redirect chains can dilute page rank ('link juice'), increase page load times, and consume search engine crawl budget, causing poor SEO performance."
+          "text": "RedirectWise provides an Intelligent Health Score with instant A-F grades, HTTP Response Header Auditor for cache-control and server outputs, and Millisecond Speed Analysis to trace exact delay gaps between redirect hops."
+        }
+      }, {
+        "@type": "Question",
+        "name": "Why do redirect chains affect performance?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Long redirect chains can dilute page rank ('link juice'), increase page load times, and consume crawl budget, causing poor website performance. RedirectWise helps identify and fix these issues."
         }
       }, {
         "@type": "Question",
         "name": "Does RedirectWise support Chrome and Edge?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Yes! RedirectWise is available as a free browser extension for both Google Chrome and Microsoft Edge."
+          "text": "Yes! RedirectWise is available as a completely free browser extension for both Google Chrome and Microsoft Edge. It's also Manifest V3 compliant."
         }
       }]
     }
@@ -100,7 +114,7 @@
     >
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16">
-          <a href="#" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
+          <a href="/" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
             <div class="flex items-center justify-center">
               <img
                 src="assets/logo.svg"
@@ -165,17 +179,16 @@
               class="inline-flex items-center gap-2 bg-white px-4 py-2 rounded-full text-sm font-medium text-slate-600 shadow-sm mb-6"
             >
               <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-              Free Extension
+              18 Languages Supported
             </div>
             <h1
               class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 leading-tight mb-6"
             >
-              Track HTTP Redirects
-              <span class="text-blue-500"> Like a Pro</span>
+              Ultimate Redirect
+              <span class="text-blue-500"> Checker</span>
             </h1>
             <p class="text-xl text-slate-600 mb-8 leading-relaxed">
-              Analyze redirect chains, get SEO scores, and optimize your URLs in real-time. The
-              ultimate browser extension for developers and SEO professionals.
+              Track redirects & catch hidden ad links with a persistent history dashboard. Real-time redirect checker with popup & sidepanel. Trace every hop including 301, 302, JavaScript, Meta Refresh, and HSTS redirects.
             </p>
             <div class="flex flex-wrap gap-4">
               <a
@@ -222,128 +235,137 @@
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-16">
           <h2 class="text-3xl sm:text-4xl font-bold text-slate-900 mb-4">
-            Powerful Features for SEO Professionals
+            Critical Features
           </h2>
           <p class="text-xl text-slate-600 max-w-2xl mx-auto">
-            Everything you need to analyze, debug, and optimize HTTP redirect chains.
+            Everything you need to analyze, debug, and optimize HTTP redirect chains for better performance.
           </p>
         </div>
         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <!-- Feature 1 -->
+          <!-- Feature 1: URL Redirect Trace Tool -->
           <div class="bg-slate-50 rounded-2xl p-8 hover:shadow-xl transition-shadow">
             <div
               class="w-14 h-14 bg-blue-500/10 rounded-xl flex items-center justify-center mb-6 text-blue-500"
             >
               <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M13 10V3L4 14h7v7l9-11h-7z"
-                />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
               </svg>
             </div>
-            <h3 class="text-xl font-bold text-slate-900 mb-3">Popup & Sidepanel</h3>
+            <h3 class="text-xl font-bold text-slate-900 mb-3">URL Redirect Trace Tool</h3>
             <p class="text-slate-600">
-              Track redirects easily from the quick extension popup or pin the sidepanel for continuous real-time monitoring while browsing.
+              Automatically capture every hop within a redirect chain including 301, 302, 303, 307, 308, JavaScript redirects, Meta Refreshes, and HSTS.
             </p>
           </div>
-          <!-- Feature 2 -->
+          <!-- Feature 2: 18+ Language Support -->
           <div class="bg-slate-50 rounded-2xl p-8 hover:shadow-xl transition-shadow">
             <div
               class="w-14 h-14 bg-emerald-500/10 rounded-xl flex items-center justify-center mb-6 text-emerald-500"
             >
               <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"/>
               </svg>
             </div>
-            <h3 class="text-xl font-bold text-slate-900 mb-3">SEO Scoring</h3>
+            <h3 class="text-xl font-bold text-slate-900 mb-3">18+ Language Support</h3>
             <p class="text-slate-600">
-              Get instant A-F grades with actionable recommendations to optimize your redirect
-              chains.
+              Native support for English, Hindi, Spanish, Arabic, Portuguese, Dutch, Polish, Vietnamese, Swedish, Indonesian, and more!
             </p>
           </div>
-          <!-- Feature 3 -->
+          <!-- Feature 3: Persistent Redirect History -->
           <div class="bg-slate-50 rounded-2xl p-8 hover:shadow-xl transition-shadow">
             <div
               class="w-14 h-14 bg-violet-500/10 rounded-xl flex items-center justify-center mb-6 text-violet-500"
             >
               <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"/>
               </svg>
             </div>
-            <h3 class="text-xl font-bold text-slate-900 mb-3">Response Headers</h3>
+            <h3 class="text-xl font-bold text-slate-900 mb-3">Persistent Redirect History</h3>
             <p class="text-slate-600">
-              View detailed HTTP headers, status codes, IP addresses, and timing information for
-              each hop.
+              Unlike standard extensions that lose data on page reload, RedirectWise securely logs up to 2,000 URLs in a persistent dashboard.
             </p>
           </div>
-          <!-- Feature 4 -->
+          <!-- Feature 4: Intelligent Health Score -->
           <div class="bg-slate-50 rounded-2xl p-8 hover:shadow-xl transition-shadow">
             <div
               class="w-14 h-14 bg-amber-500/10 rounded-xl flex items-center justify-center mb-6 text-amber-500"
             >
               <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
               </svg>
             </div>
-            <h3 class="text-xl font-bold text-slate-900 mb-3">Persistent History Dashboard</h3>
+            <h3 class="text-xl font-bold text-slate-900 mb-3">Intelligent Health Score</h3>
             <p class="text-slate-600">
-              Never miss a hidden ad redirect! Full active-tab history is retained in the dashboard even if the page automatically refreshes.
+              Get instant A-F grades for every redirect chain. Discover slow redirects affecting Core Web Vitals and penalize infinite loop architecture.
             </p>
           </div>
-          <!-- Feature 5 -->
+          <!-- Feature 5: HTTP Response Header Auditor -->
           <div class="bg-slate-50 rounded-2xl p-8 hover:shadow-xl transition-shadow">
             <div
               class="w-14 h-14 bg-rose-500/10 rounded-xl flex items-center justify-center mb-6 text-rose-500"
             >
               <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
               </svg>
             </div>
-            <h3 class="text-xl font-bold text-slate-900 mb-3">PDF Export</h3>
+            <h3 class="text-xl font-bold text-slate-900 mb-3">HTTP Response Header Auditor</h3>
             <p class="text-slate-600">
-              Generate detailed PDF reports of redirect chains for documentation and client
-              reporting.
+              Audit strict cache-control protocols, server outputs, and custom HTTP headers perfectly tailored for technical audits.
             </p>
           </div>
-          <!-- Feature 6 -->
+          <!-- Feature 6: Real-Time Popup & Sidepanel -->
           <div class="bg-slate-50 rounded-2xl p-8 hover:shadow-xl transition-shadow">
             <div
-              class="w-14 h-14 bg-slate-800/10 rounded-xl flex items-center justify-center mb-6 text-slate-800"
+              class="w-14 h-14 bg-cyan-500/10 rounded-xl flex items-center justify-center mb-6 text-cyan-500"
             >
               <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
-                />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"/>
               </svg>
             </div>
-            <h3 class="text-xl font-bold text-slate-900 mb-3">Dark Mode</h3>
+            <h3 class="text-xl font-bold text-slate-900 mb-3">Real-Time Popup & Sidepanel</h3>
             <p class="text-slate-600">
-              Easy on the eyes with a beautiful dark theme that follows your system preferences.
+              Run your redirect path checker natively via the popup or permanently pin the dashboard sidepanel for continuous real-time website monitoring.
+            </p>
+          </div>
+          <!-- Feature 7: Millisecond Speed Analysis -->
+          <div class="bg-slate-50 rounded-2xl p-8 hover:shadow-xl transition-shadow">
+            <div
+              class="w-14 h-14 bg-orange-500/10 rounded-xl flex items-center justify-center mb-6 text-orange-500"
+            >
+              <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+            </div>
+            <h3 class="text-xl font-bold text-slate-900 mb-3">Millisecond Speed Analysis</h3>
+            <p class="text-slate-600">
+              Trace exact delay gaps between redirect hops to audit tracking link latency and optimize redirect performance.
+            </p>
+          </div>
+          <!-- Feature 8: PDF Export (MV3 Compliant) -->
+          <div class="bg-slate-50 rounded-2xl p-8 hover:shadow-xl transition-shadow">
+            <div
+              class="w-14 h-14 bg-indigo-500/10 rounded-xl flex items-center justify-center mb-6 text-indigo-500"
+            >
+              <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+              </svg>
+            </div>
+            <h3 class="text-xl font-bold text-slate-900 mb-3">PDF Export (MV3 Compliant)</h3>
+            <p class="text-slate-600">
+              Download professional redirect path reports with logos and categorized headers, fully optimized for Manifest V3.
+            </p>
+          </div>
+          <!-- Feature 9: Strict 100% Privacy -->
+          <div class="bg-slate-50 rounded-2xl p-8 hover:shadow-xl transition-shadow">
+            <div
+              class="w-14 h-14 bg-green-500/10 rounded-xl flex items-center justify-center mb-6 text-green-500"
+            >
+              <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+              </svg>
+            </div>
+            <h3 class="text-xl font-bold text-slate-900 mb-3">Strict 100% Privacy</h3>
+            <p class="text-slate-600">
+              Operates fully offline. No analytics, no cloud storage, and zero data leaving your browser.
             </p>
           </div>
         </div>
@@ -391,7 +413,7 @@
             </div>
             <h3 class="text-xl font-bold text-slate-900 mb-3">Analyze & Export</h3>
             <p class="text-slate-600">
-              Click the extension icon to view the redirect chain, SEO score, and export reports.
+              Click the extension icon to view the redirect chain, health score, and export reports.
             </p>
           </div>
         </div>
@@ -404,14 +426,14 @@
         <div class="text-center mb-16">
           <h2 class="text-3xl sm:text-4xl font-bold text-slate-900 mb-4">Perfect For</h2>
           <p class="text-xl text-slate-600 max-w-2xl mx-auto">
-            Whether you're a developer, SEO specialist, or marketer, RedirectWise has you covered.
+            Whether you're a developer, web specialist, or marketer, RedirectWise has you covered.
           </p>
         </div>
         <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           <div class="bg-linear-to-br from-blue-50 to-blue-100 rounded-2xl p-6 text-center">
             <div class="text-4xl mb-4">🔍</div>
-            <h3 class="font-bold text-slate-900 mb-2">SEO Audits</h3>
-            <p class="text-sm text-slate-600">Analyze redirect chains for SEO optimization</p>
+            <h3 class="font-bold text-slate-900 mb-2">Redirect Audits</h3>
+            <p class="text-sm text-slate-600">Analyze redirect chains for optimization</p>
           </div>
           <div class="bg-linear-to-br from-emerald-50 to-emerald-100 rounded-2xl p-6 text-center">
             <div class="text-4xl mb-4">🐛</div>
@@ -437,24 +459,79 @@
       <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-16">
           <h2 class="text-3xl sm:text-4xl font-bold text-slate-900 mb-4">Frequently Asked Questions</h2>
-          <p class="text-xl text-slate-600">Common questions about URL redirection and SEO audits.</p>
+          <p class="text-xl text-slate-600">Common questions about URL redirection and audits.</p>
         </div>
         <div class="space-y-6">
           <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
-            <h3 class="text-lg font-bold text-slate-900 mb-2">What is a Redirect Checker?</h3>
-            <p class="text-slate-600">A redirect checker is a tool that allows you to see the complete path a URL takes before arriving at the final destination. It helps trace 301, 302, and meta refresh redirects to ensure visitors reach the right page efficiently.</p>
+            <h3 class="text-lg font-bold text-slate-900 mb-2">What is RedirectWise?</h3>
+            <p class="text-slate-600">RedirectWise is the ultimate URL Redirect Checker and Redirect Chain Analyzer. Instantly trace HTTP redirects, perform deep audits, and map out 301, 302, 307, 308, JavaScript redirects, Meta Refreshes, and HSTS paths in real-time.</p>
+          </div>
+          <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+            <h3 class="text-lg font-bold text-slate-900 mb-2">How many languages does RedirectWise support?</h3>
+            <p class="text-slate-600">RedirectWise now supports 18 languages including English, Hindi, Spanish, Arabic, Portuguese, Dutch, Polish, Vietnamese, Swedish, Indonesian, and more!</p>
           </div>
           <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
             <h3 class="text-lg font-bold text-slate-900 mb-2">Can it catch hidden ad redirects & page refreshes?</h3>
-            <p class="text-slate-600">Unlike basic tools that wipe history when a page reloads, RedirectWise features a Persistent History Dashboard. Even if an ad forcefully redirects you or a page refreshes, the full redirect chain remains safely recorded for the active tab.</p>
+            <p class="text-slate-600">Unlike basic tools that wipe history when a page reloads, RedirectWise features a Persistent History Dashboard. It securely logs up to 2,000 URLs. Even if an ad forcefully redirects you or a page refreshes, the full redirect chain remains safely recorded.</p>
           </div>
           <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
-            <h3 class="text-lg font-bold text-slate-900 mb-2">Why do redirect chains hurt SEO?</h3>
-            <p class="text-slate-600">Long redirect chains can dilute page rank ("link juice"), increase page load times, and unnecessarily consume search engine crawl budget. This often results in a poor user experience and lower SEO rankings for the target URL.</p>
+            <h3 class="text-lg font-bold text-slate-900 mb-2">Why do redirect chains affect website performance?</h3>
+            <p class="text-slate-600">Long redirect chains can increase page load times, waste bandwidth, and unnecessarily consume crawl budget. RedirectWise helps identify and fix these issues with instant A-F health grades.</p>
           </div>
           <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
             <h3 class="text-lg font-bold text-slate-900 mb-2">Does RedirectWise support Chrome and Edge?</h3>
-            <p class="text-slate-600">Yes! RedirectWise is available as a completely free browser extension for both Google Chrome and Microsoft Edge.</p>
+            <p class="text-slate-600">Yes! RedirectWise is available as a completely free browser extension for both Google Chrome and Microsoft Edge. It's also Manifest V3 compliant.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Release Changelog -->
+    <section class="py-20 lg:py-32 bg-white">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+          <h2 class="text-3xl sm:text-4xl font-bold text-slate-900 mb-4">Release Notes</h2>
+          <p class="text-xl text-slate-600">Latest updates and improvements</p>
+        </div>
+        <div class="space-y-6">
+          <div class="bg-slate-50 rounded-2xl p-6 border border-slate-200">
+            <div class="flex items-center gap-3 mb-4">
+              <span class="bg-blue-500 text-white text-sm font-semibold px-3 py-1 rounded-full">v1.4.2</span>
+              <span class="text-slate-500 text-sm">Latest</span>
+            </div>
+            <ul class="space-y-2 text-slate-600">
+              <li class="flex items-start gap-2"><span class="text-green-500 mt-1">✓</span> Fixed: Resolved history persistence issues to ensure redirect data is securely logged across all navigation paths.</li>
+              <li class="flex items-start gap-2"><span class="text-green-500 mt-1">✓</span> Improved: Enhanced redirect timing accuracy and polished the millisecond gap display for better precision.</li>
+              <li class="flex items-start gap-2"><span class="text-green-500 mt-1">✓</span> Improved: Optimized dashboard legibility by intelligently truncating long URLs in history cards.</li>
+              <li class="flex items-start gap-2"><span class="text-green-500 mt-1">✓</span> Improved: Refined PDF export UI with clearer visual indicators for redirect gaps.</li>
+              <li class="flex items-start gap-2"><span class="text-green-500 mt-1">✓</span> Added: Robust error handling and visual feedback for navigation failures within the popup.</li>
+            </ul>
+          </div>
+          <div class="bg-slate-50 rounded-2xl p-6 border border-slate-200">
+            <div class="flex items-center gap-3 mb-4">
+              <span class="bg-slate-600 text-white text-sm font-semibold px-3 py-1 rounded-full">v1.4.1</span>
+            </div>
+            <ul class="space-y-2 text-slate-600">
+              <li class="flex items-start gap-2"><span class="text-green-500 mt-1">✓</span> Improved: Shortened localized extension names for 100% compatibility with Chrome Store character limits.</li>
+            </ul>
+          </div>
+          <div class="bg-slate-50 rounded-2xl p-6 border border-slate-200">
+            <div class="flex items-center gap-3 mb-4">
+              <span class="bg-slate-600 text-white text-sm font-semibold px-3 py-1 rounded-full">v1.4.0</span>
+            </div>
+            <ul class="space-y-2 text-slate-600">
+              <li class="flex items-start gap-2"><span class="text-green-500 mt-1">✓</span> Added: Full Internationalization (i18n) support for 18 languages including English, Spanish, Hindi, Arabic, Dutch, Polish, and more.</li>
+              <li class="flex items-start gap-2"><span class="text-green-500 mt-1">✓</span> Added: Dashboard "Hard Refresh" shortcut via the main logo.</li>
+            </ul>
+          </div>
+          <div class="bg-slate-50 rounded-2xl p-6 border border-slate-200">
+            <div class="flex items-center gap-3 mb-4">
+              <span class="bg-slate-600 text-white text-sm font-semibold px-3 py-1 rounded-full">v1.3.0</span>
+            </div>
+            <ul class="space-y-2 text-slate-600">
+              <li class="flex items-start gap-2"><span class="text-green-500 mt-1">✓</span> Added: Intelligent User Onboarding flow and Uninstall Feedback Hook.</li>
+              <li class="flex items-start gap-2"><span class="text-green-500 mt-1">✓</span> Improved: Extension brand mapping to "Redirect Checker" for search algorithms.</li>
+            </ul>
           </div>
         </div>
       </div>
@@ -510,7 +587,7 @@
             >
           </div>
           <p class="text-slate-500 max-w-md">
-            The ultimate browser extension for tracking HTTP redirects, analyzing SEO impact, and
+            The ultimate browser extension for tracking HTTP redirects, analyzing redirect impact, and
             debugging link chains in real-time.
           </p>
           <a
@@ -536,7 +613,7 @@
             >
           </div>
           <div class="text-sm text-slate-400">
-            &copy; 2025
+            &copy; <span id="copyright-year"></span>
             <a href="https://gauravlabs.com" target="_blank" class="text-slate-500 hover:underline"
               >Gaurav Labs</a
             >. All rights reserved.
@@ -546,6 +623,8 @@
     </footer>
     <script>
       document.addEventListener('DOMContentLoaded', function () {
+        document.getElementById('copyright-year').textContent = new Date().getFullYear();
+
         // Fetch GitHub stars
         fetch('https://api.github.com/repos/gauravvyadav/redirectwise')
           .then(response => response.json())
