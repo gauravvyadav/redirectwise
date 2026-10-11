@@ -272,5 +272,65 @@
   },
   "clearLabel": {
     "message": "Temizle"
+  },
+  "newTabFrom": {
+    "message": "Şuradan yeni sekme -"
+  },
+  "openedFromTitle": {
+    "message": "Şuradan yeni sekmede açıldı:"
+  },
+  "copyLabel": {
+    "message": "Kopyala"
+  },
+  "copyHeadersTitle": {
+    "message": "Tüm başlıkları panoya kopyala"
+  },
+  "stepSingle": {
+    "message": "adım"
+  },
+  "timeLabel": {
+    "message": "Süre"
+  },
+  "gapLabel": {
+    "message": "ARALIK"
+  },
+  "gapDurationDesc": {
+    "message": "İstekler arasında geçen süre"
+  },
+  "targetLabel": {
+    "message": "Hedef"
+  },
+  "standbyLabel": {
+    "message": "Hazırda"
+  },
+  "inspectingRedirects": {
+    "message": "Yönlendirmeler inceleniyor..."
+  },
+  "navigationError": {
+    "message": "Gezinme hatası"
+  },
+  "newTabAdNotice": {
+    "message": "Yeni sekmedeki reklam yönlendirmeleri için (Google/Meta) yan paneli kullanın"
+  },
+  "openSidepanel": {
+    "message": "Yan paneli aç"
+  },
+  "openLabel": {
+    "message": "Aç"
+  },
+  "languageSettings": {
+    "message": "Dil Ayarları"
+  },
+  "languageLabel": {
+    "message": "Dil"
+  },
+  "languageDesc": {
+    "message": "Tercih ettiğiniz görüntüleme dilini seçin"
+  },
+  "systemDefault": {
+    "message": "Sistem Varsayılanı (Otomatik)"
+  },
+  "configurationPreferences": {
+    "message": "Yapılandırma // Tercihler"
   }
 }

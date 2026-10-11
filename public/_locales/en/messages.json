@@ -273,5 +273,65 @@
   },
   "categoryContent": {
     "message": "Content"
+  },
+  "newTabFrom": {
+    "message": "New tab from -"
+  },
+  "openedFromTitle": {
+    "message": "Opened in a new tab from"
+  },
+  "copyLabel": {
+    "message": "Copy"
+  },
+  "copyHeadersTitle": {
+    "message": "Copy all headers to clipboard"
+  },
+  "stepSingle": {
+    "message": "step"
+  },
+  "timeLabel": {
+    "message": "Time"
+  },
+  "gapLabel": {
+    "message": "GAP"
+  },
+  "gapDurationDesc": {
+    "message": "Time passed between requests"
+  },
+  "targetLabel": {
+    "message": "Target"
+  },
+  "standbyLabel": {
+    "message": "Standby"
+  },
+  "inspectingRedirects": {
+    "message": "Inspecting redirects..."
+  },
+  "navigationError": {
+    "message": "Navigation error"
+  },
+  "newTabAdNotice": {
+    "message": "For new-tab ad redirects (Google/Meta), use sidepanel"
+  },
+  "openSidepanel": {
+    "message": "Open sidepanel"
+  },
+  "openLabel": {
+    "message": "Open"
+  },
+  "languageSettings": {
+    "message": "Language Settings"
+  },
+  "languageLabel": {
+    "message": "Language"
+  },
+  "languageDesc": {
+    "message": "Choose your preferred display language"
+  },
+  "systemDefault": {
+    "message": "System Default (Automatic)"
+  },
+  "configurationPreferences": {
+    "message": "Configuration // Preferences"
   }
 }

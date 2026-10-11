@@ -272,5 +272,65 @@
   },
   "clearLabel": {
     "message": "Очистить"
+  },
+  "newTabFrom": {
+    "message": "Новая вкладка из -"
+  },
+  "openedFromTitle": {
+    "message": "Открыто в новой вкладке из"
+  },
+  "copyLabel": {
+    "message": "Копировать"
+  },
+  "copyHeadersTitle": {
+    "message": "Копировать все заголовки в буфер обмена"
+  },
+  "stepSingle": {
+    "message": "шаг"
+  },
+  "timeLabel": {
+    "message": "Время"
+  },
+  "gapLabel": {
+    "message": "ИНТЕРВАЛ"
+  },
+  "gapDurationDesc": {
+    "message": "Время между запросами"
+  },
+  "targetLabel": {
+    "message": "Цель"
+  },
+  "standbyLabel": {
+    "message": "Ожидание"
+  },
+  "inspectingRedirects": {
+    "message": "Проверка перенаправлений..."
+  },
+  "navigationError": {
+    "message": "Ошибка навигации"
+  },
+  "newTabAdNotice": {
+    "message": "Для отслеживания рекламы в новых вкладках (Google/Meta) используйте боковую панель"
+  },
+  "openSidepanel": {
+    "message": "Открыть боковую панель"
+  },
+  "openLabel": {
+    "message": "Открыть"
+  },
+  "languageSettings": {
+    "message": "Настройки языка"
+  },
+  "languageLabel": {
+    "message": "Язык"
+  },
+  "languageDesc": {
+    "message": "Выберите предпочитаемый язык интерфейса"
+  },
+  "systemDefault": {
+    "message": "Системный (Автоматически)"
+  },
+  "configurationPreferences": {
+    "message": "Конфигурация // Настройки"
   }
 }

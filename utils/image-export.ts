@@ -1,5 +1,7 @@
 import { format } from 'date-fns';
-import { RedirectItem, calculateGapDuration, formatDuration } from '../types/redirect';
+import type { RedirectItem } from '../types/redirect';
+import { calculateGapDuration, formatDuration } from '../types/redirect';
+import { t } from './i18n';
 
 // Modern Color Palette matching light theme
 const COLORS = {
@@ -61,7 +63,7 @@ function getColorsForItem(item: RedirectItem) {
 function getStatusLabel(item: RedirectItem): string {
   const getMsg = (key: string, fallback: string) => {
     try {
-      return chrome.i18n.getMessage(key) || fallback;
+      return t(key) || fallback;
     } catch {
       return fallback;
     }
@@ -84,7 +86,7 @@ function wrapCanvasText(ctx: CanvasRenderingContext2D, text: string, maxWidth: n
   let currentLine = '';
 
   for (let i = 0; i < words.length; i++) {
-    const word = words[i];
+    const word = words[i] ?? '';
     const wordWidth = ctx.measureText(word).width;
 
     if (wordWidth > maxWidth) {
@@ -213,6 +215,7 @@ export async function exportToImage(
 
   for (let i = 0; i < path.length; i++) {
     const item = path[i];
+    if (!item) continue;
     const delayMs = i > 0 ? calculateGapDuration(path[i - 1], item) : null;
 
     if (i > 0) {
@@ -325,15 +328,19 @@ export async function exportToImage(
 
   // Draw vertical timeline connector line
   if (layouts.length > 1) {
-    const firstCircleY = layouts[0].topY + 28;
-    const lastCircleY = layouts[layouts.length - 1].topY + 28;
+    const first = layouts[0];
+    const last = layouts[layouts.length - 1];
+    if (first && last) {
+      const firstCircleY = first.topY + 28;
+      const lastCircleY = last.topY + 28;
 
-    ctx.beginPath();
-    ctx.moveTo(48, firstCircleY);
-    ctx.lineTo(48, lastCircleY);
-    ctx.strokeStyle = '#E2E8F0';
-    ctx.lineWidth = 2;
-    ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(48, firstCircleY);
+      ctx.lineTo(48, lastCircleY);
+      ctx.strokeStyle = '#E2E8F0';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
   }
 
   // Draw each step card

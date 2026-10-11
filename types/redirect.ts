@@ -14,6 +14,10 @@ export interface RedirectItem {
   type: 'navigation' | 'server_redirect' | 'client_redirect';
   redirect_type?: 'permanent' | 'temporary' | 'meta' | 'javascript' | 'hsts';
   redirect_url?: string;
+  // Set on hops inherited from an opener tab (cross-tab ad flow). The popup
+  // filters these out (current tab only); sidepanel/dashboard show the journey.
+  openedFrom?: string;
+  inherited?: boolean;
   headers: RedirectHeader[];
   timestamp: number;
   timing?: RedirectTiming;

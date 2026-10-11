@@ -1,12 +1,9 @@
 // PDF Export utility using pdf-lib (Pure TypeScript, no external deps)
 import { format } from 'date-fns';
-import { Color, PDFDocument, PDFFont, StandardFonts, rgb } from 'pdf-lib';
-import {
-  HistoryEntry,
-  RedirectItem,
-  calculateGapDuration,
-  formatDuration,
-} from '../types/redirect';
+import type { Color } from 'pdf-lib';
+import { PDFDocument, PDFFont, StandardFonts, rgb } from 'pdf-lib';
+import type { HistoryEntry, RedirectItem } from '../types/redirect';
+import { calculateGapDuration, formatDuration } from '../types/redirect';
 
 interface PDFExportOptions {
   title?: string;
@@ -78,7 +75,7 @@ function wrapText(text: string, maxWidth: number, font: PDFFont, fontSize: numbe
     let currentLine = '';
 
     for (let i = 0; i < words.length; i++) {
-      const word = words[i];
+      const word = words[i] ?? '';
 
       const wordWidth = font.widthOfTextAtSize(word, fontSize);
 
@@ -305,7 +302,7 @@ export async function exportToPDF(
   yPos -= 20;
 
   // Table Headers
-  const colWidths = [30, 40, 90, 210, 140, 40];
+  const colWidths: [number, number, number, number, number, number] = [30, 40, 90, 210, 140, 40];
   const cols = ['#', 'Status', 'Type', 'URL', 'IP', 'Time'];
   let currentX = 15;
 
@@ -319,9 +316,10 @@ export async function exportToPDF(
   });
 
   cols.forEach((col, i) => {
-    const xPos = i === cols.length - 1 ? currentX + 5 + colWidths[i] / 2 - 10 : currentX + 5;
+    const colWidth = colWidths[i] ?? 0;
+    const xPos = i === cols.length - 1 ? currentX + 5 + colWidth / 2 - 10 : currentX + 5;
     page.drawText(col, { x: xPos, y: yPos, size: 10, font: fontBold, color: COLORS.white });
-    currentX += colWidths[i];
+    currentX += colWidth;
   });
 
   yPos -= 25;
@@ -329,6 +327,7 @@ export async function exportToPDF(
   // Table Body
   for (let i = 0; i < entry.path.length; i++) {
     const item = entry.path[i];
+    if (!item) continue;
 
     if (i > 0) {
       const prevItem = entry.path[i - 1];
@@ -540,7 +539,7 @@ export async function exportHistoryToPDF(entries: HistoryEntry[]): Promise<void>
   yPos -= 50;
 
   // Table Headers
-  const colWidths = [100, 60, 175, 175];
+  const colWidths: [number, number, number, number] = [100, 60, 175, 175];
   const cols = ['Date', 'Redir', 'Original URL', 'Final URL'];
   let currentX = 15;
 
@@ -553,7 +552,7 @@ export async function exportHistoryToPDF(entries: HistoryEntry[]): Promise<void>
   });
   cols.forEach((col, i) => {
     page.drawText(col, { x: currentX + 5, y: yPos, size: 10, font: fontBold, color: COLORS.white });
-    currentX += colWidths[i];
+    currentX += colWidths[i] ?? 0;
   });
 
   yPos -= 25;
@@ -561,6 +560,7 @@ export async function exportHistoryToPDF(entries: HistoryEntry[]): Promise<void>
   // Table Body
   for (let i = 0; i < entries.length; i++) {
     const entry = entries[i];
+    if (!entry) continue;
 
     if (yPos < MARGIN + 20) {
       page = pdfDoc.addPage([PAGE_WIDTH, PAGE_HEIGHT]);

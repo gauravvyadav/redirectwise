@@ -273,5 +273,65 @@
   },
   "clearLabel": {
     "message": "Wyczyść"
+  },
+  "newTabFrom": {
+    "message": "Nowa karta z -"
+  },
+  "openedFromTitle": {
+    "message": "Otwarte w nowej karcie z"
+  },
+  "copyLabel": {
+    "message": "Kopiuj"
+  },
+  "copyHeadersTitle": {
+    "message": "Skopiuj wszystkie nagłówki do schowka"
+  },
+  "stepSingle": {
+    "message": "krok"
+  },
+  "timeLabel": {
+    "message": "Czas"
+  },
+  "gapLabel": {
+    "message": "ODSTĘP"
+  },
+  "gapDurationDesc": {
+    "message": "Czas między żądaniami"
+  },
+  "targetLabel": {
+    "message": "Cel"
+  },
+  "standbyLabel": {
+    "message": "Gotowość"
+  },
+  "inspectingRedirects": {
+    "message": "Sprawdzanie przekierowań..."
+  },
+  "navigationError": {
+    "message": "Błąd nawigacji"
+  },
+  "newTabAdNotice": {
+    "message": "W przypadku przekierowań reklam w nowej karcie (Google/Meta) użyj panelu bocznego"
+  },
+  "openSidepanel": {
+    "message": "Otwórz panel boczny"
+  },
+  "openLabel": {
+    "message": "Otwórz"
+  },
+  "languageSettings": {
+    "message": "Ustawienia języka"
+  },
+  "languageLabel": {
+    "message": "Język"
+  },
+  "languageDesc": {
+    "message": "Wybierz preferowany język interfejsu"
+  },
+  "systemDefault": {
+    "message": "Domyślny systemu (Automatyczny)"
+  },
+  "configurationPreferences": {
+    "message": "Konfiguracja // Preferencje"
   }
 }

@@ -272,5 +272,65 @@
   },
   "clearLabel": {
     "message": "साफ़ करें"
+  },
+  "newTabFrom": {
+    "message": "नया टैब यहां से -"
+  },
+  "openedFromTitle": {
+    "message": "नए टैब में खोला गया:"
+  },
+  "copyLabel": {
+    "message": "कॉपी करें"
+  },
+  "copyHeadersTitle": {
+    "message": "सभी हेडर क्लिपबोर्ड पर कॉपी करें"
+  },
+  "stepSingle": {
+    "message": "चरण"
+  },
+  "timeLabel": {
+    "message": "समय"
+  },
+  "gapLabel": {
+    "message": "अंतर"
+  },
+  "gapDurationDesc": {
+    "message": "अनुरोधों के बीच बीता समय"
+  },
+  "targetLabel": {
+    "message": "लक्ष्य"
+  },
+  "standbyLabel": {
+    "message": "स्टैंडबाय"
+  },
+  "inspectingRedirects": {
+    "message": "रीडायरेक्ट की जांच हो रही है..."
+  },
+  "navigationError": {
+    "message": "नेविगेशन त्रुटि"
+  },
+  "newTabAdNotice": {
+    "message": "नए टैब विज्ञापन रीडायरेक्ट (Google/Meta) के लिए साइडपैनल का उपयोग करें"
+  },
+  "openSidepanel": {
+    "message": "साइडपैनल खोलें"
+  },
+  "openLabel": {
+    "message": "खोलें"
+  },
+  "languageSettings": {
+    "message": "भाषा सेटिंग्स"
+  },
+  "languageLabel": {
+    "message": "भाषा"
+  },
+  "languageDesc": {
+    "message": "अपनी पसंदीदा प्रदर्शन भाषा चुनें"
+  },
+  "systemDefault": {
+    "message": "सिस्टम डिफ़ॉल्ट (स्वचालित)"
+  },
+  "configurationPreferences": {
+    "message": "कॉन्फ़िगरेशन // प्राथमिकताएं"
   }
 }

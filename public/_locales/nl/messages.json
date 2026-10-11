@@ -273,5 +273,65 @@
   },
   "clearLabel": {
     "message": "Wissen"
+  },
+  "newTabFrom": {
+    "message": "Nieuw tabblad van -"
+  },
+  "openedFromTitle": {
+    "message": "Geopend in een nieuw tabblad van"
+  },
+  "copyLabel": {
+    "message": "Kopiëren"
+  },
+  "copyHeadersTitle": {
+    "message": "Kopieer alle headers naar klembord"
+  },
+  "stepSingle": {
+    "message": "stap"
+  },
+  "timeLabel": {
+    "message": "Tijd"
+  },
+  "gapLabel": {
+    "message": "PAUZE"
+  },
+  "gapDurationDesc": {
+    "message": "Verstreken tijd tussen verzoeken"
+  },
+  "targetLabel": {
+    "message": "Doel"
+  },
+  "standbyLabel": {
+    "message": "Stand-by"
+  },
+  "inspectingRedirects": {
+    "message": "Omleidingen inspecteren..."
+  },
+  "navigationError": {
+    "message": "Navigatiefout"
+  },
+  "newTabAdNotice": {
+    "message": "Voor advertentie-omleidingen in nieuw tabblad (Google/Meta), gebruik het zijpaneel"
+  },
+  "openSidepanel": {
+    "message": "Zijpaneel openen"
+  },
+  "openLabel": {
+    "message": "Openen"
+  },
+  "languageSettings": {
+    "message": "Taalinstellingen"
+  },
+  "languageLabel": {
+    "message": "Taal"
+  },
+  "languageDesc": {
+    "message": "Kies uw voorkeurstaal voor weergave"
+  },
+  "systemDefault": {
+    "message": "Systeemstandaard (Automatisch)"
+  },
+  "configurationPreferences": {
+    "message": "Configuratie // Voorkeuren"
   }
 }

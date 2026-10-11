@@ -272,5 +272,65 @@
   },
   "clearLabel": {
     "message": "مسح"
+  },
+  "newTabFrom": {
+    "message": "علامة تبويب جديدة من -"
+  },
+  "openedFromTitle": {
+    "message": "تم الفتح في علامة تبويب جديدة من"
+  },
+  "copyLabel": {
+    "message": "نسخ"
+  },
+  "copyHeadersTitle": {
+    "message": "نسخ جميع الترويسات إلى الحافظة"
+  },
+  "stepSingle": {
+    "message": "خطوة"
+  },
+  "timeLabel": {
+    "message": "الوقت"
+  },
+  "gapLabel": {
+    "message": "فارق"
+  },
+  "gapDurationDesc": {
+    "message": "الوقت المنقضي بين الطلبات"
+  },
+  "targetLabel": {
+    "message": "الهدف"
+  },
+  "standbyLabel": {
+    "message": "في وضع الاستعداد"
+  },
+  "inspectingRedirects": {
+    "message": "جارٍ فحص إعادة التوجيه..."
+  },
+  "navigationError": {
+    "message": "خطأ في التصفح"
+  },
+  "newTabAdNotice": {
+    "message": "لإعادة توجيه إعلانات التبويب الجديد (Google/Meta)، استخدم اللوحة الجانبية"
+  },
+  "openSidepanel": {
+    "message": "فتح اللوحة الجانبية"
+  },
+  "openLabel": {
+    "message": "فتح"
+  },
+  "languageSettings": {
+    "message": "إعدادات اللغة"
+  },
+  "languageLabel": {
+    "message": "اللغة"
+  },
+  "languageDesc": {
+    "message": "اختر لغة العرض المفضلة لديك"
+  },
+  "systemDefault": {
+    "message": "افتراضي النظام (تلقائي)"
+  },
+  "configurationPreferences": {
+    "message": "الإعدادات // التفضيلات"
   }
 }

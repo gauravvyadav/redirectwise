@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 224 40" fill="none">
+  <!-- RedirectWise horizontal lockup: icon + wordmark + tagline -->
+  <!-- Mirrors website/assets/logo-lockup.svg — keep the two in sync -->
+  <!-- Icon: flat brand-blue square, white redirect arrow -->
+  <rect width="40" height="40" fill="#2563EB"/>
+  <path
+    d="M12 28L28 12M28 12H18M28 12V22"
+    stroke="white"
+    stroke-width="3"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+  <!-- Wordmark -->
+  <text
+    x="48"
+    y="22"
+    font-family="Arial, Helvetica, sans-serif"
+    font-size="19"
+    font-weight="900"
+    letter-spacing="1"
+    textLength="170"
+    lengthAdjust="spacingAndGlyphs"
+  ><tspan fill="#111111">REDIRECT</tspan><tspan fill="#2563EB">WISE</tspan></text>
+  <!-- Tagline -->
+  <text
+    x="48"
+    y="35"
+    font-family="Arial, Helvetica, sans-serif"
+    font-size="8.5"
+    font-weight="700"
+    letter-spacing="2.6"
+    fill="#6B7280"
+  >BY GAURAVLABS</text>
+</svg>

@@ -1,83 +1,408 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>RedirectWise: URL Redirect Checker</title>
-    <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png" />
+    <title>RedirectWise — Real-time HTTP Redirect Checker & Analyzer</title>
+    <meta
+      name="description"
+      content="Track redirects, catch hidden ad links, and audit HTTP response headers with a persistent history dashboard. Manifest V3 compliant extension for Chrome and Edge."
+    />
     <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png" />
-    <link rel="manifest" href="../site.webmanifest" />
+    <link rel="manifest" href="site.webmanifest" />
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 
+    <!-- Early theme initialization to eliminate any flash of unstyled theme -->
+    <script>
+      (function () {
+        try {
+          const stored = localStorage.getItem('theme');
+          if (
+            stored === 'dark' ||
+            (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches)
+          ) {
+            document.documentElement.classList.add('dark');
+          } else {
+            document.documentElement.classList.remove('dark');
+          }
+        } catch (_) {}
+      })();
+    </script>
+
     <style>
-      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+      @import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600;700;800&family=Geist:wght@300;400;500;600;700;800;900&display=swap');
+
+      /* ==========================================================================
+         SWISS MODERNIST COLOR SYSTEM (Single source of truth)
+         Modify these variables to adjust the brand palette across the entire page
+         ========================================================================== */
+      :root {
+        /* Core Surfaces - Clean neutral canvas and crisp cards (Zero warm/chocolate/stone tint) */
+        --paper: #fafafa;
+        --paper-card: #ffffff;
+        --paper-subtle: #f4f4f5;
+        --ink: #09090b;
+        --stone: #52525b;
+        --muted: #71717a;
+        --line: #e4e4e7;
+        --line-subtle: rgba(9, 9, 11, 0.05);
+
+        /* Brand Accent (RedirectWise Blue) */
+        --brand: #2563eb;
+        --brand-hover: #1d4ed8;
+        --brand-tint: rgba(37, 99, 235, 0.08);
+
+        /* Functional Status Colors */
+        --ok: #16a34a;
+        --warn: #d97706;
+        --err: #dc2626;
+
+        /* Primary Action Buttons */
+        --btn-ink: #09090b;
+        --btn-text: #ffffff;
+
+        /* Glass Header (20% transparency / 80% opacity) */
+        --header-bg: rgba(255, 255, 255, 0.85);
+      }
+
+      .dark {
+        /* Dark Surfaces - Pure Deep Tech Obsidian (Zero warm/chocolate tint) */
+        --paper: #09090b;
+        --paper-card: #18181b;
+        --paper-subtle: #27272a;
+        --ink: #fafafa;
+        --stone: #a1a1aa;
+        --muted: #71717a;
+        --line: #27272a;
+        --line-subtle: rgba(250, 250, 250, 0.06);
+
+        /* Dark Brand Accent */
+        --brand: #3b82f6;
+        --brand-hover: #2563eb;
+        --brand-tint: rgba(59, 130, 246, 0.12);
+
+        /* Dark Functional Status Colors */
+        --ok: #4ade80;
+        --warn: #fbbf24;
+        --err: #f87171;
+
+        /* Primary Action Buttons in Dark Mode */
+        --btn-ink: #fafafa;
+        --btn-text: #09090b;
+
+        /* Glass Header in Dark Mode (20% transparency / 80% opacity) */
+        --header-bg: rgba(24, 24, 27, 0.85);
+      }
+
       * {
         scroll-behavior: smooth;
+        box-sizing: border-box;
       }
+
       body {
-        font-family: 'Inter', sans-serif;
+        font-family:
+          'Geist',
+          -apple-system,
+          BlinkMacSystemFont,
+          'Segoe UI',
+          Roboto,
+          sans-serif;
+        background-color: var(--paper);
+        color: var(--ink);
+        -webkit-font-smoothing: antialiased;
+        transition: background-color 0.2s ease, color 0.2s ease;
+      }
+
+      .font-mono {
+        font-family: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      }
+
+      /* Reusable Variable Utility Classes */
+      .bg-ink {
+        background-color: var(--btn-ink);
+        color: var(--btn-text);
+      }
+      .dark .bg-ink {
+        background-color: var(--btn-ink);
+        color: var(--btn-text);
+      }
+      .dark .bg-ink span,
+      .dark .bg-ink div {
+        color: var(--btn-text);
+      }
+      .bg-paper {
+        background-color: var(--paper);
+      }
+      .bg-paper-card {
+        background-color: var(--paper-card);
+      }
+      .header-glass {
+        background-color: var(--header-bg);
+        background-color: color-mix(in srgb, var(--paper-card) 80%, transparent);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+      }
+      .dark .header-glass {
+        background-color: var(--header-bg);
+        background-color: color-mix(in srgb, var(--paper-card) 80%, transparent);
+      }
+      /* Theme-aware brand lockup (light/dark SVG swap follows .dark toggle) */
+      .logo-dark {
+        display: none;
+      }
+      .dark .logo-light {
+        display: none;
+      }
+      .dark .logo-dark {
+        display: block;
+      }
+      /* Technical precision grid background (Gauravlabs drafting-grid language) */
+      .grid-bg {
+        background-image:
+          linear-gradient(to right, var(--line-subtle) 1px, transparent 1px),
+          linear-gradient(to bottom, var(--line-subtle) 1px, transparent 1px);
+        background-size: 56px 56px;
+      }
+      .bg-paper-subtle {
+        background-color: var(--paper-subtle);
+      }
+      .bg-line {
+        background-color: var(--line);
+      }
+      .text-ink {
+        color: var(--ink);
+      }
+      .text-paper {
+        color: var(--paper);
+      }
+      .text-stone {
+        color: var(--stone);
+      }
+      .text-muted {
+        color: var(--muted);
+      }
+      .text-brand {
+        color: var(--brand);
+      }
+      .bg-brand {
+        background-color: var(--brand);
+      }
+      .bg-ok {
+        background-color: var(--ok);
+      }
+      .text-ok {
+        color: var(--ok);
+      }
+      .bg-warn {
+        background-color: var(--warn);
+      }
+      .text-warn {
+        color: var(--warn);
+      }
+      .border-line {
+        border-color: var(--line);
+      }
+      .border-ink {
+        border-color: var(--ink);
+      }
+      .border-brand {
+        border-color: var(--brand);
+      }
+
+      /* Hover States */
+      .hover\:bg-brand:hover {
+        background-color: var(--brand) !important;
+      }
+      .hover\:border-brand:hover {
+        border-color: var(--brand) !important;
+      }
+      .hover\:bg-paper-subtle:hover {
+        background-color: var(--paper-subtle) !important;
+      }
+      .hover\:border-ink:hover {
+        border-color: var(--ink) !important;
+      }
+      .hover\:text-brand:hover {
+        color: var(--brand) !important;
+      }
+      .hover\:text-ink:hover {
+        color: var(--ink) !important;
+      }
+
+      /* Fixed drafting grid stays behind the whole landing page */
+      .page-grid::before {
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        content: '';
+        pointer-events: none;
+        background-image:
+          radial-gradient(ellipse at 50% 0%, var(--brand-tint), transparent 56%),
+          linear-gradient(var(--line-subtle) 1px, transparent 1px),
+          linear-gradient(90deg, var(--line-subtle) 1px, transparent 1px);
+        background-size: auto, 56px 56px, 56px 56px;
+      }
+
+      /* Subtle marquee animation for footer running watermark */
+      @keyframes marqueeSlow {
+        from {
+          transform: translateX(0);
+        }
+        to {
+          transform: translateX(-50%);
+        }
+      }
+      .animate-marquee-slow {
+        animation: marqueeSlow 35s linear infinite;
       }
     </style>
   </head>
-  <body class="bg-white text-slate-800">
-    <!-- Header -->
-    <header
-      class="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200"
+  <body class="bg-paper text-ink page-grid min-h-screen overflow-x-hidden">
+    <!-- Top Announcement Bar -->
+    <aside
+      aria-label="Version announcement"
+      class="border-b border-line bg-paper-card py-2 px-3 sm:px-4 text-center font-mono text-[9px] sm:text-[9.5px] font-bold uppercase tracking-wider text-muted overflow-hidden"
     >
+      <div class="flex items-center justify-center gap-2 flex-wrap sm:flex-nowrap">
+        <span class="inline-flex items-center gap-1.5 text-ink shrink-0">
+          <span class="w-1.5 h-1.5 bg-ok"></span>
+          <span>VERSION 2.0 RELEASED</span>
+        </span>
+        <span class="hidden sm:inline text-muted/30">|</span>
+        <span class="hidden sm:inline text-stone">NEW UI DESIGN • ADS NEW-TAB REDIRECT TRACKING IN SIDEPANEL</span>
+      </div>
+    </aside>
+
+    <!-- Header Navigation -->
+    <header class="sticky top-0 z-50 header-glass border-b border-line">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16">
-          <a href="/" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
-            <div class="flex items-center justify-center">
-              <img
-                src="assets/logo.svg"
-                alt="RedirectWise Logo"
-                class="w-10 h-10 shadow-lg shadow-blue-500/25 rounded-xl"
-              />
-            </div>
-            <span class="text-xl font-bold text-slate-900"
-              >Redirect<span class="text-blue-500">Wise</span></span
-            >
+          <a href="/" class="flex items-center group shrink-0" aria-label="RedirectWise Home">
+            <img src="assets/logo-lockup.svg" alt="RedirectWise Logo" class="h-7 w-auto shrink-0 logo-light" />
+            <img src="assets/logo-lockup-dark.svg" alt="" aria-hidden="true" class="h-7 w-auto shrink-0 logo-dark" />
           </a>
-          <nav class="hidden md:flex items-center gap-8">
-            <a href="#features" class="text-slate-600 hover:text-blue-500 transition-colors"
-              >Features</a
-            >
-            <a href="#how-it-works" class="text-slate-600 hover:text-blue-500 transition-colors"
-              >How It Works</a
-            >
-            <a href="#download" class="text-slate-600 hover:text-blue-500 transition-colors"
-              >Download</a
-            >
+
+          <nav
+            class="hidden md:flex items-center gap-8 font-mono text-[11px] font-bold uppercase tracking-[0.14em] text-muted"
+          >
+            <a href="#features" class="hover:text-ink transition-colors">Features</a>
+            <a href="#architecture" class="hover:text-ink transition-colors">Architecture</a>
+            <a href="#changelog" class="hover:text-ink transition-colors">Changelog</a>
+            <a href="#faq" class="hover:text-ink transition-colors">FAQ</a>
           </nav>
-          <div class="hidden sm:flex items-center gap-4">
+
+          <div class="flex items-center gap-2 sm:gap-2.5">
             <a
               href="https://github.com/gauravvyadav/redirectwise"
               target="_blank"
-              class="flex items-center gap-2 text-slate-600 hover:text-slate-900 transition-colors"
+              rel="noopener noreferrer"
+              class="h-9 px-3 hidden lg:inline-flex items-center justify-center gap-2 border border-line bg-paper-card hover:border-ink font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-ink transition-colors shrink-0"
             >
-              <svg height="20" width="20" viewBox="0 0 16 16" fill="currentColor">
+              <svg height="14" width="14" viewBox="0 0 16 16" fill="currentColor">
                 <path
                   d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"
-                ></path>
+                />
               </svg>
-              <div
-                class="flex items-center gap-1 border border-slate-200 rounded-md px-2 py-0.5 bg-slate-50"
-              >
-                <span class="font-medium text-sm">Star</span>
-                <span
-                  class="text-xs text-slate-500 font-semibold border-l border-slate-200 pl-1"
-                  id="github-stars"
-                  >0</span
-                >
-              </div>
+              <span>STAR</span>
+              <span id="github-stars" class="text-muted border-l border-line pl-1.5">0</span>
+            </a>
+
+            <!-- Theme Toggle Button -->
+            <button
+              id="theme-toggle"
+              type="button"
+              class="w-9 h-9 flex items-center justify-center border border-line bg-paper-card text-muted hover:text-ink hover:border-ink hover:bg-paper-subtle transition-colors cursor-pointer shrink-0"
+              title="Toggle dark / light appearance"
+              aria-label="Toggle dark mode"
+            >
+              <!-- Sun icon (shown in dark mode) -->
+              <svg id="theme-sun" class="w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+              </svg>
+              <!-- Moon icon (shown in light mode) -->
+              <svg id="theme-moon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+              </svg>
+            </button>
+
+            <!-- Edge Store Download Button (Tablet & Desktop) -->
+            <a
+              id="header-edge"
+              href="https://microsoftedge.microsoft.com/addons/detail/mdgmnjiooaiahcnkinkgdgibhmjklaid"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="h-9 px-3 hidden sm:inline-flex items-center justify-center gap-1.5 border border-line bg-paper-card hover:border-ink hover:bg-paper-subtle text-ink font-mono text-[10.5px] font-bold uppercase tracking-[0.14em] transition-colors cursor-pointer shrink-0"
+              title="Download for Microsoft Edge"
+            >
+              <img src="assets/Microsoft_Edge.svg" alt="Edge" class="w-3.5 h-3.5" />
+              <span>EDGE</span>
+            </a>
+
+            <!-- Chrome Store Download Button -->
+            <a
+              id="header-install"
+              href="https://chromewebstore.google.com/detail/redirectwise/mhahonijegjclaecmoinjomidmhhleln"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="h-9 px-3 sm:px-3.5 bg-ink text-white hover:bg-brand border border-ink hover:border-brand font-mono text-[10px] sm:text-[10.5px] font-bold uppercase tracking-[0.14em] inline-flex items-center justify-center gap-1.5 transition-colors cursor-pointer shrink-0"
+              title="Download for Google Chrome"
+            >
+              <img src="assets/Google_Chrome.svg" alt="Chrome" class="w-3.5 h-3.5" />
+              <span>CHROME</span>
+            </a>
+
+            <!-- Mobile Menu Toggle Button -->
+            <button
+              id="mobile-menu-toggle"
+              type="button"
+              class="w-9 h-9 md:hidden flex items-center justify-center border border-line bg-paper-card text-ink hover:border-ink hover:bg-paper-subtle transition-colors cursor-pointer shrink-0"
+              title="Toggle navigation menu"
+              aria-label="Toggle navigation menu"
+              aria-expanded="false"
+            >
+              <svg id="menu-icon-open" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+              <svg id="menu-icon-close" class="w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Mobile Dropdown Navigation -->
+        <div
+          id="mobile-menu"
+          class="hidden md:hidden border-t border-line py-3 font-mono text-xs font-bold uppercase tracking-[0.16em] bg-paper"
+        >
+          <div class="grid grid-cols-2 gap-2 pb-3 border-b border-line">
+            <a href="#features" class="p-2 border border-line bg-paper-card text-stone hover:text-ink text-center">Features</a>
+            <a href="#architecture" class="p-2 border border-line bg-paper-card text-stone hover:text-ink text-center">Architecture</a>
+            <a href="#changelog" class="p-2 border border-line bg-paper-card text-stone hover:text-ink text-center">Changelog</a>
+            <a href="#faq" class="p-2 border border-line bg-paper-card text-stone hover:text-ink text-center">FAQ</a>
+          </div>
+          <div class="pt-3 flex items-center gap-2">
+            <a
+              href="https://microsoftedge.microsoft.com/addons/detail/mdgmnjiooaiahcnkinkgdgibhmjklaid"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="h-9 px-3 flex-1 flex items-center justify-center gap-1.5 border border-line bg-paper-card text-ink text-[10px]"
+            >
+              <img src="assets/Microsoft_Edge.svg" alt="Edge" class="w-3.5 h-3.5" />
+              <span>EDGE STORE</span>
             </a>
             <a
-              href="#download"
-              class="inline-flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-900 px-4 py-2 rounded-lg font-medium transition-colors border border-slate-200 shadow-sm"
+              href="https://github.com/gauravvyadav/redirectwise"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="h-9 px-3 flex items-center justify-center gap-1.5 border border-line bg-paper-card text-ink text-[10px]"
             >
-              Install Free
+              <svg height="14" width="14" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z" />
+              </svg>
+              <span>STAR</span>
             </a>
           </div>
         </div>
@@ -85,58 +410,92 @@
     </header>
 
     <!-- Hero Section -->
-    <section class="pt-32 pb-20 lg:pt-40 lg:pb-32">
+    <section
+      class="relative pt-10 pb-14 sm:pt-16 sm:pb-20 lg:pt-24 lg:pb-28 border-b border-line bg-paper grid-bg"
+    >
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid lg:grid-cols-2 gap-12 items-center">
-          <div>
+        <div class="grid lg:grid-cols-12 gap-8 lg:gap-8 items-start">
+          <!-- Hero Left Column -->
+          <div class="lg:col-span-7">
+            <!-- Eyebrow Metadata -->
             <div
-              class="inline-flex items-center gap-2 bg-white px-4 py-2 rounded-full text-sm font-medium text-slate-600 shadow-sm mb-6"
+              class="flex flex-wrap items-center gap-2 sm:gap-3 font-mono text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.16em] text-muted mb-4 sm:mb-6"
             >
-              <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-              18 Languages Supported
+              <span class="px-2 py-0.5 border border-ink bg-ink text-white">TYPE // MV3 EXTENSION</span>
+              <span class="text-muted/40">•</span>
+              <span class="text-stone">100% ON-DEVICE</span>
+              <span class="hidden sm:inline-block text-muted/40">•</span>
+              <span class="hidden sm:inline-block">HTTP / 301 / 302 / JS / HSTS</span>
             </div>
             <h1
-              class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 leading-tight mb-6"
+              class="font-black uppercase text-ink tracking-[-0.03em] text-3xl sm:text-5xl md:text-6xl lg:text-[5.5rem] leading-[0.98] sm:leading-[0.95] mb-2"
             >
-              Ultimate Redirect
-              <span class="text-blue-500"> Checker</span>
+              TRACK REDIRECTS.
             </h1>
-            <p class="text-xl text-slate-600 mb-8 leading-relaxed">
-              Track redirects & catch hidden ad links with a persistent history dashboard. Real-time redirect checker with popup & sidepanel. Trace every hop including 301, 302, JavaScript, Meta Refresh, and HSTS redirects.
+            <p
+              class="font-black uppercase text-brand tracking-[-0.02em] text-xl sm:text-3xl md:text-4xl lg:text-[3.8rem] leading-[1.05] mb-4 sm:mb-6"
+            >
+              CATCH HIDDEN AD LINKS.
             </p>
-            <div class="flex flex-wrap gap-4">
+
+            <p class="text-sm sm:text-base lg:text-lg text-stone max-w-xl leading-relaxed mb-6 sm:mb-8">
+              A high-precision real-time redirect tracker and response header auditor. Logs every
+              hop with millisecond timing across popup, pinned sidepanel, and a persistent 2,000-URL
+              dashboard.
+            </p>
+
+            <!-- CTA Button Row -->
+            <div class="flex flex-col sm:flex-row gap-3 max-w-md mb-6 sm:mb-8">
               <a
                 id="hero-chrome"
-                href="#download"
-                class="inline-flex items-center gap-3 bg-white hover:bg-slate-50 text-slate-900 px-4 py-2.5 rounded-xl font-medium transition-all border border-slate-200 shadow-lg"
+                href="https://chromewebstore.google.com/detail/redirectwise/mhahonijegjclaecmoinjomidmhhleln"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="w-full sm:w-auto h-12 px-6 bg-ink text-white hover:bg-brand hover:border-brand border border-ink font-mono text-[11px] font-bold uppercase tracking-[0.16em] inline-flex items-center justify-center gap-3 transition-colors cursor-pointer"
               >
-                <img src="assets/Google_Chrome.svg" alt="Chrome" class="w-8 h-8" />
-                <div class="text-left">
-                  <div class="text-xs text-slate-500">Download for</div>
-                  <div class="text-base font-semibold">Google Chrome</div>
-                </div>
+                <img src="assets/Google_Chrome.svg" alt="Chrome" class="w-5 h-5" />
+                <span>ADD TO CHROME // FREE</span>
               </a>
+
               <a
                 id="hero-edge"
-                href="#download"
-                class="inline-flex items-center gap-3 bg-white hover:bg-slate-50 text-slate-900 px-4 py-2.5 rounded-xl font-medium transition-all border border-slate-200 shadow-lg"
+                href="https://microsoftedge.microsoft.com/addons/detail/mdgmnjiooaiahcnkinkgdgibhmjklaid"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="w-full sm:w-auto h-12 px-6 bg-paper-card text-ink hover:bg-paper-subtle hover:border-ink border border-line font-mono text-[11px] font-bold uppercase tracking-[0.16em] inline-flex items-center justify-center gap-3 transition-colors cursor-pointer"
               >
-                <img src="assets/Microsoft_Edge.svg" alt="Edge" class="w-8 h-8" />
-                <div class="text-left">
-                  <div class="text-xs text-slate-500">Download for</div>
-                  <div class="text-base font-semibold">Microsoft Edge</div>
-                </div>
+                <img src="assets/Microsoft_Edge.svg" alt="Edge" class="w-5 h-5" />
+                <span>ADD TO EDGE // FREE</span>
               </a>
             </div>
-          </div>
-          <div class="relative flex justify-center">
+
+            <!-- Micro specs -->
             <div
-              class="rounded-2xl shadow-2xl overflow-hidden border border-slate-200 max-w-[400px] w-full"
+              class="flex flex-wrap items-center gap-x-2.5 sm:gap-x-3 gap-y-1.5 font-mono text-[9px] sm:text-[10px] text-muted uppercase tracking-wider"
             >
+              <span>MANIFEST V3</span>
+              <span class="text-muted/40">•</span>
+              <span>0MS DELAY</span>
+              <span class="text-muted/40">•</span>
+              <span>ZERO TELEMETRY</span>
+              <span class="text-muted/40">•</span>
+              <span>18 LOCALES</span>
+            </div>
+          </div>
+
+          <!-- Hero Right Column: Preview -->
+          <div class="lg:col-span-5 mt-2 lg:mt-0 lg:self-stretch">
+            <div class="w-full max-w-md ml-auto lg:h-full">
               <img
                 src="assets/preview.png"
                 alt="RedirectWise Extension Preview"
-                class="w-full h-auto"
+                class="w-full h-auto max-w-md lg:h-full lg:object-contain lg:object-top border border-line logo-light mx-auto block"
+              />
+              <img
+                src="assets/preview-dark.png"
+                alt=""
+                aria-hidden="true"
+                class="w-full max-w-md h-auto lg:h-full lg:object-contain lg:object-top border border-line logo-dark mx-auto"
               />
             </div>
           </div>
@@ -144,397 +503,718 @@
       </div>
     </section>
 
+    <!-- Hairline 1px Spec Grid (Signature Gauravlabs Pattern) -->
+    <section class="border-b border-line bg-paper">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="border border-line bg-line gap-px grid grid-cols-2 md:grid-cols-4 text-center">
+          <div class="p-4 sm:p-6 bg-paper-card flex flex-col items-center justify-center">
+            <span class="font-mono text-xl sm:text-2xl font-black text-ink">100%</span>
+            <span
+              class="font-mono text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.16em] text-muted mt-1"
+            >
+              Private (On-Device)
+            </span>
+          </div>
+
+          <div class="p-4 sm:p-6 bg-paper-card flex flex-col items-center justify-center">
+            <span class="font-mono text-xl sm:text-2xl font-black text-brand">2,000</span>
+            <span
+              class="font-mono text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.16em] text-muted mt-1"
+            >
+              Persistent URL Log
+            </span>
+          </div>
+
+          <div class="p-4 sm:p-6 bg-paper-card flex flex-col items-center justify-center">
+            <span class="font-mono text-xl sm:text-2xl font-black text-ink">18</span>
+            <span
+              class="font-mono text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.16em] text-muted mt-1"
+            >
+              Native Languages
+            </span>
+          </div>
+
+          <div class="p-4 sm:p-6 bg-paper-card flex flex-col items-center justify-center">
+            <span class="font-mono text-xl sm:text-2xl font-black text-ok">0ms</span>
+            <span
+              class="font-mono text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.16em] text-muted mt-1"
+            >
+              Overhead Latency
+            </span>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- Features Section -->
-    <section id="features" class="py-20 lg:py-32 bg-white">
+    <section id="features" class="py-20 lg:py-28 border-b border-line bg-paper-card">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-16">
-          <h2 class="text-3xl sm:text-4xl font-bold text-slate-900 mb-4">
-            Critical Features
+        <div class="mb-14">
+          <span
+            class="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-brand block mb-2"
+          >
+            [ CAPABILITIES & PROTOCOLS ]
+          </span>
+          <h2 class="text-3xl sm:text-5xl font-black uppercase tracking-tight text-ink">
+            Engineered for Precision.
           </h2>
-          <p class="text-xl text-slate-600 max-w-2xl mx-auto">
-            Everything you need to analyze, debug, and optimize HTTP redirect chains for better performance.
+          <p class="text-base sm:text-lg text-stone max-w-2xl mt-3">
+            Every feature is built around the HTTP specification to eliminate blind spots in
+            redirect chains.
           </p>
         </div>
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <!-- Feature 1: URL Redirect Trace Tool -->
-          <div class="bg-slate-50 rounded-2xl p-8 hover:shadow-xl transition-shadow">
-            <div
-              class="w-14 h-14 bg-blue-500/10 rounded-xl flex items-center justify-center mb-6 text-blue-500"
-            >
-              <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-              </svg>
+
+        <!-- 3x3 Architectural Grid with 1px Hairlines -->
+        <div class="border border-line bg-line gap-px grid md:grid-cols-2 lg:grid-cols-3">
+          <!-- Feature 01 -->
+          <div
+            class="bg-paper-card p-6 sm:p-8 flex flex-col justify-between hover:bg-paper transition-colors"
+          >
+            <div>
+              <span
+                class="font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-muted block mb-3"
+              >
+                01 // TRACE ENGINE
+              </span>
+              <h3 class="text-lg font-black uppercase tracking-tight text-ink mb-2">
+                Multi-Protocol Capture
+              </h3>
+              <p class="text-sm text-stone leading-relaxed">
+                Captures 301, 302, 303, 307, 308 server redirects, client-side JavaScript
+                navigations, HTML meta refreshes, and automatic HSTS protocol upgrades.
+              </p>
             </div>
-            <h3 class="text-xl font-bold text-slate-900 mb-3">URL Redirect Trace Tool</h3>
-            <p class="text-slate-600">
-              Automatically capture every hop within a redirect chain including 301, 302, 303, 307, 308, JavaScript redirects, Meta Refreshes, and HSTS.
-            </p>
-          </div>
-          <!-- Feature 2: 18+ Language Support -->
-          <div class="bg-slate-50 rounded-2xl p-8 hover:shadow-xl transition-shadow">
             <div
-              class="w-14 h-14 bg-emerald-500/10 rounded-xl flex items-center justify-center mb-6 text-emerald-500"
+              class="mt-6 pt-4 border-t border-line font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-brand"
             >
-              <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"/>
-              </svg>
+              REAL-TIME MONITORING
             </div>
-            <h3 class="text-xl font-bold text-slate-900 mb-3">18+ Language Support</h3>
-            <p class="text-slate-600">
-              Native support for English, Hindi, Spanish, Arabic, Portuguese, Dutch, Polish, Vietnamese, Swedish, Indonesian, and more!
-            </p>
-          </div>
-          <!-- Feature 3: Persistent Redirect History -->
-          <div class="bg-slate-50 rounded-2xl p-8 hover:shadow-xl transition-shadow">
-            <div
-              class="w-14 h-14 bg-violet-500/10 rounded-xl flex items-center justify-center mb-6 text-violet-500"
-            >
-              <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"/>
-              </svg>
-            </div>
-            <h3 class="text-xl font-bold text-slate-900 mb-3">Persistent Redirect History</h3>
-            <p class="text-slate-600">
-              Unlike standard extensions that lose data on page reload, RedirectWise securely logs up to 2,000 URLs in a persistent dashboard.
-            </p>
           </div>
 
-          <!-- Feature 5: HTTP Response Header Auditor -->
-          <div class="bg-slate-50 rounded-2xl p-8 hover:shadow-xl transition-shadow">
-            <div
-              class="w-14 h-14 bg-rose-500/10 rounded-xl flex items-center justify-center mb-6 text-rose-500"
-            >
-              <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-              </svg>
+          <!-- Feature 02 -->
+          <div
+            class="bg-paper-card p-6 sm:p-8 flex flex-col justify-between hover:bg-paper transition-colors"
+          >
+            <div>
+              <span
+                class="font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-muted block mb-3"
+              >
+                02 // DATA PERSISTENCE
+              </span>
+              <h3 class="text-lg font-black uppercase tracking-tight text-ink mb-2">
+                2,000-URL History
+              </h3>
+              <p class="text-sm text-stone leading-relaxed">
+                Unlike basic extensions that wipe data on page reload, RedirectWise securely logs up
+                to 2,000 redirects in an on-device searchable database.
+              </p>
             </div>
-            <h3 class="text-xl font-bold text-slate-900 mb-3">HTTP Response Header Auditor</h3>
-            <p class="text-slate-600">
-              Audit strict cache-control protocols, server outputs, and custom HTTP headers perfectly tailored for technical audits.
-            </p>
+            <div
+              class="mt-6 pt-4 border-t border-line font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-brand"
+            >
+              SURVIVES BROWSER RELOADS
+            </div>
           </div>
-          <!-- Feature 6: Real-Time Popup & Sidepanel -->
-          <div class="bg-slate-50 rounded-2xl p-8 hover:shadow-xl transition-shadow">
-            <div
-              class="w-14 h-14 bg-cyan-500/10 rounded-xl flex items-center justify-center mb-6 text-cyan-500"
-            >
-              <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"/>
-              </svg>
+
+          <!-- Feature 03 -->
+          <div
+            class="bg-paper-card p-6 sm:p-8 flex flex-col justify-between hover:bg-paper transition-colors"
+          >
+            <div>
+              <span
+                class="font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-muted block mb-3"
+              >
+                03 // SPEED METRICS
+              </span>
+              <h3 class="text-lg font-black uppercase tracking-tight text-ink mb-2">
+                Millisecond Gap Latency
+              </h3>
+              <p class="text-sm text-stone leading-relaxed">
+                Measure the exact delay between previous request finish and subsequent hop start.
+                Pinpoint slow intermediate ad trackers and redirect hops.
+              </p>
             </div>
-            <h3 class="text-xl font-bold text-slate-900 mb-3">Real-Time Popup & Sidepanel</h3>
-            <p class="text-slate-600">
-              Run your redirect path checker natively via the popup or permanently pin the dashboard sidepanel for continuous real-time website monitoring.
-            </p>
+            <div
+              class="mt-6 pt-4 border-t border-line font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-brand"
+            >
+              HIGH-PRECISION TIMING
+            </div>
           </div>
-          <!-- Feature 7: Millisecond Speed Analysis -->
-          <div class="bg-slate-50 rounded-2xl p-8 hover:shadow-xl transition-shadow">
-            <div
-              class="w-14 h-14 bg-orange-500/10 rounded-xl flex items-center justify-center mb-6 text-orange-500"
-            >
-              <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-              </svg>
+
+          <!-- Feature 04 -->
+          <div
+            class="bg-paper-card p-6 sm:p-8 flex flex-col justify-between hover:bg-paper transition-colors"
+          >
+            <div>
+              <span
+                class="font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-muted block mb-3"
+              >
+                04 // HEADER AUDITOR
+              </span>
+              <h3 class="text-lg font-black uppercase tracking-tight text-ink mb-2">
+                HTTP Response Inspector
+              </h3>
+              <p class="text-sm text-stone leading-relaxed">
+                Inspect raw and categorized headers: Cache-Control, Strict-Transport-Security
+                (HSTS), Content-Security-Policy (CSP), server identifiers, and IP addresses.
+              </p>
             </div>
-            <h3 class="text-xl font-bold text-slate-900 mb-3">Millisecond Speed Analysis</h3>
-            <p class="text-slate-600">
-              Trace exact delay gaps between redirect hops to audit tracking link latency and optimize redirect performance.
-            </p>
+            <div
+              class="mt-6 pt-4 border-t border-line font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-brand"
+            >
+              TECHNICAL INSPECTION
+            </div>
           </div>
-          <!-- Feature 8: PDF Export (MV3 Compliant) -->
-          <div class="bg-slate-50 rounded-2xl p-8 hover:shadow-xl transition-shadow">
-            <div
-              class="w-14 h-14 bg-indigo-500/10 rounded-xl flex items-center justify-center mb-6 text-indigo-500"
-            >
-              <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-              </svg>
+
+          <!-- Feature 05 -->
+          <div
+            class="bg-paper-card p-6 sm:p-8 flex flex-col justify-between hover:bg-paper transition-colors"
+          >
+            <div>
+              <span
+                class="font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-muted block mb-3"
+              >
+                05 // DUAL VIEWPORTS
+              </span>
+              <h3 class="text-lg font-black uppercase tracking-tight text-ink mb-2">
+                Popup & Side Panel
+              </h3>
+              <p class="text-sm text-stone leading-relaxed">
+                Use the lightweight popup for rapid ad-hoc audits, or pin the Chrome Side Panel for
+                continuous live stream navigation tracking as you browse.
+              </p>
             </div>
-            <h3 class="text-xl font-bold text-slate-900 mb-3">PDF Export (MV3 Compliant)</h3>
-            <p class="text-slate-600">
-              Download professional redirect path reports with logos and categorized headers, fully optimized for Manifest V3.
-            </p>
+            <div
+              class="mt-6 pt-4 border-t border-line font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-brand"
+            >
+              CHROME SIDE PANEL API
+            </div>
           </div>
-          <!-- Feature 9: Strict 100% Privacy -->
-          <div class="bg-slate-50 rounded-2xl p-8 hover:shadow-xl transition-shadow">
-            <div
-              class="w-14 h-14 bg-green-500/10 rounded-xl flex items-center justify-center mb-6 text-green-500"
-            >
-              <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-              </svg>
+
+          <!-- Feature 06 -->
+          <div
+            class="bg-paper-card p-6 sm:p-8 flex flex-col justify-between hover:bg-paper transition-colors"
+          >
+            <div>
+              <span
+                class="font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-muted block mb-3"
+              >
+                06 // EXPORT ENGINE
+              </span>
+              <h3 class="text-lg font-black uppercase tracking-tight text-ink mb-2">
+                PDF, PNG, CSV & Text
+              </h3>
+              <p class="text-sm text-stone leading-relaxed">
+                Generate clean technical reports in one click. Export to PDF with timestamps,
+                downloadable PNG charts, or tab-delimited CSV for spreadsheet workflows.
+              </p>
             </div>
-            <h3 class="text-xl font-bold text-slate-900 mb-3">Strict 100% Privacy</h3>
-            <p class="text-slate-600">
-              Operates fully offline. No analytics, no cloud storage, and zero data leaving your browser.
-            </p>
+            <div
+              class="mt-6 pt-4 border-t border-line font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-brand"
+            >
+              CLIENT-SIDE RENDERING
+            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- How It Works -->
-    <section id="how-it-works" class="py-20 lg:py-32">
+    <!-- Architecture & How It Works -->
+    <section id="architecture" class="py-20 lg:py-28 border-b border-line bg-paper">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-16">
-          <h2 class="text-3xl sm:text-4xl font-bold text-slate-900 mb-4">How It Works</h2>
-          <p class="text-xl text-slate-600 max-w-2xl mx-auto">
-            Get started in seconds with our simple three-step process.
+        <div class="mb-14">
+          <span
+            class="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-brand block mb-2"
+          >
+            [ ARCHITECTURAL FLOW ]
+          </span>
+          <h2 class="text-3xl sm:text-5xl font-black uppercase tracking-tight text-ink">
+            How RedirectWise Operates.
+          </h2>
+          <p class="text-base sm:text-lg text-stone max-w-2xl mt-3">
+            Pure Manifest V3 service worker design with zero remote script execution.
           </p>
         </div>
-        <div class="grid md:grid-cols-3 gap-8">
-          <div class="text-center">
-            <div
-              class="w-16 h-16 bg-blue-500 text-white rounded-2xl flex items-center justify-center text-2xl font-bold mx-auto mb-6 shadow-lg shadow-blue-500/25"
-            >
-              1
-            </div>
-            <h3 class="text-xl font-bold text-slate-900 mb-3">Install Extension</h3>
-            <p class="text-slate-600">
-              Add RedirectWise to your browser from the Chrome Web Store or Edge Add-ons.
+
+        <div class="border border-line bg-line gap-px grid md:grid-cols-3">
+          <div class="bg-paper-card p-6 sm:p-8">
+            <span class="font-mono text-2xl font-black text-ink block mb-4">01</span>
+            <h3 class="text-base font-black uppercase tracking-tight text-ink mb-2">
+              1. Install Unobtrusively
+            </h3>
+            <p class="text-sm text-stone leading-relaxed">
+              Add RedirectWise from the Chrome Web Store or Edge Add-ons. It requests standard
+              webNavigation and webRequest permissions to audit network requests locally.
             </p>
           </div>
-          <div class="text-center">
-            <div
-              class="w-16 h-16 bg-blue-500 text-white rounded-2xl flex items-center justify-center text-2xl font-bold mx-auto mb-6 shadow-lg shadow-blue-500/25"
-            >
-              2
-            </div>
-            <h3 class="text-xl font-bold text-slate-900 mb-3">Browse Normally</h3>
-            <p class="text-slate-600">
-              Navigate to any URL and RedirectWise automatically captures all redirects in the
-              background.
+
+          <div class="bg-paper-card p-6 sm:p-8">
+            <span class="font-mono text-2xl font-black text-brand block mb-4">02</span>
+            <h3 class="text-base font-black uppercase tracking-tight text-ink mb-2">
+              2. Browse Normally
+            </h3>
+            <p class="text-sm text-stone leading-relaxed">
+              Click any affiliate link, ad URL, or shortened link. RedirectWise intercepts the hop
+              sequence in the background service worker without slowing down page rendering.
             </p>
           </div>
-          <div class="text-center">
-            <div
-              class="w-16 h-16 bg-blue-500 text-white rounded-2xl flex items-center justify-center text-2xl font-bold mx-auto mb-6 shadow-lg shadow-blue-500/25"
-            >
-              3
-            </div>
-            <h3 class="text-xl font-bold text-slate-900 mb-3">Analyze & Export</h3>
-            <p class="text-slate-600">
-              Click the extension icon to view the redirect chain and export reports.
+
+          <div class="bg-paper-card p-6 sm:p-8">
+            <span class="font-mono text-2xl font-black text-ink block mb-4">03</span>
+            <h3 class="text-base font-black uppercase tracking-tight text-ink mb-2">
+              3. Audit & Export
+            </h3>
+            <p class="text-sm text-stone leading-relaxed">
+              Open the popup, sidepanel, or full-page dashboard to inspect every status code,
+              response header, and millisecond gap. Export to PDF, PNG, or CSV in one click.
             </p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Use Cases -->
-    <section class="py-20 lg:py-32 bg-white">
+    <!-- Use Cases Spec -->
+    <section class="py-20 lg:py-28 border-b border-line bg-paper-card">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-16">
-          <h2 class="text-3xl sm:text-4xl font-bold text-slate-900 mb-4">Perfect For</h2>
-          <p class="text-xl text-slate-600 max-w-2xl mx-auto">
-            Whether you're a developer, web specialist, or marketer, RedirectWise has you covered.
-          </p>
+        <div class="mb-14">
+          <span
+            class="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-brand block mb-2"
+          >
+            [ TARGET APPLICATIONS ]
+          </span>
+          <h2 class="text-3xl sm:text-5xl font-black uppercase tracking-tight text-ink">
+            Built For Professionals.
+          </h2>
         </div>
-        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div class="bg-linear-to-br from-blue-50 to-blue-100 rounded-2xl p-6 text-center">
-            <div class="text-4xl mb-4">🔍</div>
-            <h3 class="font-bold text-slate-900 mb-2">Redirect Audits</h3>
-            <p class="text-sm text-slate-600">Analyze redirect chains for optimization</p>
-          </div>
-          <div class="bg-linear-to-br from-emerald-50 to-emerald-100 rounded-2xl p-6 text-center">
-            <div class="text-4xl mb-4">🐛</div>
-            <h3 class="font-bold text-slate-900 mb-2">Debug Issues</h3>
-            <p class="text-sm text-slate-600">Find and fix redirect loops quickly</p>
-          </div>
-          <div class="bg-linear-to-br from-violet-50 to-violet-100 rounded-2xl p-6 text-center">
-            <div class="text-4xl mb-4">🔗</div>
-            <h3 class="font-bold text-slate-900 mb-2">Affiliate Links</h3>
-            <p class="text-sm text-slate-600">Monitor affiliate redirect paths</p>
-          </div>
-          <div class="bg-linear-to-br from-amber-50 to-amber-100 rounded-2xl p-6 text-center">
-            <div class="text-4xl mb-4">📊</div>
-            <h3 class="font-bold text-slate-900 mb-2">Campaign Tracking</h3>
-            <p class="text-sm text-slate-600">Track marketing URL redirects</p>
-          </div>
-        </div>
-      </div>
-    </section>
 
-    <!-- FAQ Section -->
-    <section id="faq" class="py-20 lg:py-32 bg-slate-50">
-      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-16">
-          <h2 class="text-3xl sm:text-4xl font-bold text-slate-900 mb-4">Frequently Asked Questions</h2>
-          <p class="text-xl text-slate-600">Common questions about URL redirection and audits.</p>
-        </div>
-        <div class="space-y-6">
-          <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
-            <h3 class="text-lg font-bold text-slate-900 mb-2">What is RedirectWise?</h3>
-            <p class="text-slate-600">RedirectWise is the ultimate URL Redirect Checker and Redirect Chain Analyzer. Instantly trace HTTP redirects, perform deep audits, and map out 301, 302, 307, 308, JavaScript redirects, Meta Refreshes, and HSTS paths in real-time.</p>
+        <div class="border border-line bg-line gap-px grid sm:grid-cols-2 lg:grid-cols-4">
+          <div class="bg-paper-card p-6">
+            <span
+              class="font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-muted block mb-2"
+              >CASE 01</span
+            >
+            <h3 class="text-base font-bold uppercase text-ink mb-2">Redirect Audits</h3>
+            <p class="text-xs text-stone leading-relaxed">
+              Verify 301 vs 302 redirects during site migrations and domain consolidation.
+            </p>
           </div>
-          <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
-            <h3 class="text-lg font-bold text-slate-900 mb-2">How many languages does RedirectWise support?</h3>
-            <p class="text-slate-600">RedirectWise now supports 18 languages including English, Hindi, Spanish, Arabic, Portuguese, Dutch, Polish, Vietnamese, Swedish, Indonesian, and more!</p>
+
+          <div class="bg-paper-card p-6">
+            <span
+              class="font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-muted block mb-2"
+              >CASE 02</span
+            >
+            <h3 class="text-base font-bold uppercase text-ink mb-2">Loop Debugging</h3>
+            <p class="text-xs text-stone leading-relaxed">
+              Catch infinite redirect loops and SSL misconfigurations before they break user
+              journeys.
+            </p>
           </div>
-          <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
-            <h3 class="text-lg font-bold text-slate-900 mb-2">Can it catch hidden ad redirects & page refreshes?</h3>
-            <p class="text-slate-600">Unlike basic tools that wipe history when a page reloads, RedirectWise features a Persistent History Dashboard. It securely logs up to 2,000 URLs. Even if an ad forcefully redirects you or a page refreshes, the full redirect chain remains safely recorded.</p>
+
+          <div class="bg-paper-card p-6">
+            <span
+              class="font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-muted block mb-2"
+              >CASE 03</span
+            >
+            <h3 class="text-base font-bold uppercase text-ink mb-2">Affiliate Tracking</h3>
+            <p class="text-xs text-stone leading-relaxed">
+              Audit ad network redirects, subid parameter passing, and middleman tracking hops.
+            </p>
           </div>
-          <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
-            <h3 class="text-lg font-bold text-slate-900 mb-2">Why do redirect chains affect website performance?</h3>
-            <p class="text-slate-600">Long redirect chains can increase page load times, waste bandwidth, and unnecessarily consume crawl budget. RedirectWise helps identify and fix these issues.</p>
-          </div>
-          <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
-            <h3 class="text-lg font-bold text-slate-900 mb-2">Does RedirectWise support Chrome and Edge?</h3>
-            <p class="text-slate-600">Yes! RedirectWise is available as a completely free browser extension for both Google Chrome and Microsoft Edge. It's also Manifest V3 compliant.</p>
+
+          <div class="bg-paper-card p-6">
+            <span
+              class="font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-muted block mb-2"
+              >CASE 04</span
+            >
+            <h3 class="text-base font-bold uppercase text-ink mb-2">Security & HSTS</h3>
+            <p class="text-xs text-stone leading-relaxed">
+              Ensure strict HTTPS compliance and inspect security policies like CSP, COOP, and HSTS.
+            </p>
           </div>
         </div>
       </div>
     </section>
 
     <!-- Release Changelog -->
-    <section class="py-20 lg:py-32 bg-white">
+    <section id="changelog" class="py-20 lg:py-28 border-b border-line bg-paper">
       <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-16">
-          <h2 class="text-3xl sm:text-4xl font-bold text-slate-900 mb-4">Release Notes</h2>
-          <p class="text-xl text-slate-600">Latest updates and improvements</p>
+        <div class="mb-12">
+          <span
+            class="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-brand block mb-2"
+          >
+            [ VERSION REGISTRY ]
+          </span>
+          <h2 class="text-3xl sm:text-4xl font-black uppercase tracking-tight text-ink">
+            Release Notes.
+          </h2>
         </div>
-        <div class="space-y-6">
-          <div class="bg-slate-50 rounded-2xl p-6 border border-slate-200">
-            <div class="flex items-center gap-3 mb-4">
-              <span class="bg-blue-500 text-white text-sm font-semibold px-3 py-1 rounded-full">v1.5.0</span>
-              <span class="text-slate-500 text-sm">Latest</span>
+
+        <div class="space-y-4">
+          <!-- V2.0.0 -->
+          <div class="border border-ink bg-paper-card p-6">
+            <div
+              class="flex items-center justify-between pb-3 mb-4 border-b border-line font-mono text-[10px]"
+            >
+              <div class="flex items-center gap-2">
+                <span class="bg-ink text-paper px-2 py-0.5 font-bold uppercase tracking-wider"
+                  >v2.0.0</span
+                >
+                <span class="text-ok font-bold uppercase tracking-wider">• LATEST RELEASE</span>
+              </div>
+              <span class="text-muted">OCTOBER 12, 2026</span>
             </div>
-            <ul class="space-y-2 text-slate-600">
-              <li class="flex items-start gap-2"><span class="text-green-500 mt-1">✓</span> Added: PNG image export to visualize and download redirect chains.</li>
-              <li class="flex items-start gap-2"><span class="text-green-500 mt-1">✓</span> Redesigned: Popup actions layout — moved "Clear path" to copy section, equal-width buttons.</li>
-              <li class="flex items-start gap-2"><span class="text-green-500 mt-1">✓</span> Added: Custom delete confirmation dialog in Dashboard replacing browser confirm().</li>
-              <li class="flex items-start gap-2"><span class="text-green-500 mt-1">✓</span> Refactored: Dashboard action options with pill-styled favorite button and synchronized export triggers.</li>
-              <li class="flex items-start gap-2"><span class="text-green-500 mt-1">✓</span> Synced: Brand name (RedirectWise) and slogan (URL Redirect Checker) across all 18 locales.</li>
-              <li class="flex items-start gap-2"><span class="text-green-500 mt-1">✓</span> Cleaned: Removed all SEO-related feature text and unused locale strings.</li>
+            <ul class="font-mono text-xs text-stone space-y-2">
+              <li class="flex items-baseline gap-2">
+                <span class="text-brand font-bold">+</span>
+                <span
+                  >Redesigned: Complete Swiss Modernist visual identity with hairline precision, flat geometry, and unified design token variables.</span
+                >
+              </li>
+              <li class="flex items-baseline gap-2">
+                <span class="text-brand font-bold">+</span>
+                <span
+                  >Added: Zero-flash dark mode theme system with persistent local storage and system color-scheme sync.</span
+                >
+              </li>
+              <li class="flex items-baseline gap-2">
+                <span class="text-brand font-bold">+</span>
+                <span
+                  >Added: Dual-store ecosystem with direct downloads for both Google Chrome and Microsoft Edge.</span
+                >
+              </li>
+              <li class="flex items-baseline gap-2">
+                <span class="text-brand font-bold">+</span>
+                <span
+                  >Updated: Flat brand logo icon with zero inner shadow, solid brand blue, and Gauravlabs brand harmonization.</span
+                >
+              </li>
+              <li class="flex items-baseline gap-2">
+                <span class="text-brand font-bold">+</span>
+                <span
+                  >Fixed: Redirect chains now survive client-side (ad/JS/meta) redirects, page refreshes, and plain link clicks — the popup shows where the page came from.</span
+                >
+              </li>
+              <li class="flex items-baseline gap-2">
+                <span class="text-brand font-bold">+</span>
+                <span
+                  >Added: Cross-tab journey tracking — tabs opened from ads inherit the opener chain with a new-tab-from marker, traced live in the sidepanel.</span
+                >
+              </li>
+              <li class="flex items-baseline gap-2">
+                <span class="text-brand font-bold">+</span>
+                <span
+                  >Updated: Icon-only protocol badge (HTTP warning only), file-based brand logo and lockup with dark-mode variants, and hero drafting grid.</span
+                >
+              </li>
             </ul>
           </div>
-          <div class="bg-slate-50 rounded-2xl p-6 border border-slate-200">
-            <div class="flex items-center gap-3 mb-4">
-              <span class="bg-slate-600 text-white text-sm font-semibold px-3 py-1 rounded-full">v1.4.2</span>
+
+          <!-- V1.5.0 -->
+          <div class="border border-line bg-paper-card p-6">
+            <div
+              class="flex items-center justify-between pb-3 mb-4 border-b border-line font-mono text-[10px]"
+            >
+              <span
+                class="bg-paper-subtle text-ink px-2 py-0.5 font-bold uppercase tracking-wider border border-line"
+                >v1.5.0</span
+              >
+              <span class="text-muted">APRIL 20, 2026</span>
             </div>
-            <ul class="space-y-2 text-slate-600">
-              <li class="flex items-start gap-2"><span class="text-green-500 mt-1">✓</span> Fixed: Resolved history persistence issues to ensure redirect data is securely logged across all navigation paths.</li>
-              <li class="flex items-start gap-2"><span class="text-green-500 mt-1">✓</span> Improved: Enhanced redirect timing accuracy and polished the millisecond gap display for better precision.</li>
-              <li class="flex items-start gap-2"><span class="text-green-500 mt-1">✓</span> Improved: Optimized dashboard legibility by intelligently truncating long URLs in history cards.</li>
-              <li class="flex items-start gap-2"><span class="text-green-500 mt-1">✓</span> Improved: Refined PDF export UI with clearer visual indicators for redirect gaps.</li>
-              <li class="flex items-start gap-2"><span class="text-green-500 mt-1">✓</span> Added: Robust error handling and visual feedback for navigation failures within the popup.</li>
+            <ul class="font-mono text-xs text-stone space-y-2">
+              <li class="flex items-baseline gap-2">
+                <span class="text-brand font-bold">+</span>
+                <span
+                  >Added: High-resolution PNG image export to download visual redirect chain
+                  cards.</span
+                >
+              </li>
+              <li class="flex items-baseline gap-2">
+                <span class="text-brand font-bold">+</span>
+                <span
+                  >Added: Custom inline delete confirmation dialog replacing browser native
+                  confirm().</span
+                >
+              </li>
+              <li class="flex items-baseline gap-2">
+                <span class="text-brand font-bold">+</span>
+                <span
+                  >Updated: Full internationalization support with synchronized branding across all
+                  18 locales.</span
+                >
+              </li>
             </ul>
           </div>
-          <div class="bg-slate-50 rounded-2xl p-6 border border-slate-200">
-            <div class="flex items-center gap-3 mb-4">
-              <span class="bg-slate-600 text-white text-sm font-semibold px-3 py-1 rounded-full">v1.4.1</span>
+
+          <!-- V1.4.2 -->
+          <div class="border border-line bg-paper-card p-6">
+            <div
+              class="flex items-center justify-between pb-3 mb-4 border-b border-line font-mono text-[10px]"
+            >
+              <span
+                class="bg-paper-subtle text-ink px-2 py-0.5 font-bold uppercase tracking-wider border border-line"
+                >v1.4.2</span
+              >
+              <span class="text-muted">PREVIOUS</span>
             </div>
-            <ul class="space-y-2 text-slate-600">
-              <li class="flex items-start gap-2"><span class="text-green-500 mt-1">✓</span> Improved: Shortened localized extension names for 100% compatibility with Chrome Store character limits.</li>
+            <ul class="font-mono text-xs text-stone space-y-2">
+              <li class="flex items-baseline gap-2">
+                <span class="text-muted font-bold">•</span>
+                <span
+                  >Fixed: Resolved history persistence issues across multi-tab simultaneous
+                  browsing.</span
+                >
+              </li>
+              <li class="flex items-baseline gap-2">
+                <span class="text-muted font-bold">•</span>
+                <span>Enhanced: Millisecond timing accuracy and delay gap indicators.</span>
+              </li>
             </ul>
           </div>
-          <div class="bg-slate-50 rounded-2xl p-6 border border-slate-200">
-            <div class="flex items-center gap-3 mb-4">
-              <span class="bg-slate-600 text-white text-sm font-semibold px-3 py-1 rounded-full">v1.4.0</span>
-            </div>
-            <ul class="space-y-2 text-slate-600">
-              <li class="flex items-start gap-2"><span class="text-green-500 mt-1">✓</span> Added: Full Internationalization (i18n) support for 18 languages including English, Spanish, Hindi, Arabic, Dutch, Polish, and more.</li>
-              <li class="flex items-start gap-2"><span class="text-green-500 mt-1">✓</span> Added: Dashboard "Hard Refresh" shortcut via the main logo.</li>
-            </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="py-20 lg:py-28 border-b border-line bg-paper-card">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="mb-12">
+          <span
+            class="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-brand block mb-2"
+          >
+            [ FREQUENTLY ASKED QUESTIONS ]
+          </span>
+          <h2 class="text-3xl sm:text-4xl font-black uppercase tracking-tight text-ink">
+            Clarifications & FAQs.
+          </h2>
+        </div>
+
+        <div class="border border-line bg-line gap-px grid">
+          <div class="bg-paper-card p-6">
+            <h3 class="font-bold uppercase text-sm text-ink mb-2">What is RedirectWise?</h3>
+            <p class="text-xs text-stone leading-relaxed">
+              RedirectWise is an advanced URL redirect checker and HTTP response header analyzer. It
+              intercepts network navigation in real-time, mapping out 301, 302, 307, 308, JavaScript
+              redirects, Meta Refreshes, and HSTS protocol jumps.
+            </p>
           </div>
-          <div class="bg-slate-50 rounded-2xl p-6 border border-slate-200">
-            <div class="flex items-center gap-3 mb-4">
-              <span class="bg-slate-600 text-white text-sm font-semibold px-3 py-1 rounded-full">v1.3.0</span>
-            </div>
-            <ul class="space-y-2 text-slate-600">
-              <li class="flex items-start gap-2"><span class="text-green-500 mt-1">✓</span> Added: Intelligent User Onboarding flow and Uninstall Feedback Hook.</li>
-              <li class="flex items-start gap-2"><span class="text-green-500 mt-1">✓</span> Improved: Extension brand mapping to "Redirect Checker" for search algorithms.</li>
-            </ul>
+
+          <div class="bg-paper-card p-6">
+            <h3 class="font-bold uppercase text-sm text-ink mb-2">
+              Does it send my browsing data to any server?
+            </h3>
+            <p class="text-xs text-stone leading-relaxed">
+              No. RedirectWise is 100% private and runs entirely on-device inside your browser. No
+              telemetry, no analytics, no external APIs, and no cloud databases.
+            </p>
+          </div>
+
+          <div class="bg-paper-card p-6">
+            <h3 class="font-bold uppercase text-sm text-ink mb-2">
+              Can it catch hidden ad redirects & forced page refreshes?
+            </h3>
+            <p class="text-xs text-stone leading-relaxed">
+              Yes. Basic tools lose data when a URL refreshes. RedirectWise logs up to 2,000 URLs in
+              a persistent indexed database so even aggressive ad redirects remain recorded.
+            </p>
+          </div>
+
+          <div class="bg-paper-card p-6">
+            <h3 class="font-bold uppercase text-sm text-ink mb-2">Which browsers are supported?</h3>
+            <p class="text-xs text-stone leading-relaxed">
+              RedirectWise is available on Google Chrome and Microsoft Edge, built natively with
+              Manifest V3.
+            </p>
           </div>
         </div>
       </div>
     </section>
 
     <!-- Download Section -->
-    <section id="download" class="py-20 lg:py-32 bg-white text-slate-900">
+    <section id="download" class="py-20 lg:py-28 border-b border-line bg-paper">
       <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <h2 class="text-3xl sm:text-4xl font-bold mb-6">Ready to Optimize Your Redirects?</h2>
-        <p class="text-xl text-slate-600 mb-10">
-          Download RedirectWise for free and start analyzing your redirect chains today.
+        <span
+          class="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-brand block mb-2"
+        >
+          [ GET STARTED TODAY ]
+        </span>
+        <h2 class="text-3xl sm:text-5xl font-black uppercase tracking-tight text-ink mb-4">
+          Install RedirectWise Free.
+        </h2>
+        <p class="text-base text-stone max-w-lg mx-auto mb-10 leading-relaxed">
+          Start auditing HTTP redirect chains with microsecond precision. Free, open source, and
+          completely on-device.
         </p>
-        <div class="flex flex-wrap justify-center gap-4">
+
+        <div class="flex flex-col sm:flex-row justify-center gap-4">
           <a
             id="chrome-download"
             href="https://chromewebstore.google.com/detail/redirectwise/mhahonijegjclaecmoinjomidmhhleln"
             target="_blank"
-            class="inline-flex items-center gap-3 bg-white hover:bg-slate-50 text-slate-900 px-4 py-2.5 rounded-xl font-medium transition-all shadow-lg"
+            rel="noopener noreferrer"
+            class="h-14 px-8 bg-ink text-white hover:bg-brand border border-ink hover:border-brand font-mono text-xs font-bold uppercase tracking-[0.16em] inline-flex items-center justify-center gap-3 transition-colors"
           >
-            <img src="assets/Google_Chrome.svg" alt="Chrome" class="w-8 h-8" />
-            <div class="text-left">
-              <div class="text-xs text-slate-500">Download for</div>
-              <div class="text-base font-semibold">Google Chrome</div>
+            <img src="assets/Google_Chrome.svg" alt="Chrome" class="w-6 h-6" />
+            <div class="text-left leading-tight">
+              <div class="text-[9px] font-bold uppercase tracking-wider text-white/80" style="color: rgba(255, 255, 255, 0.8);">DOWNLOAD FOR</div>
+              <div class="font-bold uppercase tracking-wider text-white">GOOGLE CHROME</div>
             </div>
           </a>
+
           <a
             id="edge-download"
             href="https://microsoftedge.microsoft.com/addons/detail/mdgmnjiooaiahcnkinkgdgibhmjklaid"
             target="_blank"
-            class="inline-flex items-center gap-3 bg-white hover:bg-slate-50 text-slate-900 px-4 py-2.5 rounded-xl font-medium transition-all shadow-lg"
+            rel="noopener noreferrer"
+            class="h-14 px-8 bg-paper-card text-ink hover:bg-paper-subtle hover:border-ink border border-line font-mono text-xs font-bold uppercase tracking-[0.16em] inline-flex items-center justify-center gap-3 transition-colors"
           >
-            <img src="assets/Microsoft_Edge.svg" alt="Edge" class="w-8 h-8" />
-            <div class="text-left">
-              <div class="text-xs text-slate-500">Download for</div>
-              <div class="text-base font-semibold">Microsoft Edge</div>
+            <img src="assets/Microsoft_Edge.svg" alt="Edge" class="w-6 h-6" />
+            <div class="text-left leading-tight">
+              <div class="text-[9px] font-bold uppercase tracking-wider text-stone">DOWNLOAD FOR</div>
+              <div class="font-bold uppercase tracking-wider text-ink">MICROSOFT EDGE</div>
             </div>
           </a>
         </div>
       </div>
     </section>
 
-    <!-- Footer -->
-    <!-- Footer -->
-    <footer class="bg-slate-50 text-slate-600 py-12 border-t border-slate-200">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex flex-col items-center text-center gap-6">
-          <div class="flex items-center gap-3">
-            <div class="flex items-center justify-center">
-              <img src="assets/logo.svg" alt="RedirectWise Logo" class="w-10 h-10 rounded-xl" />
+    <!-- Footer with Signature Running Watermark & 12-Col Architectural Layout -->
+    <footer class="relative pt-14 sm:pt-20 pb-10 sm:pb-12 bg-paper border-t border-line overflow-hidden">
+      <!-- Running Background Subtle Watermark (Infinite marquee with gradient fade mask) -->
+      <div
+        aria-hidden="true"
+        class="absolute bottom-0 left-0 right-0 pointer-events-none select-none overflow-hidden h-[15vw] max-h-48 opacity-[0.035] z-0"
+        style="mask-image: linear-gradient(to top, black 0%, transparent 90%); -webkit-mask-image: linear-gradient(to top, black 0%, transparent 90%);"
+      >
+        <div class="animate-marquee-slow flex whitespace-nowrap will-change-transform leading-none">
+          <div class="flex items-center gap-16 font-black text-[12vw] tracking-tighter uppercase text-ink shrink-0 pr-16 select-none">
+            <span>REDIRECTWISE</span>
+            <span class="text-brand">&bull;</span>
+            <span>GAURAVLABS</span>
+            <span class="text-brand">&bull;</span>
+            <span>HTTP AUDIT</span>
+            <span class="text-brand">&bull;</span>
+          </div>
+          <div class="flex items-center gap-16 font-black text-[12vw] tracking-tighter uppercase text-ink shrink-0 pr-16 select-none" aria-hidden="true">
+            <span>REDIRECTWISE</span>
+            <span class="text-brand">&bull;</span>
+            <span>GAURAVLABS</span>
+            <span class="text-brand">&bull;</span>
+            <span>HTTP AUDIT</span>
+            <span class="text-brand">&bull;</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-8 sm:gap-12 pb-10 sm:pb-16 border-b border-line">
+          <!-- Brand Info (6 cols) -->
+          <div class="md:col-span-6 flex flex-col items-start text-left gap-3 sm:gap-4">
+            <a href="/" class="flex items-center group" aria-label="RedirectWise Home">
+              <img
+                src="assets/logo-lockup.svg"
+                alt="RedirectWise Logo"
+                class="h-9 w-auto shrink-0 select-none logo-light"
+              />
+              <img
+                src="assets/logo-lockup-dark.svg"
+                alt=""
+                aria-hidden="true"
+                class="h-9 w-auto shrink-0 select-none logo-dark"
+              />
+            </a>
+            </a>
+            <p class="text-xs sm:text-sm text-stone max-w-sm leading-relaxed mt-1 text-left">
+              In-browser HTTP redirect auditing and response header inspector. Track redirect chains in real-time with zero telemetry and 100% on-device isolation.
+            </p>
+            <div class="mt-2">
+              <a
+                href="https://www.producthunt.com/products/redirectwise?embed=true&utm_source=badge-featured&utm_medium=badge&utm_source=badge-redirectwise"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <img
+                  src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1050741&theme=light&t=1765880443038"
+                  alt="RedirectWise - Real-time HTTP redirect tracker | Product Hunt"
+                  style="width: 210px; height: 46px"
+                  width="210"
+                  height="46"
+                />
+              </a>
             </div>
-            <span class="text-xl font-bold text-slate-900"
-              >Redirect<span class="text-blue-500">Wise</span></span
-            >
           </div>
-          <p class="text-slate-500 max-w-md">
-            The ultimate browser extension for tracking HTTP redirects, analyzing redirect impact, and
-            debugging link chains in real-time.
-          </p>
-          <a
-            href="https://www.producthunt.com/products/redirectwise?embed=true&utm_source=badge-featured&utm_medium=badge&utm_source=badge-redirectwise"
-            target="_blank"
-            ><img
-              src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1050741&theme=light&t=1765880443038"
-              alt="RedirectWise - Real-time HTTP redirect tracker with history & export | Product Hunt"
-              style="width: 250px; height: 54px"
-              width="250"
-              height="54"
-          /></a>
-          <div class="flex flex-col gap-2">
-            <a
-              href="./privacy/"
-              class="font-medium text-slate-900 hover:text-blue-500 transition-colors"
-              >Privacy Policy</a
-            >
-            <a
-              href="mailto:support@gauravlabs.com"
-              class="font-medium text-slate-900 hover:text-blue-500 transition-colors"
-              >Support: support@gauravlabs.com</a
-            >
+
+          <!-- Links (6 cols, 3 columns on mobile) -->
+          <div class="md:col-span-6 grid grid-cols-3 gap-4 sm:gap-8 text-left">
+            <!-- Product -->
+            <div class="flex flex-col items-start gap-2 sm:gap-2.5">
+              <span class="text-[9.5px] sm:text-[10px] font-mono font-black uppercase tracking-[0.2em] text-ink">
+                PRODUCT
+              </span>
+              <nav aria-label="Footer Product" class="flex flex-col items-start gap-2 sm:gap-2.5">
+                <a href="#features" class="text-xs text-stone hover:text-brand transition-colors">Features</a>
+                <a href="#architecture" class="text-xs text-stone hover:text-brand transition-colors">Architecture</a>
+                <a href="#changelog" class="text-xs text-stone hover:text-brand transition-colors">Changelog</a>
+                <a href="#faq" class="text-xs text-stone hover:text-brand transition-colors">FAQ</a>
+              </nav>
+            </div>
+
+            <!-- Legal -->
+            <div class="flex flex-col items-start gap-2 sm:gap-2.5">
+              <span class="text-[9.5px] sm:text-[10px] font-mono font-black uppercase tracking-[0.2em] text-ink">
+                LEGAL
+              </span>
+              <nav aria-label="Footer Legal" class="flex flex-col items-start gap-2 sm:gap-2.5">
+                <a href="./privacy/" class="text-xs text-stone hover:text-brand transition-colors">Privacy</a>
+                <a href="https://chromewebstore.google.com/detail/redirectwise/mhahonijegjclaecmoinjomidmhhleln" target="_blank" rel="noopener noreferrer" class="text-xs text-stone hover:text-brand transition-colors">Chrome</a>
+                <a href="https://microsoftedge.microsoft.com/addons/detail/mdgmnjiooaiahcnkinkgdgibhmjklaid" target="_blank" rel="noopener noreferrer" class="text-xs text-stone hover:text-brand transition-colors">Edge</a>
+              </nav>
+            </div>
+
+            <!-- Ecosystem & Specs -->
+            <div class="flex flex-col items-start gap-2 sm:gap-2.5">
+              <span class="text-[9.5px] sm:text-[10px] font-mono font-black uppercase tracking-[0.2em] text-ink">
+                ECOSYSTEM
+              </span>
+              <ul class="flex flex-col items-start gap-2 sm:gap-2.5 list-none p-0 m-0">
+                <li>
+                  <a href="https://gauravlabs.com" target="_blank" rel="noopener noreferrer" class="text-xs text-stone hover:text-brand transition-colors">
+                    Gauravlabs &rarr;
+                  </a>
+                </li>
+                <li>
+                  <a href="https://github.com/gauravvyadav/redirectwise" target="_blank" rel="noopener noreferrer" class="text-xs text-stone hover:text-brand transition-colors">
+                    GitHub &rarr;
+                  </a>
+                </li>
+                <li>
+                  <a href="mailto:support@gauravlabs.com" class="text-xs text-stone hover:text-brand transition-colors">
+                    Support &rarr;
+                  </a>
+                </li>
+              </ul>
+            </div>
           </div>
-          <div class="text-sm text-slate-400">
-            &copy; <span id="copyright-year"></span>
-            <a href="https://gauravlabs.com" target="_blank" class="text-slate-500 hover:underline"
-              >Gaurav Labs</a
-            >. All rights reserved.
+        </div>
+
+        <!-- Bottom Bar -->
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 pt-6 sm:pt-8 text-[9px] sm:text-[10px] font-mono text-muted text-left">
+          <div class="flex items-center gap-2">
+            <span class="w-1.5 h-1.5 bg-ok shrink-0"></span>
+            <span class="text-ink font-bold">100% CLIENT-SIDE &bull; ZERO TELEMETRY &bull; OPEN-SOURCE CORE</span>
+          </div>
+          <div>
+            &copy; <span id="copyright-year"></span> RedirectWise &bull;
+            <a href="https://gauravlabs.com" target="_blank" rel="noopener" class="text-ink hover:underline">
+              GAURAVLABS
+            </a>
+            &bull;
+            <a href="./privacy/" class="hover:underline">Privacy</a>
           </div>
         </div>
       </div>
     </footer>
+
     <script>
       document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('copyright-year').textContent = new Date().getFullYear();
@@ -550,23 +1230,76 @@
           })
           .catch(err => console.error('Failed to fetch GitHub stars:', err));
 
-        const userAgent = navigator.userAgent;
-        const isChrome = userAgent.includes('Chrome') && !userAgent.includes('Edg');
-        const isEdge = userAgent.includes('Edg');
-        const chromeBtn = document.getElementById('chrome-download');
-        const edgeBtn = document.getElementById('edge-download');
-        const heroChrome = document.getElementById('hero-chrome');
-        const heroEdge = document.getElementById('hero-edge');
-        if (isChrome) {
-          edgeBtn.style.display = 'none';
-          heroEdge.style.display = 'none';
-        } else if (isEdge) {
-          chromeBtn.style.display = 'none';
-          heroChrome.style.display = 'none';
-        } else {
-          // Default to Chrome for other browsers
-          edgeBtn.style.display = 'none';
-          heroEdge.style.display = 'none';
+        // Theme toggle logic
+        const themeToggle = document.getElementById('theme-toggle');
+        const sunIcon = document.getElementById('theme-sun');
+        const moonIcon = document.getElementById('theme-moon');
+
+        function updateThemeIcons() {
+          const isDark = document.documentElement.classList.contains('dark');
+          if (sunIcon && moonIcon) {
+            if (isDark) {
+              sunIcon.classList.remove('hidden');
+              moonIcon.classList.add('hidden');
+            } else {
+              sunIcon.classList.add('hidden');
+              moonIcon.classList.remove('hidden');
+            }
+          }
+        }
+
+        updateThemeIcons();
+
+        if (themeToggle) {
+          themeToggle.addEventListener('click', function () {
+            const isDark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            updateThemeIcons();
+          });
+        }
+
+        // Listen for OS scheme changes if user hasn't manually chosen a preference
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function (e) {
+          if (!localStorage.getItem('theme')) {
+            if (e.matches) {
+              document.documentElement.classList.add('dark');
+            } else {
+              document.documentElement.classList.remove('dark');
+            }
+            updateThemeIcons();
+          }
+        });
+
+        // Mobile menu toggle
+        const mobileToggle = document.getElementById('mobile-menu-toggle');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const menuIconOpen = document.getElementById('menu-icon-open');
+        const menuIconClose = document.getElementById('menu-icon-close');
+
+        if (mobileToggle && mobileMenu) {
+          mobileToggle.addEventListener('click', function () {
+            const isExpanded = !mobileMenu.classList.contains('hidden');
+            if (isExpanded) {
+              mobileMenu.classList.add('hidden');
+              menuIconOpen.classList.remove('hidden');
+              menuIconClose.classList.add('hidden');
+              mobileToggle.setAttribute('aria-expanded', 'false');
+            } else {
+              mobileMenu.classList.remove('hidden');
+              menuIconOpen.classList.add('hidden');
+              menuIconClose.classList.remove('hidden');
+              mobileToggle.setAttribute('aria-expanded', 'true');
+            }
+          });
+
+          mobileMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', function () {
+              mobileMenu.classList.add('hidden');
+              menuIconOpen.classList.remove('hidden');
+              menuIconClose.classList.add('hidden');
+              mobileToggle.setAttribute('aria-expanded', 'false');
+            });
+          });
         }
       });
     </script>

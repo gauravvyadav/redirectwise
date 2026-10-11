@@ -4,34 +4,24 @@ interface LogoProps {
 }
 
 export default function Logo({ size = 32, className = '' }: LogoProps) {
+  // Canonical artwork lives in public/icons/logo.svg (shipped in the build;
+  // website uses the matching website/assets/logo.svg). Rendered as an image
+  // so the file stays the single source of truth — edit the file, update
+  // everywhere. Works because popup/sidepanel/dashboard are extension pages.
   return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 32 32"
-      fill="none"
+    <img
+      src="/icons/logo.svg"
+      alt="RedirectWise logo"
       width={size}
       height={size}
       className={className}
-    >
-      <defs>
-        <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#3B82F6" />
-          <stop offset="100%" stopColor="#1D4ED8" />
-        </linearGradient>
-      </defs>
-      <rect width="32" height="32" rx="6" fill="url(#logoGradient)" />
-      <path
-        d="M10 22L22 10M22 10H14M22 10V18"
-        stroke="white"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
+      draggable={false}
+    />
   );
 }
 
-// White version for use on colored backgrounds
+// White version for use on colored backgrounds (stays inline: as an <img> it
+// couldn't inherit currentColor, and it's a deliberate variant, not the logo)
 export function LogoIcon({ size = 20, className = '' }: LogoProps) {
   return (
     <svg

@@ -14,7 +14,7 @@ Track redirects, uncover hidden ad/tracking hops, and review the full redirect j
   </a>
 </p>
 
-Latest tagged release: `v1.5.0`
+Latest tagged release: `v2.0.0`
 
 ## Features
 
@@ -27,10 +27,14 @@ Latest tagged release: `v1.5.0`
 - `HSTS detection` for browser-enforced HTTPS upgrades
 - `Dark mode` across popup, sidepanel, and dashboard
 - `Session persistence` so redirect data survives popup closes and short-lived extension UI reloads
+- `Cross-tab journey tracking` so tabs opened from ads/links inherit the opener chain with a new-tab-from marker
 - `Internationalization` with 18 locales
 
 ## Release Highlights
 
+- `v2.0.0`
+  Complete Swiss Modernist architectural redesign across Extension and Marketing Web surfaces. Flat geometry logo icon with zero shadow, unified design token variables (`--paper`, `--ink`, `--brand`, `--line`), 1px hairline drafting grids, zero-flash dark mode theme system, dual-store availability (Google Chrome & Microsoft Edge), and Gauravlabs design language alignment.
+  Tracking hardening: redirect chains survive client-side (ad/JS/meta) redirects, page refreshes, and plain link clicks; new-tab ad flows inherit the opener chain; history merge and cross-tab sidepanel tracing fixed.
 - `v1.5.0`
   Added PNG image export, redesigned popup actions layout, custom delete confirmation dialog, synced brand name (RedirectWise) and slogan (URL Redirect Checker) across all locales, and removed all SEO-related feature text.
 - `v1.4.x`
@@ -132,7 +136,7 @@ redirectwise/
 ## How It Works
 
 1. `Background service worker`
-   Captures main-frame navigations with `webRequest` and `webNavigation`, records redirect hops, headers, IPs, status codes, and timing metadata, then broadcasts live updates to the UI.
+   Captures main-frame navigations with `webRequest` and `webNavigation`, records redirect hops, headers, IPs, status codes, and timing metadata, then broadcasts live updates to the UI. Same-tab navigations chain into one journey; new tabs inherit their opener's chain.
 2. `Popup`
    Shows the current tab’s redirect journey, copy/export actions, and detailed per-hop inspection.
 3. `Sidepanel`

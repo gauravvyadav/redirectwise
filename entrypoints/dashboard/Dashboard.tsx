@@ -26,11 +26,12 @@ import {
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Logo from '../../components/Logo';
 import RedirectItemCard from '../../components/RedirectItemCard';
-import { HistoryEntry, RedirectItem, calculateGapDuration, formatDuration } from '../../types/redirect';
-import { exportHistoryToPDF, exportToPDF } from '../../utils/pdf-export';
+import type { HistoryEntry, RedirectItem } from '../../types/redirect';
+import { calculateGapDuration, formatDuration } from '../../types/redirect';
 import { exportToImage } from '../../utils/image-export';
+import { exportHistoryToPDF, exportToPDF } from '../../utils/pdf-export';
+import type { Settings as AppSettings } from '../../utils/storage';
 import {
-  Settings as AppSettings,
   clearHistory,
   deleteHistoryEntry,
   getHistory,
@@ -39,6 +40,7 @@ import {
   saveSettings,
   updateHistoryEntry,
 } from '../../utils/storage';
+import { SUPPORTED_LANGUAGES, setI18nLanguage, t, useI18n } from '../../utils/i18n';
 
 interface Stats {
   totalEntries: number;
@@ -47,13 +49,14 @@ interface Stats {
 }
 
 export default function Dashboard() {
+  useI18n();
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [darkMode, setDarkMode] = useState(false);
   const [settings, setSettings] = useState<AppSettings | null>(null);
   const [currentView, setCurrentView] = useState<'history' | 'settings'>('history');
-  const [settingsActiveTab, setSettingsActiveTab] = useState<'general'>('general');
+  const [settingsActiveTab, setSettingsActiveTab] = useState<'general' | 'language'>('general');
   const [loading, setLoading] = useState(true);
   const [selectedEntry, setSelectedEntry] = useState<HistoryEntry | null>(null);
   const [filter, setFilter] = useState<'all' | 'favorites'>('all');
@@ -81,7 +84,6 @@ export default function Dashboard() {
   const filteredHistory = useMemo(() => {
     let filtered = [...history];
 
-    // Search filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter(
@@ -92,12 +94,10 @@ export default function Dashboard() {
       );
     }
 
-    // Favorites filter
     if (filter === 'favorites') {
       filtered = filtered.filter(entry => entry.isFavorite);
     }
 
-    // Sort
     filtered.sort((a, b) => {
       let comparison = 0;
       switch (sortBy) {
@@ -127,27 +127,23 @@ export default function Dashboard() {
     }
   }, [darkMode]);
 
-  // Auto-select first entry when filtered history changes
   useEffect(() => {
     if (filteredHistory.length > 0 && !selectedEntry) {
-      setSelectedEntry(filteredHistory[0]);
+      const first = filteredHistory[0];
+      if (first) setSelectedEntry(first);
     } else if (filteredHistory.length === 0) {
       setSelectedEntry(null);
     }
   }, [filteredHistory, selectedEntry]);
 
-  const handleDelete = useCallback(
-    (id: string) => {
-      setEntryToDelete(id);
-      setDeleteTarget('single');
-    },
-    []
-  );
+  const handleDelete = useCallback((id: string) => {
+    setEntryToDelete(id);
+    setDeleteTarget('single');
+  }, []);
 
   const handleToggleFavorite = useCallback(
     async (entry: HistoryEntry) => {
       await updateHistoryEntry(entry.id, { isFavorite: !entry.isFavorite });
-      // Update selected entry if it's the one we modified
       if (selectedEntry?.id === entry.id) {
         setSelectedEntry({ ...selectedEntry, isFavorite: !entry.isFavorite });
       }
@@ -205,92 +201,90 @@ export default function Dashboard() {
     await saveSettings({ [key]: newSettings[key] });
   };
 
+  const handleLanguageChange = async (lang: string) => {
+    if (!settings) return;
+    const newSettings = { ...settings, language: lang };
+    setSettings(newSettings as AppSettings);
+    await saveSettings({ language: lang });
+    await setI18nLanguage(lang);
+  };
+
   return (
-    <div
-      className={clsx(
-        'h-screen flex flex-col transition-colors',
-        darkMode ? 'bg-slate-900 text-slate-100' : 'bg-white text-slate-900'
-      )}
-    >
+    <div className="h-screen flex flex-col transition-colors bg-paper text-ink">
       {/* Top Header */}
-      <header
-        className={clsx(
-          'shrink-0 border-b h-14',
-          darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'
-        )}
-      >
+      <header className="shrink-0 border-b border-line bg-paper-card h-14">
         <div className="h-full px-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <button
               onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-              className={clsx(
-                'p-2 rounded-lg transition-colors lg:hidden',
-                darkMode ? 'hover:bg-slate-700' : 'hover:bg-slate-100'
-              )}
+              className="w-8 h-8 flex items-center justify-center border border-line bg-paper-card hover:border-ink transition-colors lg:hidden"
             >
-              <Menu className="w-5 h-5" />
+              <Menu className="w-4 h-4" />
             </button>
 
             <div
-              className="flex items-center gap-2 cursor-pointer group"
+              className="flex items-center gap-2.5 cursor-pointer group"
               onClick={() => window.location.reload()}
-              title={chrome.i18n.getMessage('headerRefresh')}
+              title={t('headerRefresh')}
             >
-              <Logo size={32} />
-              <h1 className="text-lg font-bold leading-tight group-hover:text-blue-500 transition-colors">
-                {chrome.i18n.getMessage('extensionName').split(':')[0]}
-              </h1>
+              <Logo size={28} />
+              <div>
+                <h1 className="text-xs font-black uppercase tracking-widest leading-tight text-ink">
+                  {t('extensionName').split(':')[0]}
+                </h1>
+                <span className="font-mono text-[9.5px] font-bold uppercase tracking-[0.16em] text-muted">
+                  DASHBOARD // PERSISTENT
+                </span>
+              </div>
             </div>
           </div>
 
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-2">
             {stats && (
-              <div
-                className={clsx(
-                  'hidden md:flex items-center gap-4 mr-4 px-4 py-1.5 rounded-lg text-sm',
-                  darkMode ? 'bg-slate-700/50' : 'bg-slate-100'
-                )}
-              >
+              <div className="hidden md:flex items-center gap-3 h-8 px-3 border border-line bg-paper-card font-mono text-[10px] uppercase tracking-[0.14em] text-text-secondary">
                 <span>
-                  <strong>{stats.totalEntries}</strong> {chrome.i18n.getMessage('entriesLabel')}
+                  <strong className="text-ink">{stats.totalEntries}</strong>{' '}
+                  {t('entriesLabel')}
+                </span>
+                <span className="text-muted">/</span>
+                <span>
+                  <strong className="text-ink">{stats.totalRedirects}</strong>{' '}
+                  {t('redirectsPlural')}
                 </span>
               </div>
             )}
+
+            <button
+              onClick={loadData}
+              className="w-8 h-8 flex items-center justify-center border border-line bg-paper-card text-ink hover:border-ink hover:bg-paper-subtle transition-colors"
+              title={t('headerRefresh')}
+            >
+              <RefreshCw className="w-4 h-4" />
+            </button>
+
             <button
               onClick={() => setCurrentView(currentView === 'history' ? 'settings' : 'history')}
               className={clsx(
-                'p-2 rounded-lg transition-colors',
-                currentView === 'settings' &&
-                  (darkMode ? 'bg-slate-700 text-blue-400' : 'bg-slate-200 text-blue-600'),
-                darkMode ? 'hover:bg-slate-700' : 'hover:bg-slate-100'
+                'w-8 h-8 flex items-center justify-center border transition-colors',
+                currentView === 'settings'
+                  ? 'bg-ink text-paper border-ink'
+                  : 'border-line bg-paper-card text-ink hover:border-ink hover:bg-paper-subtle'
               )}
               title={
                 currentView === 'history'
-                  ? chrome.i18n.getMessage('settingsTitle')
-                  : chrome.i18n.getMessage('backToHistory')
+                  ? t('settingsTitle')
+                  : t('backToHistory')
               }
             >
-              <Settings className="w-5 h-5" />
+              <Settings className="w-4 h-4" />
             </button>
+
             <button
               onClick={handleToggleDarkMode}
-              className={clsx(
-                'p-2 rounded-lg transition-colors',
-                darkMode ? 'hover:bg-slate-700' : 'hover:bg-slate-100'
-              )}
-              title={chrome.i18n.getMessage(darkMode ? 'headerLightMode' : 'headerDarkMode')}
+              className="w-8 h-8 flex items-center justify-center border border-line bg-paper-card text-ink hover:border-ink hover:bg-paper-subtle transition-colors"
+              title={t(darkMode ? 'headerLightMode' : 'headerDarkMode')}
             >
-              {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-            </button>
-            <button
-              onClick={loadData}
-              className={clsx(
-                'p-2 rounded-lg transition-colors',
-                darkMode ? 'hover:bg-slate-700' : 'hover:bg-slate-100'
-              )}
-              title={chrome.i18n.getMessage('headerRefresh')}
-            >
-              <RefreshCw className="w-5 h-5" />
+              {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
             </button>
           </div>
         </div>
@@ -302,169 +296,142 @@ export default function Dashboard() {
           {/* Left Sidebar - History List */}
           <aside
             className={clsx(
-              'shrink-0 flex flex-col border-r overflow-hidden transition-all',
-              sidebarCollapsed ? 'w-0 lg:w-80' : 'w-full lg:w-80',
-              darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'
+              'shrink-0 flex flex-col border-r border-line bg-paper overflow-hidden transition-all',
+              sidebarCollapsed ? 'w-0 lg:w-84' : 'w-full lg:w-84'
             )}
           >
             {/* Filters & Search */}
-            <div
-              className={clsx(
-                'shrink-0 p-3 border-b space-y-3',
-                darkMode ? 'border-slate-700' : 'border-slate-200'
-              )}
-            >
+            <div className="shrink-0 p-3 border-b border-line space-y-2.5">
               {/* Search */}
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted" />
                 <input
                   type="text"
-                  placeholder={chrome.i18n.getMessage('searchUrls')}
+                  placeholder={t('searchUrls')}
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
-                  className={clsx(
-                    'w-full pl-9 pr-3 py-2 rounded-lg border text-sm transition-colors',
-                    darkMode
-                      ? 'bg-slate-700 border-slate-600 focus:border-blue-500'
-                      : 'bg-slate-50 border-slate-200 focus:border-blue-500'
-                  )}
+                  className="w-full h-8 pl-8 pr-3 border border-line bg-paper-card text-ink focus:border-ink font-mono text-[11px] outline-none transition-colors"
                 />
               </div>
 
-              {/* Filter Tabs */}
-              <div className="flex gap-1">
+              {/* Filter Tabs Grid */}
+              <div className="border border-line bg-line gap-px grid grid-cols-2">
                 <button
                   onClick={() => setFilter('all')}
                   className={clsx(
-                    'flex-1 px-2 py-1.5 rounded-md text-xs font-medium transition-colors',
+                    'h-8 font-mono text-[10px] font-bold uppercase tracking-[0.14em] transition-colors',
                     filter === 'all'
-                      ? 'bg-blue-500 text-white'
-                      : darkMode
-                        ? 'bg-slate-700 hover:bg-slate-600'
-                        : 'bg-slate-100 hover:bg-slate-200'
+                      ? 'bg-ink text-paper'
+                      : 'bg-paper-card text-muted hover:bg-paper-subtle'
                   )}
                 >
-                  {chrome.i18n.getMessage('filterAll')}
+                  {t('filterAll')}
                 </button>
                 <button
                   onClick={() => setFilter('favorites')}
                   className={clsx(
-                    'flex-1 px-2 py-1.5 rounded-md text-xs font-medium transition-colors flex items-center justify-center gap-1',
+                    'h-8 font-mono text-[10px] font-bold uppercase tracking-[0.14em] flex items-center justify-center gap-1 transition-colors',
                     filter === 'favorites'
-                      ? 'bg-amber-500 text-white'
-                      : darkMode
-                        ? 'bg-slate-700 hover:bg-slate-600'
-                        : 'bg-slate-100 hover:bg-slate-200'
+                      ? 'bg-warn text-white'
+                      : 'bg-paper-card text-muted hover:bg-paper-subtle'
                   )}
                 >
-                  <Star className="w-3 h-3" /> {chrome.i18n.getMessage('filterFav')}
+                  <Star className="w-3 h-3" /> {t('filterFav')}
                 </button>
               </div>
 
               {/* Sort & Actions */}
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5">
                 <select
                   value={sortBy}
                   onChange={e => setSortBy(e.target.value as typeof sortBy)}
-                  className={clsx(
-                    'flex-1 px-2 py-1.5 rounded-md border text-xs',
-                    darkMode ? 'bg-slate-700 border-slate-600' : 'bg-slate-50 border-slate-200'
-                  )}
+                  className="flex-1 h-8 px-2.5 border border-line bg-paper-card text-ink font-mono text-[10px] uppercase font-bold outline-none"
                 >
-                  <option value="date">{chrome.i18n.getMessage('sortByDate')}</option>
-                  <option value="redirects">{chrome.i18n.getMessage('sortByRedirects')}</option>
+                  <option value="date">{t('sortByDate')}</option>
+                  <option value="redirects">{t('sortByRedirects')}</option>
                 </select>
                 <button
                   onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
-                  className={clsx(
-                    'p-1.5 rounded-md transition-colors',
-                    darkMode ? 'bg-slate-700 hover:bg-slate-600' : 'bg-slate-100 hover:bg-slate-200'
-                  )}
+                  className="w-8 h-8 flex items-center justify-center border border-line bg-paper-card hover:border-ink text-ink transition-colors"
                 >
                   {sortOrder === 'desc' ? (
-                    <ChevronDown className="w-4 h-4" />
+                    <ChevronDown className="w-3.5 h-3.5" />
                   ) : (
-                    <ChevronUp className="w-4 h-4" />
+                    <ChevronUp className="w-3.5 h-3.5" />
                   )}
                 </button>
                 {filteredHistory.length > 0 && (
                   <button
                     onClick={handleExportAllPDF}
-                    className="p-1.5 rounded-md bg-blue-500 text-white hover:bg-blue-600 transition-colors"
-                    title={chrome.i18n.getMessage('exportAllToPdf')}
+                    className="w-8 h-8 flex items-center justify-center border border-accent bg-accent text-white hover:bg-accent-hover transition-colors"
+                    title={t('exportAllToPdf')}
                   >
-                    <Download className="w-4 h-4" />
+                    <Download className="w-3.5 h-3.5" />
                   </button>
                 )}
                 {history.length > 0 && (
                   <button
                     onClick={handleClearAll}
-                    className="p-1.5 rounded-md bg-red-500 text-white hover:bg-red-600 transition-colors"
-                    title={chrome.i18n.getMessage('clearAllHistory')}
+                    className="w-8 h-8 flex items-center justify-center border border-err bg-err text-white hover:opacity-90 transition-colors"
+                    title={t('clearAllHistory')}
                   >
-                    <Trash2 className="w-4 h-4" />
+                    <Trash2 className="w-3.5 h-3.5" />
                   </button>
                 )}
               </div>
             </div>
 
             {/* Entry Count */}
-            <div
-              className={clsx(
-                'shrink-0 px-3 py-2 text-xs border-b',
-                darkMode
-                  ? 'text-slate-400 border-slate-700 bg-slate-800/50'
-                  : 'text-slate-500 border-slate-200 bg-slate-50'
-              )}
-            >
+            <div className="shrink-0 px-3 py-1.5 font-mono text-[9px] font-bold uppercase tracking-[0.14em] border-b border-line bg-paper-subtle text-muted">
               {filteredHistory.length}{' '}
               {filteredHistory.length === 1
-                ? chrome.i18n.getMessage('entrySingle')
-                : chrome.i18n.getMessage('entriesLabel')}
-              {searchQuery && ` ${chrome.i18n.getMessage('matchingLabel')} "${searchQuery}"`}
+                ? t('entrySingle')
+                : t('entriesLabel')}
+              {searchQuery && ` // MATCHING "${searchQuery}"`}
             </div>
 
             {/* History List */}
-            <div className="flex-1 overflow-y-auto">
+            <div className="flex-1 overflow-y-auto divide-y divide-line">
               {loading ? (
-                <div className="flex items-center justify-center h-32">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+                <div className="flex flex-col items-center justify-center h-32 gap-2">
+                  <div className="w-5 h-5 border-2 border-accent border-t-transparent animate-spin" />
+                  <span className="font-mono text-[9px] uppercase tracking-wider text-muted">
+                    LOADING SESSIONS...
+                  </span>
                 </div>
               ) : filteredHistory.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-32 text-center p-4">
-                  <Clock className="w-10 h-10 mb-2 text-slate-300" />
-                  <p className={clsx('text-sm', darkMode ? 'text-slate-400' : 'text-slate-500')}>
+                  <Clock className="w-6 h-6 mb-2 text-muted" />
+                  <p className="font-mono text-[10px] uppercase tracking-wider text-muted">
                     {searchQuery || filter !== 'all'
-                      ? chrome.i18n.getMessage('noMatches')
-                      : chrome.i18n.getMessage('noHistoryYet')}
+                      ? t('noMatches')
+                      : t('noHistoryYet')}
                   </p>
                 </div>
               ) : (
-                <div className="divide-y divide-slate-200 dark:divide-slate-700">
-                  {filteredHistory.map(entry => (
-                    <HistoryListItem
-                      key={entry.id}
-                      entry={entry}
-                      isSelected={selectedEntry?.id === entry.id}
-                      darkMode={darkMode}
-                      settings={settings}
-                      onClick={() => {
-                        setSelectedEntry(entry);
-                        if (window.innerWidth < 1024) {
-                          setSidebarCollapsed(true);
-                        }
-                      }}
-                      onToggleFavorite={() => handleToggleFavorite(entry)}
-                      onDelete={() => handleDelete(entry.id)}
-                    />
-                  ))}
-                </div>
+                filteredHistory.map(entry => (
+                  <HistoryListItem
+                    key={entry.id}
+                    entry={entry}
+                    isSelected={selectedEntry?.id === entry.id}
+                    darkMode={darkMode}
+                    settings={settings}
+                    onClick={() => {
+                      setSelectedEntry(entry);
+                      if (window.innerWidth < 1024) {
+                        setSidebarCollapsed(true);
+                      }
+                    }}
+                    onToggleFavorite={() => handleToggleFavorite(entry)}
+                    onDelete={() => handleDelete(entry.id)}
+                  />
+                ))
               )}
             </div>
           </aside>
 
           {/* Right Panel - Details */}
-          <main className={clsx('flex-1 overflow-hidden', darkMode ? 'bg-slate-900' : 'bg-white')}>
+          <main className="flex-1 overflow-hidden bg-paper">
             {selectedEntry ? (
               <div ref={detailPanelRef} className="h-full">
                 <DetailPanel
@@ -480,19 +447,17 @@ export default function Dashboard() {
               </div>
             ) : (
               <div className="h-full flex flex-col items-center justify-center text-center p-8">
-                <div
-                  className={clsx(
-                    'w-20 h-20 rounded-2xl flex items-center justify-center mb-4',
-                    darkMode ? 'bg-slate-800' : 'bg-white'
-                  )}
-                >
-                  <Globe className="w-10 h-10 text-slate-300" />
+                <div className="w-14 h-14 border border-line bg-paper-card flex items-center justify-center mb-3">
+                  <Globe className="w-7 h-7 text-accent" />
                 </div>
-                <h3 className="text-lg font-medium mb-1">
-                  {chrome.i18n.getMessage('selectAnEntry')}
+                <span className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-muted mb-1">
+                  NO SELECTION
+                </span>
+                <h3 className="text-sm font-black uppercase tracking-tight mb-1 text-ink">
+                  {t('selectAnEntry')}
                 </h3>
-                <p className={clsx('text-sm', darkMode ? 'text-slate-400' : 'text-slate-500')}>
-                  {chrome.i18n.getMessage('chooseRedirectToView')}
+                <p className="text-xs max-w-xs text-text-secondary">
+                  {t('chooseRedirectToView')}
                 </p>
               </div>
             )}
@@ -507,54 +472,48 @@ export default function Dashboard() {
           activeTab={settingsActiveTab}
           setActiveTab={setSettingsActiveTab}
           onToggleSetting={handleToggleSetting}
+          onLanguageChange={handleLanguageChange}
         />
       )}
 
-      {/* Custom Delete Confirmation Modal */}
+      {/* Delete Confirmation Modal */}
       {deleteTarget && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div
-            className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/60 backdrop-blur-xs"
             onClick={closeDeleteModal}
           />
-          <div
-            className={clsx(
-              'relative max-w-sm w-full rounded-xl border p-6 shadow-2xl transition-all transform scale-100 z-10',
-              darkMode ? 'bg-slate-800 border-slate-700 text-slate-100' : 'bg-white border-slate-200 text-slate-900'
-            )}
-          >
-            <h3 className="text-base font-semibold mb-2">
+          <div className="relative max-w-sm w-full border border-ink bg-paper-card text-ink p-6 z-10 transition-all">
+            <span className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-err mb-1 block">
+              WARNING // DESTRUCTIVE ACTION
+            </span>
+            <h3 className="text-sm font-black uppercase tracking-tight mb-2">
               {deleteTarget === 'all'
-                ? chrome.i18n.getMessage('clearAllHistory') || 'Clear All History'
-                : chrome.i18n.getMessage('deleteEntry') || 'Delete Entry'}
+                ? t('clearAllHistory') || 'Clear All History'
+                : t('deleteEntry') || 'Delete Entry'}
             </h3>
-            
-            <p className={clsx('text-sm mb-6', darkMode ? 'text-slate-400' : 'text-slate-500')}>
+
+            <p className="text-xs mb-6 leading-relaxed text-text-secondary">
               {deleteTarget === 'all'
-                ? chrome.i18n.getMessage('confirmClearAll')
-                : chrome.i18n.getMessage('confirmDeleteEntry')}
+                ? t('confirmClearAll')
+                : t('confirmDeleteEntry')}
             </p>
-            
-            <div className="flex items-center justify-end gap-3">
+
+            <div className="flex items-center justify-end gap-2 font-mono text-[10px] font-bold uppercase tracking-[0.14em]">
               <button
                 onClick={closeDeleteModal}
-                className={clsx(
-                  'px-4 py-2 rounded-lg border text-sm font-medium transition-colors cursor-pointer',
-                  darkMode
-                    ? 'border-slate-700 hover:bg-slate-700 text-slate-300'
-                    : 'border-slate-200 hover:bg-slate-50 text-slate-700'
-                )}
+                className="h-8 px-4 border border-line hover:border-ink text-ink transition-colors inline-flex items-center justify-center"
               >
-                {chrome.i18n.getMessage('cancelLabel') || 'Cancel'}
+                {t('cancelLabel') || 'Cancel'}
               </button>
-              
+
               <button
                 onClick={confirmDelete}
-                className="px-4 py-2 rounded-lg text-sm font-medium bg-red-500 hover:bg-red-600 text-white transition-colors cursor-pointer"
+                className="h-8 px-4 border border-err bg-err hover:opacity-90 text-white transition-colors inline-flex items-center justify-center"
               >
                 {deleteTarget === 'all'
-                  ? chrome.i18n.getMessage('clearAllHistory').split(' ')[0] || 'Clear'
-                  : chrome.i18n.getMessage('deleteEntry') || 'Delete'}
+                  ? t('clearAllHistory').split(' ')[0] || 'Clear'
+                  : t('deleteEntry') || 'Delete'}
               </button>
             </div>
           </div>
@@ -564,72 +523,161 @@ export default function Dashboard() {
   );
 }
 
-function SettingsViewUI({ settings, darkMode, activeTab, setActiveTab, onToggleSetting }: any) {
+function SettingsViewUI({
+  settings,
+  activeTab,
+  setActiveTab,
+  onLanguageChange,
+}: any) {
+  const selectedLang = settings?.language || 'system';
+
   return (
     <div className="flex-1 flex overflow-hidden">
-      <aside
-        className={clsx(
-          'shrink-0 flex flex-col w-64 border-r overflow-hidden',
-          darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'
-        )}
-      >
-        <div
-          className={clsx(
-            'p-4 border-b font-medium',
-            darkMode ? 'border-slate-700' : 'border-slate-200'
-          )}
-        >
-          {chrome.i18n.getMessage('settingsTitle')}
+      <aside className="shrink-0 flex flex-col w-64 border-r border-line bg-paper overflow-hidden">
+        <div className="p-4 border-b border-line font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-ink">
+          {t('settingsTitle')}
         </div>
         <div className="flex-1 p-2 space-y-1">
           <button
             onClick={() => setActiveTab('general')}
             className={clsx(
-              'w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors',
+              'w-full text-left px-3 py-2 border font-mono text-[10.5px] font-bold uppercase tracking-[0.14em] transition-colors',
               activeTab === 'general'
-                ? darkMode
-                  ? 'bg-blue-900/30 text-blue-400'
-                  : 'bg-blue-50 text-blue-600'
-                : darkMode
-                  ? 'hover:bg-slate-700 text-slate-300'
-                  : 'hover:bg-slate-100 text-slate-600'
+                ? 'bg-ink text-paper border-ink'
+                : 'border-transparent hover:border-line text-text-secondary'
             )}
           >
-            {chrome.i18n.getMessage('generalSettings')}
+            {t('generalSettings')}
+          </button>
+          <button
+            onClick={() => setActiveTab('language')}
+            className={clsx(
+              'w-full text-left px-3 py-2 border font-mono text-[10.5px] font-bold uppercase tracking-[0.14em] transition-colors',
+              activeTab === 'language'
+                ? 'bg-ink text-paper border-ink'
+                : 'border-transparent hover:border-line text-text-secondary'
+            )}
+          >
+            {t('languageSettings')}
           </button>
         </div>
       </aside>
-      <main
-        className={clsx(
-          'flex-1 overflow-y-auto p-6 md:p-10',
-          darkMode ? 'bg-slate-900' : 'bg-white'
-        )}
-      >
+      <main className="flex-1 overflow-y-auto p-6 md:p-10 bg-paper">
         {activeTab === 'general' && (
-          <div className="max-w-3xl">
-            <h2 className="text-2xl font-semibold mb-6">
-              {chrome.i18n.getMessage('generalSettings')}
-            </h2>
-            <div
-              className={clsx(
-                'rounded-xl border p-6 flex items-center justify-between',
-                darkMode ? 'border-slate-700 bg-slate-800' : 'border-slate-200 bg-white'
-              )}
-            >
+          <div className="max-w-2xl space-y-6">
+            <div>
+              <span className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-muted block mb-1">
+                {t('configurationPreferences')}
+              </span>
+              <h2 className="text-xl font-black uppercase tracking-tight mb-6 text-ink">
+                {t('generalSettings')}
+              </h2>
+            </div>
+            <div className="border border-line bg-paper-card p-5 flex items-center justify-between">
               <div>
-                <h3 className="font-medium">{chrome.i18n.getMessage('darkModeAppearance')}</h3>
-                <p className={clsx('text-sm mt-1', darkMode ? 'text-slate-400' : 'text-slate-500')}>
-                  {chrome.i18n.getMessage('darkModeDesc')}
+                <h3 className="font-bold text-xs uppercase tracking-tight text-ink">
+                  {t('darkModeAppearance')}
+                </h3>
+                <p className="text-[11px] mt-1 text-text-secondary">
+                  {t('darkModeDesc')}
                 </p>
               </div>
-              <span
+              <span className="px-2.5 py-1 border border-line bg-paper-subtle font-mono text-[9.5px] font-bold uppercase tracking-[0.14em] text-ink">
+                {t('useHeaderButton')}
+              </span>
+            </div>
+
+            <div className="border border-line bg-paper-card p-5 flex items-center justify-between">
+              <div>
+                <h3 className="font-bold text-xs uppercase tracking-tight text-ink">
+                  {t('languageLabel')}
+                </h3>
+                <p className="text-[11px] mt-1 text-text-secondary">
+                  {t('languageDesc')}
+                </p>
+              </div>
+              <select
+                value={selectedLang}
+                onChange={e => onLanguageChange(e.target.value)}
+                className="px-2.5 py-1.5 border border-line bg-paper font-mono text-[11px] font-bold uppercase tracking-[0.08em] text-ink focus:outline-none focus:border-ink cursor-pointer"
+              >
+                <option value="system">{t('systemDefault')}</option>
+                {SUPPORTED_LANGUAGES.map(lang => (
+                  <option key={lang.code} value={lang.code}>
+                    {lang.nativeName} ({lang.name})
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'language' && (
+          <div className="max-w-3xl">
+            <span className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-muted block mb-1">
+              {t('configurationPreferences')}
+            </span>
+            <h2 className="text-xl font-black uppercase tracking-tight mb-2 text-ink">
+              {t('languageSettings')}
+            </h2>
+            <p className="text-xs text-text-secondary mb-6 font-mono">
+              {t('languageDesc')}
+            </p>
+
+            <div className="space-y-3">
+              <button
+                onClick={() => onLanguageChange('system')}
                 className={clsx(
-                  'px-3 py-1 rounded-full text-xs font-medium',
-                  darkMode ? 'bg-slate-700 text-slate-300' : 'bg-slate-100 text-slate-600'
+                  'w-full p-3.5 border text-left font-mono text-xs transition-colors flex items-center justify-between cursor-pointer',
+                  selectedLang === 'system'
+                    ? 'border-ink bg-ink text-paper font-bold'
+                    : 'border-line bg-paper-card hover:border-ink text-ink'
                 )}
               >
-                {chrome.i18n.getMessage('useHeaderButton')}
-              </span>
+                <div className="flex flex-col">
+                  <span className="font-bold uppercase tracking-wider">{t('systemDefault')}</span>
+                  <span
+                    className={clsx(
+                      'text-[10px] mt-0.5',
+                      selectedLang === 'system' ? 'text-paper/70' : 'text-muted'
+                    )}
+                  >
+                    {t('languageDesc')}
+                  </span>
+                </div>
+                {selectedLang === 'system' && <span className="font-bold text-sm">✓</span>}
+              </button>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5 pt-2">
+                {SUPPORTED_LANGUAGES.map(lang => {
+                  const isSelected = selectedLang === lang.code;
+                  return (
+                    <button
+                      key={lang.code}
+                      onClick={() => onLanguageChange(lang.code)}
+                      className={clsx(
+                        'p-3 border text-left font-mono transition-colors flex items-center justify-between cursor-pointer',
+                        isSelected
+                          ? 'border-ink bg-ink text-paper font-bold'
+                          : 'border-line bg-paper-card hover:border-ink text-ink'
+                      )}
+                    >
+                      <div className="min-w-0 pr-2">
+                        <div className="text-xs font-bold truncate">{lang.nativeName}</div>
+                        <div
+                          className={clsx(
+                            'text-[10px] truncate uppercase tracking-wider mt-0.5',
+                            isSelected ? 'text-paper/70' : 'text-muted'
+                          )}
+                        >
+                          {lang.name} [{lang.code}]
+                        </div>
+                      </div>
+                      {isSelected && <span className="font-bold text-sm shrink-0">✓</span>}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
         )}
@@ -638,41 +686,10 @@ function SettingsViewUI({ settings, darkMode, activeTab, setActiveTab, onToggleS
   );
 }
 
-function ToggleSwitch({
-  checked,
-  onChange,
-  darkMode,
-}: {
-  checked: boolean;
-  onChange: () => void;
-  darkMode: boolean;
-}) {
-  return (
-    <label className="flex items-center cursor-pointer shrink-0 ml-4">
-      <div
-        className={clsx(
-          'w-12 h-7 rounded-full transition-colors relative',
-          checked ? 'bg-blue-500' : darkMode ? 'bg-slate-700' : 'bg-slate-200'
-        )}
-      >
-        <div
-          className={clsx(
-            'absolute top-1 w-5 h-5 rounded-full bg-white transition-all shadow-sm',
-            checked ? 'left-6' : 'left-1'
-          )}
-        />
-      </div>
-      <input type="checkbox" className="sr-only" checked={checked} onChange={onChange} />
-    </label>
-  );
-}
-
 // History List Item Component
 function HistoryListItem({
   entry,
   isSelected,
-  darkMode,
-  settings,
   onClick,
   onToggleFavorite,
   onDelete,
@@ -690,7 +707,7 @@ function HistoryListItem({
     try {
       return new URL(url).hostname;
     } catch {
-      return url.length > 30 ? url.substring(0, 30) + '...' : url;
+      return url.length > 25 ? url.substring(0, 25) + '...' : url;
     }
   };
 
@@ -698,40 +715,26 @@ function HistoryListItem({
     <div
       onClick={onClick}
       className={clsx(
-        'p-3 cursor-pointer transition-colors group',
-        isSelected
-          ? darkMode
-            ? 'bg-blue-900/30 border-l-2 border-blue-500'
-            : 'bg-blue-50 border-l-2 border-blue-500'
-          : darkMode
-            ? 'hover:bg-slate-700/50'
-            : 'hover:bg-slate-50'
+        'p-3 cursor-pointer transition-colors group border-l-2',
+        isSelected ? 'bg-paper-card border-l-accent' : 'border-l-transparent hover:bg-paper-subtle'
       )}
     >
-      <div className="flex items-start gap-3">
-        {/* Content */}
+      <div className="flex items-start gap-2.5">
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-0.5">
-            <span
-              className={clsx(
-                'text-xs font-medium',
-                darkMode ? 'text-slate-300' : 'text-slate-700'
-              )}
-            >
+          <div className="flex items-center gap-1.5 mb-1">
+            <span className="font-mono text-xs font-bold truncate text-ink">
               {getHostname(entry.originalUrl)}
             </span>
-            {entry.isFavorite && <Star className="w-3 h-3 text-amber-500 fill-current" />}
+            {entry.isFavorite && <Star className="w-3 h-3 text-warn fill-current" />}
           </div>
-          <div className="flex items-center gap-2 text-xs">
-            <span
-              className={clsx('px-1.5 py-0.5 rounded', darkMode ? 'bg-slate-700' : 'bg-slate-200')}
-            >
+          <div className="flex items-center gap-2 font-mono text-[9.5px]">
+            <span className="px-1.5 py-0.2 border border-line bg-paper-subtle text-text-secondary font-bold uppercase tracking-wider">
               {entry.redirectCount}{' '}
               {entry.redirectCount !== 1
-                ? chrome.i18n.getMessage('hopsPlural')
-                : chrome.i18n.getMessage('hopSingle')}
+                ? t('hopsPlural')
+                : t('hopSingle')}
             </span>
-            <span className={darkMode ? 'text-slate-500' : 'text-slate-400'}>
+            <span className="text-muted">
               {formatDistanceToNow(entry.timestamp, { addSuffix: true })}
             </span>
           </div>
@@ -745,18 +748,14 @@ function HistoryListItem({
               onToggleFavorite();
             }}
             className={clsx(
-              'p-1 rounded transition-colors',
-              entry.isFavorite
-                ? 'text-amber-500'
-                : darkMode
-                  ? 'text-slate-500 hover:text-slate-300'
-                  : 'text-slate-400 hover:text-slate-600'
+              'p-1 border transition-colors',
+              entry.isFavorite ? 'border-warn text-warn' : 'border-line hover:border-ink text-muted'
             )}
           >
             {entry.isFavorite ? (
-              <Star className="w-4 h-4 fill-current" />
+              <Star className="w-3 h-3 fill-current" />
             ) : (
-              <StarOff className="w-4 h-4" />
+              <StarOff className="w-3 h-3" />
             )}
           </button>
           <button
@@ -764,9 +763,9 @@ function HistoryListItem({
               e.stopPropagation();
               onDelete();
             }}
-            className="p-1 rounded text-red-400 hover:text-red-500 transition-colors"
+            className="p-1 border border-err-border text-err hover:bg-err-bg transition-colors"
           >
-            <Trash2 className="w-4 h-4" />
+            <Trash2 className="w-3 h-3" />
           </button>
         </div>
       </div>
@@ -778,7 +777,6 @@ function HistoryListItem({
 function DetailPanel({
   entry,
   darkMode,
-  settings,
   onExportPDF,
   onExportImage,
   onToggleFavorite,
@@ -878,176 +876,145 @@ function DetailPanel({
     });
   };
 
-  const getStatusColor = (statusCode: number) => {
-    if (statusCode >= 200 && statusCode < 300) return 'bg-green-500';
-    if (statusCode >= 300 && statusCode < 400) return 'bg-amber-500';
-    if (statusCode >= 400 && statusCode < 500) return 'bg-red-500';
-    if (statusCode >= 500) return 'bg-red-600';
-    return 'bg-slate-500';
-  };
-
   return (
     <div className="h-full flex flex-col overflow-hidden">
       {/* Panel Header */}
-      <div
-        className={clsx(
-          'shrink-0 p-4 border-b',
-          darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'
-        )}
-      >
-        <div className="flex items-center gap-4">
+      <div className="shrink-0 p-4 border-b border-line bg-paper-card">
+        <div className="flex items-start gap-4">
           <button
             onClick={onBack}
-            className={clsx(
-              'p-2 rounded-lg transition-colors lg:hidden',
-              darkMode ? 'hover:bg-slate-700' : 'hover:bg-slate-100'
-            )}
+            className="w-8 h-8 flex items-center justify-center border border-line bg-paper-card hover:border-ink transition-colors lg:hidden shrink-0"
           >
-            <ArrowRight className="w-5 h-5 rotate-180" />
+            <ArrowRight className="w-4 h-4 rotate-180" />
           </button>
 
           {/* URL Info */}
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1">
-              <h2 className="font-semibold truncate">{entry.originalUrl}</h2>
+            <div className="flex items-center gap-2 mb-1 max-w-[40vw] min-w-0">
+              <h2
+                className="font-mono text-sm font-bold truncate text-ink min-w-0"
+                title={entry.originalUrl}
+              >
+                {entry.originalUrl}
+              </h2>
               <a
                 href={entry.originalUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-blue-500 hover:text-blue-600 shrink-0"
+                className="text-accent hover:text-accent-hover shrink-0"
+                title={t('openUrl') || 'Open URL'}
               >
-                <ExternalLink className="w-4 h-4" />
+                <ExternalLink className="w-3.5 h-3.5" />
               </a>
             </div>
             {entry.originalUrl !== entry.finalUrl && (
-              <div className="flex items-center gap-1 text-sm">
-                <ArrowRight className="w-3 h-3 text-slate-400" />
-                <span className={clsx('truncate', darkMode ? 'text-slate-400' : 'text-slate-500')}>
+              <div className="flex items-center gap-1.5 font-mono text-xs text-text-secondary mb-2 max-w-[40vw] min-w-0">
+                <ArrowRight className="w-3 h-3 text-accent shrink-0" />
+                <span className="truncate min-w-0" title={entry.finalUrl}>
                   {entry.finalUrl}
                 </span>
               </div>
             )}
-            <div className="flex items-center gap-3 mt-2 text-xs">
-              <span
-                className={clsx(
-                  'px-2 py-0.5 rounded-full',
-                  darkMode ? 'bg-slate-700' : 'bg-slate-200'
-                )}
-              >
+            <div className="flex items-center gap-2.5 font-mono text-[10px] flex-wrap">
+              <span className="h-6 flex items-center px-2 border border-line bg-paper text-ink font-bold uppercase tracking-wider">
                 {entry.redirectCount}{' '}
                 {entry.redirectCount !== 1
-                  ? chrome.i18n.getMessage('redirectsPlural')
-                  : chrome.i18n.getMessage('redirectSingle')}
+                  ? t('redirectsPlural')
+                  : t('redirectSingle')}
               </span>
-              <span className={darkMode ? 'text-slate-500' : 'text-slate-400'}>
+              <span className="text-muted">
                 {format(entry.timestamp, "MMM d, yyyy 'at' h:mm a")}
               </span>
               {entry.totalTime > 0 && (
-                <span
-                  className={clsx(
-                    'flex items-center gap-1',
-                    darkMode ? 'text-slate-500' : 'text-slate-400'
-                  )}
-                >
+                <span className="flex items-center gap-1 font-bold text-accent">
                   <Zap className="w-3 h-3" />
-                  {formatDuration(entry.totalTime)} {chrome.i18n.getMessage('totalLabel')}
+                  {formatDuration(entry.totalTime)} {t('totalLabel').toUpperCase()}
                 </span>
               )}
             </div>
           </div>
 
-          {/* Actions */}
-          <div className="flex items-center gap-1 shrink-0">
+          {/* Actions Bar */}
+          <div className="flex items-center gap-1.5 shrink-0 flex-wrap justify-end">
             <button
               onClick={onToggleFavorite}
               className={clsx(
-                'flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium border transition-colors',
+                'h-8 flex items-center gap-1.5 px-3 border font-mono text-[10px] font-bold uppercase tracking-[0.12em] transition-colors',
                 entry.isFavorite
-                  ? 'bg-amber-50 border-amber-200 text-amber-600 dark:bg-amber-950/30 dark:border-amber-800 dark:text-amber-300'
-                  : darkMode
-                    ? 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-slate-100'
-                    : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-800'
+                  ? 'bg-warn-bg border-warn-border text-warn'
+                  : 'bg-paper-card border-line text-text-secondary hover:border-ink hover:text-ink'
               )}
             >
               {entry.isFavorite ? (
-                <Star className="w-3.5 h-3.5 fill-current text-amber-500" />
+                <Star className="w-3.5 h-3.5 fill-current text-warn" />
               ) : (
                 <StarOff className="w-3.5 h-3.5" />
               )}
               <span>
                 {entry.isFavorite
-                  ? chrome.i18n.getMessage('favoritedLabel')
-                  : chrome.i18n.getMessage('favoriteLabel')}
+                  ? t('favoritedLabel')
+                  : t('favoriteLabel')}
               </span>
             </button>
+
             {/* Copy Text */}
             <button
               onClick={handleCopyText}
               className={clsx(
-                'flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium border transition-colors',
+                'h-8 flex items-center gap-1.5 px-3 border font-mono text-[10px] font-bold uppercase tracking-[0.12em] transition-colors',
                 copiedText
-                  ? 'bg-green-50 border-green-200 text-green-700 dark:bg-green-900/30 dark:border-green-800 dark:text-green-300'
-                  : darkMode
-                    ? 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-slate-100'
-                    : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-800'
+                  ? 'bg-ok-bg border-ok-border text-ok'
+                  : 'bg-paper-card border-line text-text-secondary hover:border-ink hover:text-ink'
               )}
             >
-              {copiedText ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-              <span>{copiedText ? chrome.i18n.getMessage('copied') : chrome.i18n.getMessage('textFormat')}</span>
+              {copiedText ? <Check className="w-3.5 h-3.5 text-ok" /> : <Copy className="w-3.5 h-3.5" />}
+              <span>
+                {copiedText
+                  ? t('copied')
+                  : t('textFormat')}
+              </span>
             </button>
 
             {/* Copy CSV */}
             <button
               onClick={handleCopyCsv}
               className={clsx(
-                'flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium border transition-colors',
+                'h-8 flex items-center gap-1.5 px-3 border font-mono text-[10px] font-bold uppercase tracking-[0.12em] transition-colors',
                 copiedCsv
-                  ? 'bg-green-50 border-green-200 text-green-700 dark:bg-green-900/30 dark:border-green-800 dark:text-green-300'
-                  : darkMode
-                    ? 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-slate-100'
-                    : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-800'
+                  ? 'bg-ok-bg border-ok-border text-ok'
+                  : 'bg-paper-card border-line text-text-secondary hover:border-ink hover:text-ink'
               )}
             >
-              {copiedCsv ? <Check className="w-3.5 h-3.5" /> : <FileSpreadsheet className="w-3.5 h-3.5" />}
-              <span>{copiedCsv ? chrome.i18n.getMessage('copied') : chrome.i18n.getMessage('csvFormat')}</span>
+              {copiedCsv ? <Check className="w-3.5 h-3.5 text-ok" /> : <FileSpreadsheet className="w-3.5 h-3.5" />}
+              <span>
+                {copiedCsv ? t('copied') : t('csvFormat')}
+              </span>
             </button>
 
             {/* Export PDF */}
             <button
               onClick={onExportPDF}
-              className={clsx(
-                'flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium border transition-colors',
-                darkMode
-                  ? 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-slate-100'
-                  : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-800'
-              )}
+              className="h-8 flex items-center gap-1.5 px-3 border border-line bg-paper-card text-text-secondary hover:border-ink hover:text-ink font-mono text-[10px] font-bold uppercase tracking-[0.12em] transition-colors"
             >
-              <Download className="w-3.5 h-3.5" />
-              <span>{chrome.i18n.getMessage('pdfFormat')}</span>
+              <Download className="w-3.5 h-3.5 text-accent" />
+              <span>{t('pdfFormat')}</span>
             </button>
 
             {/* Export Image */}
             <button
               onClick={onExportImage}
-              className={clsx(
-                'flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium border transition-colors',
-                darkMode
-                  ? 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-slate-100'
-                  : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-800'
-              )}
+              className="h-8 flex items-center gap-1.5 px-3 border border-line bg-paper-card text-text-secondary hover:border-ink hover:text-ink font-mono text-[10px] font-bold uppercase tracking-[0.12em] transition-colors"
             >
-              <FileImage className="w-3.5 h-3.5" />
-              <span>{chrome.i18n.getMessage('imageFormat')}</span>
+              <FileImage className="w-3.5 h-3.5 text-accent" />
+              <span>{t('imageFormat')}</span>
             </button>
-
-            <div className={clsx('w-px h-5 mx-1', darkMode ? 'bg-slate-700' : 'bg-slate-200')} />
 
             <button
               onClick={onDelete}
-              className="p-2 rounded-lg text-red-400 hover:text-red-500 transition-colors"
-              title={chrome.i18n.getMessage('deleteEntry')}
+              className="w-8 h-8 flex items-center justify-center border border-err-border text-err hover:bg-err-bg transition-colors shrink-0"
+              title={t('deleteEntry')}
             >
-              <Trash2 className="w-5 h-5" />
+              <Trash2 className="w-3.5 h-3.5" />
             </button>
           </div>
         </div>
@@ -1056,25 +1023,21 @@ function DetailPanel({
       {/* Panel Content - Scrollable */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {/* Redirect Chain Section */}
-        <section
-          className={clsx(
-            'rounded-xl p-4 border',
-            darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'
-          )}
-        >
-          <h3 className="font-medium mb-3 flex items-center gap-2">
-            <ArrowRight className="w-4 h-4" />
-            {chrome.i18n.getMessage('redirectChain')} ({entry.path.length}{' '}
-            {chrome.i18n.getMessage('stepsLabel')})
-          </h3>
+        <section className="border border-line bg-paper-card p-4">
+          <div className="flex items-center justify-between mb-3 pb-2 border-b border-line">
+            <h3 className="font-mono text-[10px] font-bold uppercase tracking-[0.16em] flex items-center gap-2 text-ink">
+              <ArrowRight className="w-3.5 h-3.5 text-accent" />
+              {t('redirectChain')} // {entry.path.length}{' '}
+              {t('stepsLabel')}
+            </h3>
+            <span className="font-mono text-[9px] uppercase tracking-wider text-muted">
+              SESSION // {entry.id.substring(0, 8)}
+            </span>
+          </div>
+
           <div className="relative">
             {entry.path.length > 1 && (
-              <div
-                className={clsx(
-                  'absolute left-7 top-6 bottom-6 w-0.5 z-0',
-                  darkMode ? 'bg-slate-700' : 'bg-slate-200'
-                )}
-              />
+              <div className="absolute left-1/2 -translate-x-1/2 top-6 bottom-6 w-px z-0 bg-line" />
             )}
             <div className="flex flex-col gap-2 relative z-10">
               {entry.path.map((item, idx) => {
@@ -1083,18 +1046,13 @@ function DetailPanel({
                 return (
                   <Fragment key={item.id}>
                     {idx > 0 && delayMs != null && (
-                      <div className="flex pl-16 py-1 relative z-20">
+                      <div className="flex justify-center py-0.5 relative z-20">
                         <span
-                          className={clsx(
-                            'text-[10px] px-2 py-0.5 rounded-full flex items-center gap-1 border',
-                            darkMode
-                              ? 'bg-slate-800 text-slate-400 border-slate-700'
-                              : 'bg-white text-slate-500 border-slate-200'
-                          )}
-                          title={`Time passed between previous request finishing and this request starting`}
+                          className="font-mono text-[8.5px] font-bold uppercase tracking-[0.14em] px-2 py-0.5 border border-line bg-paper-subtle text-stone flex items-center gap-1"
+                          title={t('gapDurationDesc')}
                         >
-                          <Clock className="w-3 h-3" />
-                          {formatDuration(delayMs)} gap
+                          <Clock className="w-2.5 h-2.5 text-stone" />+{formatDuration(delayMs)}{' '}
+                          {t('gapLabel')}
                         </span>
                       </div>
                     )}
@@ -1114,14 +1072,9 @@ function DetailPanel({
         </section>
 
         {/* Timestamp Footer */}
-        <div
-          className={clsx(
-            'text-xs text-center py-2',
-            darkMode ? 'text-slate-500' : 'text-slate-400'
-          )}
-        >
-          {chrome.i18n.getMessage('capturedLabel')}:{' '}
-          {format(entry.timestamp, "MMMM d, yyyy 'at' h:mm:ss a")} • ID: {entry.id.substring(0, 8)}
+        <div className="font-mono text-[9.5px] uppercase tracking-[0.14em] text-center py-2 text-muted">
+          {t('capturedLabel')}:{' '}
+          {format(entry.timestamp, "MMMM d, yyyy 'at' h:mm:ss a")} // ID: {entry.id.substring(0, 8)}
         </div>
       </div>
     </div>

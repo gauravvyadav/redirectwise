@@ -1,11 +1,8 @@
 // Storage utilities for persistent history
 
 import { v4 as uuidv4 } from 'uuid';
-import {
-  HistoryEntry,
-  RedirectItem,
-  calculateTotalDuration,
-} from '../types/redirect';
+import type { HistoryEntry, RedirectItem } from '../types/redirect';
+import { calculateTotalDuration } from '../types/redirect';
 
 const HISTORY_STORAGE_KEY = 'redirectwise_history';
 const SETTINGS_STORAGE_KEY = 'redirectwise_settings';
@@ -15,19 +12,27 @@ export interface Settings {
   darkMode: boolean;
   autoSaveHistory: boolean;
   maxHistoryEntries: number;
+  language: string;
 }
 
 const defaultSettings: Settings = {
   darkMode: false,
   autoSaveHistory: true,
   maxHistoryEntries: MAX_HISTORY_ENTRIES,
+  language: 'system',
 };
 
 // Get all history entries
 export async function getHistory(): Promise<HistoryEntry[]> {
   try {
     const result = await chrome.storage.local.get(HISTORY_STORAGE_KEY);
-    return result[HISTORY_STORAGE_KEY] || [];
+    const rawHistory: HistoryEntry[] = result[HISTORY_STORAGE_KEY] || [];
+    // Filter out internal and non-trackable URLs (e.g. legacy chrome://new-tab-page entries)
+    return rawHistory.filter(
+      entry =>
+        entry.originalUrl &&
+        (entry.originalUrl.startsWith('http://') || entry.originalUrl.startsWith('https://'))
+    );
   } catch (error) {
     console.error('[RedirectWise] Error getting history:', error);
     return [];
@@ -38,10 +43,13 @@ export async function getHistory(): Promise<HistoryEntry[]> {
 export async function saveHistoryEntry(path: RedirectItem[]): Promise<HistoryEntry | null> {
   if (!path || path.length === 0) return null;
 
+  const originalUrl = path[0]?.url || '';
+  if (!originalUrl.startsWith('http://') && !originalUrl.startsWith('https://')) {
+    return null;
+  }
+
   try {
     const history = await getHistory();
-
-    const originalUrl = path[0]?.url || '';
     const finalUrl = path[path.length - 1]?.url || originalUrl;
 
     // Calculate total time
@@ -51,15 +59,20 @@ export async function saveHistoryEntry(path: RedirectItem[]): Promise<HistoryEnt
       p => p.type === 'server_redirect' || p.type === 'client_redirect'
     ).length;
 
-    // Try to merge with an existing recent entry if it is a subpath of this path
+    // Merge when the existing entry is a prefix of this path (ids are random
+    // per capture, so compare url + status instead).
     let merged = false;
     const scanLimit = Math.min(history.length, 5);
     for (let i = 0; i < scanLimit; i++) {
       const recentEntry = history[i];
+      if (!recentEntry) continue;
       if (
         recentEntry.path.length < path.length &&
         Math.abs(Date.now() - recentEntry.timestamp) < 5 * 60 * 1000 &&
-        recentEntry.path.every((item, idx) => item.id === path[idx]?.id)
+        recentEntry.path.every(
+          (item, idx) =>
+            item.url === path[idx]?.url && item.status_code === path[idx]?.status_code
+        )
       ) {
         // Update the existing entry in place
         recentEntry.path = path;
@@ -79,21 +92,24 @@ export async function saveHistoryEntry(path: RedirectItem[]): Promise<HistoryEnt
       }
     }
 
-    const entry: HistoryEntry = merged ? history[0] : {
-      id: uuidv4(),
-      originalUrl,
-      finalUrl,
-      path,
-      timestamp: Date.now(),
-      totalTime,
-      redirectCount,
-      isFavorite: false,
-    };
-
-    if (!merged) {
+    let entry: HistoryEntry | undefined;
+    if (merged) {
+      entry = history[0];
+    } else {
+      entry = {
+        id: uuidv4(),
+        originalUrl,
+        finalUrl,
+        path,
+        timestamp: Date.now(),
+        totalTime,
+        redirectCount,
+        isFavorite: false,
+      };
       // Add to beginning of array
       history.unshift(entry);
     }
+    if (!entry) return null;
 
     // Limit history size
     const trimmedHistory = history.slice(0, MAX_HISTORY_ENTRIES);
@@ -133,7 +149,9 @@ export async function updateHistoryEntry(
 
     if (index === -1) return false;
 
-    history[index] = { ...history[index], ...updates };
+    const current = history[index];
+    if (!current) return false;
+    history[index] = { ...current, ...updates };
     await chrome.storage.local.set({ [HISTORY_STORAGE_KEY]: history });
 
     console.log('[RedirectWise] Updated history entry:', id);

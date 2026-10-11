@@ -272,5 +272,65 @@
   },
   "clearLabel": {
     "message": "クリア"
+  },
+  "newTabFrom": {
+    "message": "新しいタブ元 -"
+  },
+  "openedFromTitle": {
+    "message": "新しいタブで開かれました:"
+  },
+  "copyLabel": {
+    "message": "コピー"
+  },
+  "copyHeadersTitle": {
+    "message": "すべてのヘッダーをクリップボードにコピー"
+  },
+  "stepSingle": {
+    "message": "ステップ"
+  },
+  "timeLabel": {
+    "message": "時間"
+  },
+  "gapLabel": {
+    "message": "間隔"
+  },
+  "gapDurationDesc": {
+    "message": "リクエスト間の経過時間"
+  },
+  "targetLabel": {
+    "message": "ターゲット"
+  },
+  "standbyLabel": {
+    "message": "待機中"
+  },
+  "inspectingRedirects": {
+    "message": "リダイレクトを検査中..."
+  },
+  "navigationError": {
+    "message": "ナビゲーションエラー"
+  },
+  "newTabAdNotice": {
+    "message": "新しいタブの広告リダイレクト（Google/Meta）にはサイドパネルを使用"
+  },
+  "openSidepanel": {
+    "message": "サイドパネルを開く"
+  },
+  "openLabel": {
+    "message": "開く"
+  },
+  "languageSettings": {
+    "message": "言語設定"
+  },
+  "languageLabel": {
+    "message": "言語"
+  },
+  "languageDesc": {
+    "message": "表示言語を選択してください"
+  },
+  "systemDefault": {
+    "message": "システム既定（自動）"
+  },
+  "configurationPreferences": {
+    "message": "設定 // 環境設定"
   }
 }

@@ -1,12 +1,8 @@
-import clsx from 'clsx';
 import { Clock } from 'lucide-react';
 import { Fragment, useState } from 'react';
-import {
-  RedirectItem,
-  calculateGapDuration,
-  calculateTotalDuration,
-  formatDuration,
-} from '../types/redirect';
+import type { RedirectItem } from '../types/redirect';
+import { calculateGapDuration, calculateTotalDuration, formatDuration } from '../types/redirect';
+import { t } from '../utils/i18n';
 import RedirectItemCard from './RedirectItemCard';
 
 interface RedirectPathProps {
@@ -21,34 +17,25 @@ export default function RedirectPath({ items, darkMode = false }: RedirectPathPr
     setExpandedId(expandedId === id ? null : id);
   };
 
-  // Calculate total time
   const totalTime = calculateTotalDuration(items);
 
   return (
     <div className="space-y-2">
-      <div className="flex items-center justify-between mb-3">
-        <span
-          className={`text-xs font-medium uppercase tracking-wide ${
-            darkMode ? 'text-slate-400' : 'text-slate-500'
-          }`}
-        >
-          Redirect Path ({items.length} {items.length === 1 ? 'step' : 'steps'})
+      <div className="flex items-center justify-between pb-1">
+        <span className="font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-muted">
+          {t('redirectChain')} // {items.length} {items.length === 1 ? t('stepSingle') : t('stepsLabel')}
         </span>
         {totalTime > 0 && (
-          <span className={`text-xs ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>
-            Total Request Time: {formatDuration(totalTime)}
+          <span className="h-6 inline-flex items-center font-mono text-[10px] font-bold tracking-[0.12em] text-ink px-2 border border-line bg-paper-card">
+            {t('timeLabel')}: {formatDuration(totalTime)}
           </span>
         )}
       </div>
 
       <div className="relative">
-        {/* Vertical line connecting items */}
+        {/* Hairline 1px connecting rule */}
         {items.length > 1 && (
-          <div
-            className={`absolute left-[27px] top-6 bottom-6 w-0.5 z-0 ${
-              darkMode ? 'bg-slate-700' : 'bg-slate-200'
-            }`}
-          />
+          <div className="absolute left-1/2 -translate-x-1/2 top-6 bottom-6 w-px z-0 bg-line" />
         )}
 
         <div className="flex flex-col gap-2 relative z-10">
@@ -58,18 +45,12 @@ export default function RedirectPath({ items, darkMode = false }: RedirectPathPr
             return (
               <Fragment key={item.id}>
                 {index > 0 && delayMs != null && (
-                  <div className="flex pl-16 py-1 relative z-20">
+                  <div className="flex justify-center py-0.5 relative z-20">
                     <span
-                      className={clsx(
-                        'text-[10px] px-2 py-0.5 rounded-full flex items-center gap-1 border',
-                        darkMode
-                          ? 'bg-slate-800 text-slate-400 border-slate-700'
-                          : 'bg-white text-slate-500 border-slate-200'
-                      )}
-                      title={`Time passed between previous request finishing and this request starting`}
+                      className="h-6 inline-flex items-center font-mono text-[10px] font-bold uppercase tracking-[0.14em] px-2 border border-line bg-paper-subtle text-stone gap-1.5"
+                      title={t('gapDurationDesc')}
                     >
-                      <Clock className="w-3 h-3" />
-                      {formatDuration(delayMs)} gap
+                      <Clock className="w-3 h-3 text-stone" />+{formatDuration(delayMs)} {t('gapLabel')}
                     </span>
                   </div>
                 )}

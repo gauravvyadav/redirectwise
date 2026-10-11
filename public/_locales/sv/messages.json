@@ -273,5 +273,65 @@
   },
   "clearLabel": {
     "message": "Rensa"
+  },
+  "newTabFrom": {
+    "message": "Ny flik från -"
+  },
+  "openedFromTitle": {
+    "message": "Öppnad i en ny flik från"
+  },
+  "copyLabel": {
+    "message": "Kopiera"
+  },
+  "copyHeadersTitle": {
+    "message": "Kopiera alla rubriker till urklipp"
+  },
+  "stepSingle": {
+    "message": "steg"
+  },
+  "timeLabel": {
+    "message": "Tid"
+  },
+  "gapLabel": {
+    "message": "MELLANRUM"
+  },
+  "gapDurationDesc": {
+    "message": "Tid mellan förfrågningar"
+  },
+  "targetLabel": {
+    "message": "Mål"
+  },
+  "standbyLabel": {
+    "message": "Vänteläge"
+  },
+  "inspectingRedirects": {
+    "message": "Inspekterar omdirigeringar..."
+  },
+  "navigationError": {
+    "message": "Navigeringsfel"
+  },
+  "newTabAdNotice": {
+    "message": "För annonsomdirigeringar i ny flik (Google/Meta), använd sidopanelen"
+  },
+  "openSidepanel": {
+    "message": "Öppna sidopanel"
+  },
+  "openLabel": {
+    "message": "Öppna"
+  },
+  "languageSettings": {
+    "message": "Språkinställningar"
+  },
+  "languageLabel": {
+    "message": "Språk"
+  },
+  "languageDesc": {
+    "message": "Välj önskat visningsspråk"
+  },
+  "systemDefault": {
+    "message": "Systemstandard (Automatiskt)"
+  },
+  "configurationPreferences": {
+    "message": "Konfiguration // Inställningar"
   }
 }

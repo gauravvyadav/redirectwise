@@ -272,5 +272,65 @@
   },
   "clearLabel": {
     "message": "지우기"
+  },
+  "newTabFrom": {
+    "message": "새 탭 출처 -"
+  },
+  "openedFromTitle": {
+    "message": "새 탭에서 열림:"
+  },
+  "copyLabel": {
+    "message": "복사"
+  },
+  "copyHeadersTitle": {
+    "message": "모든 헤더 클립보드에 복사"
+  },
+  "stepSingle": {
+    "message": "단계"
+  },
+  "timeLabel": {
+    "message": "시간"
+  },
+  "gapLabel": {
+    "message": "간격"
+  },
+  "gapDurationDesc": {
+    "message": "요청 간 경과 시간"
+  },
+  "targetLabel": {
+    "message": "대상"
+  },
+  "standbyLabel": {
+    "message": "대기 중"
+  },
+  "inspectingRedirects": {
+    "message": "리디렉션 검사 중..."
+  },
+  "navigationError": {
+    "message": "탐색 오류"
+  },
+  "newTabAdNotice": {
+    "message": "새 탭 광고 리디렉션(Google/Meta)은 사이드패널을 이용하세요"
+  },
+  "openSidepanel": {
+    "message": "사이드패널 열기"
+  },
+  "openLabel": {
+    "message": "열기"
+  },
+  "languageSettings": {
+    "message": "언어 설정"
+  },
+  "languageLabel": {
+    "message": "언어"
+  },
+  "languageDesc": {
+    "message": "선호하는 표시 언어를 선택하세요"
+  },
+  "systemDefault": {
+    "message": "시스템 기본값 (자동)"
+  },
+  "configurationPreferences": {
+    "message": "구성 // 환경설정"
   }
 }

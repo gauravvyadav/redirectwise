@@ -273,5 +273,65 @@
   },
   "clearLabel": {
     "message": "Xóa"
+  },
+  "newTabFrom": {
+    "message": "Tab mới từ -"
+  },
+  "openedFromTitle": {
+    "message": "Được mở trong tab mới từ"
+  },
+  "copyLabel": {
+    "message": "Sao chép"
+  },
+  "copyHeadersTitle": {
+    "message": "Sao chép tất cả tiêu đề vào khay nhớ tạm"
+  },
+  "stepSingle": {
+    "message": "bước"
+  },
+  "timeLabel": {
+    "message": "Thời gian"
+  },
+  "gapLabel": {
+    "message": "KHOẢNG CÁCH"
+  },
+  "gapDurationDesc": {
+    "message": "Thời gian trôi qua giữa các yêu cầu"
+  },
+  "targetLabel": {
+    "message": "Mục tiêu"
+  },
+  "standbyLabel": {
+    "message": "Chờ"
+  },
+  "inspectingRedirects": {
+    "message": "Đang kiểm tra chuyển hướng..."
+  },
+  "navigationError": {
+    "message": "Lỗi điều hướng"
+  },
+  "newTabAdNotice": {
+    "message": "Đối với chuyển hướng quảng cáo tab mới (Google/Meta), hãy dùng bảng điều khiển bên"
+  },
+  "openSidepanel": {
+    "message": "Mở bảng điều khiển bên"
+  },
+  "openLabel": {
+    "message": "Mở"
+  },
+  "languageSettings": {
+    "message": "Cài đặt ngôn ngữ"
+  },
+  "languageLabel": {
+    "message": "Ngôn ngữ"
+  },
+  "languageDesc": {
+    "message": "Chọn ngôn ngữ hiển thị ưa thích của bạn"
+  },
+  "systemDefault": {
+    "message": "Mặc định hệ thống (Tự động)"
+  },
+  "configurationPreferences": {
+    "message": "Cấu hình // Tùy chọn"
   }
 }

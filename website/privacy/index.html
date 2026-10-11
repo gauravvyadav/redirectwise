@@ -3,182 +3,252 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Privacy Policy - RedirectWise</title>
-    <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32x32.png" />
+    <title>Privacy Policy — RedirectWise</title>
+    <meta
+      name="description"
+      content="Privacy Policy for RedirectWise. 100% on-device operation, zero telemetry, and zero remote data storage."
+    />
     <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="../assets/favicon-16x16.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="../assets/apple-touch-icon.png" />
     <link rel="manifest" href="../site.webmanifest" />
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 
+    <!-- Early theme initialization -->
+    <script>
+      (function () {
+        try {
+          const stored = localStorage.getItem('theme');
+          if (
+            stored === 'dark' ||
+            (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches)
+          ) {
+            document.documentElement.classList.add('dark');
+          } else {
+            document.documentElement.classList.remove('dark');
+          }
+        } catch (_) {}
+      })();
+    </script>
+
     <style>
-      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-      body {
-        font-family: 'Inter', sans-serif;
+      @import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600;700;800&family=Geist:wght@300;400;500;600;700;800;900&display=swap');
+
+      /* ==========================================================================
+         SWISS MODERNIST COLOR SYSTEM (Single source of truth)
+         ========================================================================== */
+      :root {
+        --paper: #fafafa;
+        --paper-card: #ffffff;
+        --paper-subtle: #f4f4f5;
+        --ink: #09090b;
+        --stone: #52525b;
+        --muted: #71717a;
+        --line: #e4e4e7;
+        --line-subtle: rgba(9, 9, 11, 0.05);
+
+        --brand: #2563eb;
+        --brand-hover: #1d4ed8;
+
+        /* Glass Header (20% transparency / 80% opacity) */
+        --header-bg: rgba(255, 255, 255, 0.85);
       }
+
+      .dark {
+        --paper: #09090b;
+        --paper-card: #18181b;
+        --paper-subtle: #27272a;
+        --ink: #fafafa;
+        --stone: #a1a1aa;
+        --muted: #71717a;
+        --line: #27272a;
+        --line-subtle: rgba(250, 250, 250, 0.06);
+
+        --brand: #3b82f6;
+        --brand-hover: #2563eb;
+
+        /* Glass Header in Dark Mode (20% transparency / 80% opacity) */
+        --header-bg: rgba(24, 24, 27, 0.85);
+      }
+
+      body {
+        font-family: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background-color: var(--paper);
+        color: var(--ink);
+        -webkit-font-smoothing: antialiased;
+        transition: background-color 0.2s ease, color 0.2s ease;
+      }
+      .font-mono {
+        font-family: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      }
+
+      .bg-ink { background-color: var(--ink); }
+      .bg-paper { background-color: var(--paper); }
+      .bg-paper-card { background-color: var(--paper-card); }
+      .header-glass {
+        background-color: var(--header-bg);
+        background-color: color-mix(in srgb, var(--paper-card) 80%, transparent);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+      }
+      .dark .header-glass {
+        background-color: var(--header-bg);
+        background-color: color-mix(in srgb, var(--paper-card) 80%, transparent);
+      }
+      /* Theme-aware brand lockup (light/dark SVG swap follows .dark toggle) */
+      .logo-dark { display: none; }
+      .dark .logo-light { display: none; }
+      .dark .logo-dark { display: block; }
+      .bg-paper-subtle { background-color: var(--paper-subtle); }
+      .bg-line { background-color: var(--line); }
+      .text-ink { color: var(--ink); }
+      .text-paper { color: var(--paper); }
+      .text-stone { color: var(--stone); }
+      .text-muted { color: var(--muted); }
+      .text-brand { color: var(--brand); }
+      .border-line { border-color: var(--line); }
+      .border-ink { border-color: var(--ink); }
     </style>
   </head>
-  <body class="bg-slate-50 text-slate-800">
+  <body class="bg-paper text-ink min-h-screen flex flex-col">
     <!-- Header -->
-    <header class="bg-white border-b border-slate-200">
+    <header class="header-glass border-b border-line sticky top-0 z-50">
       <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16">
-          <a href="/" class="flex items-center gap-3">
-            <div class="flex items-center justify-center">
-              <img
-                src="../assets/logo.svg"
-                alt="RedirectWise Logo"
-                class="w-10 h-10 shadow-lg shadow-blue-500/25 rounded-xl"
-              />
-            </div>
-            <span class="text-xl font-bold text-slate-900"
-              >Redirect<span class="text-blue-500">Wise</span></span
-            >
+          <a href="/" class="flex items-center group" aria-label="RedirectWise Home">
+            <img
+              src="../assets/logo-lockup.svg"
+              alt="RedirectWise Logo"
+              class="h-7 w-auto shrink-0 logo-light"
+            />
+            <img
+              src="../assets/logo-lockup-dark.svg"
+              alt=""
+              aria-hidden="true"
+              class="h-7 w-auto shrink-0 logo-dark"
+            />
           </a>
-          <a href="/" class="text-slate-600 hover:text-blue-500 transition-colors">
-            ← Back to Home
+          <a
+            href="/"
+            class="font-mono text-[10.5px] font-bold uppercase tracking-[0.16em] text-stone hover:text-ink transition-colors flex items-center gap-1.5"
+          >
+            ← BACK TO HOME
           </a>
         </div>
       </div>
     </header>
 
     <!-- Content -->
-    <main class="py-12 lg:py-20">
+    <main class="grow py-12 lg:py-20">
       <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 lg:p-12">
-          <h1 class="text-3xl sm:text-4xl font-bold text-slate-900 mb-2">Privacy Policy</h1>
-          <p class="text-slate-500 mb-8">Last updated: December 5, 2025</p>
+        <div class="bg-paper-card border border-line p-8 lg:p-12">
+          <span class="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-brand block mb-2">
+            [ LEGAL COMPLIANCE & PRIVACY DISCLOSURE ]
+          </span>
+          <h1 class="text-3xl sm:text-4xl font-black uppercase tracking-tight text-ink mb-2">
+            Privacy Policy.
+          </h1>
+          <p class="font-mono text-xs text-muted mb-10 pb-4 border-b border-line">
+            LAST UPDATED // DECEMBER 5, 2025
+          </p>
 
-          <div class="prose prose-slate max-w-none space-y-8">
+          <div class="space-y-10 text-sm leading-relaxed text-stone">
             <section>
-              <h2 class="text-xl font-bold text-slate-900 mb-4">Introduction</h2>
-              <p class="text-slate-600 leading-relaxed">
-                RedirectWise ("we", "our", or "us") is committed to protecting your privacy. This
-                Privacy Policy explains how our browser extension handles information when you use
-                RedirectWise.
+              <h2 class="text-base font-bold uppercase tracking-tight text-ink mb-3">
+                1. Core Privacy Architecture
+              </h2>
+              <p>
+                RedirectWise ("we", "our", or "us") is architected around strict client-side isolation. Our browser extension executes 100% on your device with zero remote server communications, zero telemetry, and zero analytics trackers.
               </p>
             </section>
 
             <section>
-              <h2 class="text-xl font-bold text-slate-900 mb-4">Information We Collect</h2>
-              <p class="text-slate-600 leading-relaxed mb-4">
-                RedirectWise is designed with privacy in mind. We collect and process the following
-                information <strong>locally on your device only</strong>:
+              <h2 class="text-base font-bold uppercase tracking-tight text-ink mb-3">
+                2. Information Processed Locally
+              </h2>
+              <p class="mb-3">
+                The extension audits and stores the following technical metadata <strong>locally on your device only</strong>:
               </p>
-              <ul class="list-disc list-inside text-slate-600 space-y-2 ml-4">
-                <li>URLs that you visit and their redirect chains</li>
-                <li>HTTP response headers and status codes</li>
-                <li>Timing information for redirects</li>
-                <li>Your extension preferences and settings</li>
+              <ul class="list-disc list-inside space-y-1.5 pl-2 font-mono text-xs text-ink">
+                <li>Visited URLs and their immediate HTTP redirect hops</li>
+                <li>HTTP response status codes (301, 302, 307, 308, etc.)</li>
+                <li>HTTP response headers (Server, Cache-Control, HSTS, CSP)</li>
+                <li>Hop latency and millisecond request timing</li>
+                <li>User preferences (such as dark mode toggle)</li>
               </ul>
-              <p class="text-slate-600 leading-relaxed mt-4">
-                <strong>Important:</strong> All data is stored locally in your browser using browser
-                storage APIs. We do not transmit, collect, or store any of your browsing data on
-                external servers.
-              </p>
+              <div class="mt-4 p-3 border border-line bg-paper font-mono text-xs">
+                <strong>NOTE:</strong> No data is ever transmitted, synchronized, or stored on external cloud infrastructure.
+              </div>
             </section>
 
             <section>
-              <h2 class="text-xl font-bold text-slate-900 mb-4">How We Use Information</h2>
-              <p class="text-slate-600 leading-relaxed mb-4">
-                The locally stored information is used exclusively to:
+              <h2 class="text-base font-bold uppercase tracking-tight text-ink mb-3">
+                3. Purpose of Local Data Processing
+              </h2>
+              <p class="mb-3">
+                All collected data remains strictly within your browser's private local sandbox for:
               </p>
-              <ul class="list-disc list-inside text-slate-600 space-y-2 ml-4">
-                <li>Display redirect chains and HTTP information in the extension popup</li>
-                <li>Maintain a history of analyzed URLs for your reference</li>
-                <li>Generate PDF reports when you request them</li>
-                <li>Remember your preferences (like dark mode settings)</li>
-              </ul>
-            </section>
-
-            <section>
-              <h2 class="text-xl font-bold text-slate-900 mb-4">Data Storage</h2>
-              <p class="text-slate-600 leading-relaxed">
-                All data is stored locally on your device using browser storage APIs. You can clear
-                this data at any time by:
-              </p>
-              <ul class="list-disc list-inside text-slate-600 space-y-2 ml-4 mt-4">
-                <li>Using the clear history feature within the extension</li>
-                <li>Removing the extension from your browser</li>
-                <li>Clearing your browser's extension data</li>
+              <ul class="list-disc list-inside space-y-1 pl-2 text-xs">
+                <li>Displaying real-time redirect hop chains in the extension popup and side panel</li>
+                <li>Maintaining your persistent redirect history log (up to 2,000 entries)</li>
+                <li>Generating client-side PDF and PNG export files upon your explicit user action</li>
+                <li>Persisting dark appearance settings</li>
               </ul>
             </section>
 
             <section>
-              <h2 class="text-xl font-bold text-slate-900 mb-4">Data Sharing</h2>
-              <p class="text-slate-600 leading-relaxed">
-                We do <strong>not</strong> share, sell, rent, or trade any of your information with
-                third parties. Since all data remains on your device, there is no data transmission
-                to external servers.
+              <h2 class="text-base font-bold uppercase tracking-tight text-ink mb-3">
+                4. Data Storage & User Deletion
+              </h2>
+              <p>
+                All records reside in your browser's <code class="font-mono text-xs bg-paper-subtle px-1 py-0.5 border border-line">chrome.storage.local</code> partition. You can permanently wipe all records at any moment by using the "Clear All History" button in the Dashboard, or by uninstalling the extension.
               </p>
             </section>
 
             <section>
-              <h2 class="text-xl font-bold text-slate-900 mb-4">Permissions</h2>
-              <p class="text-slate-600 leading-relaxed mb-4">
-                RedirectWise requires the following browser permissions to function:
-              </p>
-              <ul class="list-disc list-inside text-slate-600 space-y-2 ml-4">
-                <li>
-                  <strong>webRequest:</strong> To monitor HTTP requests and capture redirect
-                  information
-                </li>
-                <li>
-                  <strong>webNavigation:</strong> To track page navigation and detect redirects
-                </li>
-                <li>
-                  <strong>tabs:</strong> To associate redirect data with the correct browser tab
-                </li>
-                <li><strong>storage:</strong> To save your history and preferences locally</li>
-              </ul>
-            </section>
-
-            <section>
-              <h2 class="text-xl font-bold text-slate-900 mb-4">Third-Party Services</h2>
-              <p class="text-slate-600 leading-relaxed">
-                RedirectWise does not integrate with any third-party analytics, tracking, or
-                advertising services. The extension operates entirely offline and does not make any
-                external network requests.
+              <h2 class="text-base font-bold uppercase tracking-tight text-ink mb-3">
+                5. Third-Party Services & Zero Telemetry
+              </h2>
+              <p>
+                RedirectWise contains zero Google Analytics, zero telemetry SDKs, zero ads, and zero third-party trackers. No network requests are dispatched outside your active navigation context.
               </p>
             </section>
 
             <section>
-              <h2 class="text-xl font-bold text-slate-900 mb-4">Children's Privacy</h2>
-              <p class="text-slate-600 leading-relaxed">
-                RedirectWise is not directed at children under the age of 13. We do not knowingly
-                collect any personal information from children.
-              </p>
+              <h2 class="text-base font-bold uppercase tracking-tight text-ink mb-3">
+                6. Browser Permission Justifications
+              </h2>
+              <div class="border border-line bg-line gap-px grid sm:grid-cols-2 text-xs">
+                <div class="p-3 bg-paper-card">
+                  <div class="font-mono font-bold text-ink">webRequest</div>
+                  <div class="text-muted mt-0.5">Captures HTTP response headers and status codes.</div>
+                </div>
+                <div class="p-3 bg-paper-card">
+                  <div class="font-mono font-bold text-ink">webNavigation</div>
+                  <div class="text-muted mt-0.5">Detects client-side JS redirects and page transitions.</div>
+                </div>
+                <div class="p-3 bg-paper-card">
+                  <div class="font-mono font-bold text-ink">tabs</div>
+                  <div class="text-muted mt-0.5">Associates redirect chains with active browser tabs.</div>
+                </div>
+                <div class="p-3 bg-paper-card">
+                  <div class="font-mono font-bold text-ink">storage</div>
+                  <div class="text-muted mt-0.5">Persists history and preferences locally on-device.</div>
+                </div>
+              </div>
             </section>
 
             <section>
-              <h2 class="text-xl font-bold text-slate-900 mb-4">Changes to This Policy</h2>
-              <p class="text-slate-600 leading-relaxed">
-                We may update this Privacy Policy from time to time. We will notify you of any
-                changes by posting the new Privacy Policy on this page and updating the "Last
-                updated" date.
+              <h2 class="text-base font-bold uppercase tracking-tight text-ink mb-3">
+                7. Contact & Inquiries
+              </h2>
+              <p>
+                For questions regarding this privacy policy or open-source compliance:
               </p>
-            </section>
-
-            <section>
-              <h2 class="text-xl font-bold text-slate-900 mb-4">Contact Us</h2>
-              <p class="text-slate-600 leading-relaxed">
-                If you have any questions about this Privacy Policy, please contact us at:
-              </p>
-              <p class="text-slate-600 mt-4">
-                <strong>Email:</strong>
-                <a href="mailto:support@gauravlabs.com" class="text-blue-500 hover:underline"
-                  >support@gauravlabs.com</a
-                >
-              </p>
-              <p class="text-slate-600 mt-2">
-                <strong>Website:</strong>
-                <a
-                  href="https://gauravlabs.com"
-                  target="_blank"
-                  class="text-blue-500 hover:underline"
-                  >gauravlabs.com</a
-                >
-              </p>
+              <div class="mt-2 font-mono text-xs">
+                <div>EMAIL: <a href="mailto:support@gauravlabs.com" class="text-brand hover:underline">support@gauravlabs.com</a></div>
+                <div class="mt-1">LAB: <a href="https://gauravlabs.com" target="_blank" rel="noopener noreferrer" class="text-brand hover:underline">gauravlabs.com</a></div>
+              </div>
             </section>
           </div>
         </div>
@@ -186,23 +256,11 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-slate-50 text-slate-600 py-12 border-t border-slate-200">
-      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex flex-col md:flex-row items-center justify-between gap-4 text-sm">
-          <div>
-            &copy; 2025
-            <a href="https://gauravlabs.com" target="_blank" class="text-slate-500 hover:underline"
-              >Gaurav Labs</a
-            >. All rights reserved.
-          </div>
-          <div class="flex gap-6">
-            <a href="/" class="hover:text-blue-500 transition-colors">Home</a>
-            <a href="mailto:support@gauravlabs.com" class="hover:text-blue-500 transition-colors"
-              >Contact</a
-            >
-          </div>
-        </div>
-      </div>
+    <footer class="border-t border-line py-8 text-center font-mono text-[10px] text-muted">
+      &copy; <span id="year"></span> GAURAVLABS. ALL RIGHTS RESERVED.
     </footer>
+    <script>
+      document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
   </body>
 </html>

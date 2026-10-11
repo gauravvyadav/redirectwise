@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 224 40" fill="none">
+  <!-- RedirectWise horizontal lockup for dark surfaces -->
+  <!-- Mirrors website/assets/logo-lockup-dark.svg — keep the two in sync -->
+  <rect width="40" height="40" fill="#3B82F6"/>
+  <path
+    d="M12 28L28 12M28 12H18M28 12V22"
+    stroke="white"
+    stroke-width="3"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+  <text
+    x="48"
+    y="22"
+    font-family="Arial, Helvetica, sans-serif"
+    font-size="19"
+    font-weight="900"
+    letter-spacing="1"
+    textLength="170"
+    lengthAdjust="spacingAndGlyphs"
+  ><tspan fill="#FAFAFA">REDIRECT</tspan><tspan fill="#3B82F6">WISE</tspan></text>
+  <text
+    x="48"
+    y="35"
+    font-family="Arial, Helvetica, sans-serif"
+    font-size="8.5"
+    font-weight="700"
+    letter-spacing="2.6"
+    fill="#A1A1AA"
+  >BY GAURAVLABS</text>
+</svg>

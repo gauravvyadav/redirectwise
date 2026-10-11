@@ -273,5 +273,65 @@
   },
   "clearLabel": {
     "message": "Hapus"
+  },
+  "newTabFrom": {
+    "message": "Tab baru dari -"
+  },
+  "openedFromTitle": {
+    "message": "Dibuka di tab baru dari"
+  },
+  "copyLabel": {
+    "message": "Salin"
+  },
+  "copyHeadersTitle": {
+    "message": "Salin semua header ke papan klip"
+  },
+  "stepSingle": {
+    "message": "langkah"
+  },
+  "timeLabel": {
+    "message": "Waktu"
+  },
+  "gapLabel": {
+    "message": "JEDA"
+  },
+  "gapDurationDesc": {
+    "message": "Waktu yang berlalu antar permintaan"
+  },
+  "targetLabel": {
+    "message": "Target"
+  },
+  "standbyLabel": {
+    "message": "Siaga"
+  },
+  "inspectingRedirects": {
+    "message": "Memeriksa pengalihan..."
+  },
+  "navigationError": {
+    "message": "Kesalahan navigasi"
+  },
+  "newTabAdNotice": {
+    "message": "Untuk pengalihan iklan tab baru (Google/Meta), gunakan panel samping"
+  },
+  "openSidepanel": {
+    "message": "Buka panel samping"
+  },
+  "openLabel": {
+    "message": "Buka"
+  },
+  "languageSettings": {
+    "message": "Pengaturan Bahasa"
+  },
+  "languageLabel": {
+    "message": "Bahasa"
+  },
+  "languageDesc": {
+    "message": "Pilih bahasa tampilan preferensi Anda"
+  },
+  "systemDefault": {
+    "message": "Default Sistem (Otomatis)"
+  },
+  "configurationPreferences": {
+    "message": "Konfigurasi // Preferensi"
   }
 }

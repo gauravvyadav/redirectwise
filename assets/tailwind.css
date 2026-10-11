@@ -1,39 +1,144 @@
 @import 'tailwindcss';
 
+/* ==========================================================================
+   GAURAVLABS — SWISS MODERNIST DESIGN SYSTEM CSS VARIABLES
+   Single source of truth for color maintainability
+   ========================================================================== */
+
+:root {
+  /* Surfaces - Clean neutral canvas and crisp cards (Zero warm/chocolate/stone tint) */
+  --paper: #fafafa;
+  --paper-card: #ffffff;
+  --paper-subtle: #f4f4f5;
+  --ink: #09090b;
+  --stone: #52525b;
+  --text-secondary: #52525b;
+  --muted: #71717a;
+  --line: #e4e4e7;
+  --line-subtle: rgba(9, 9, 11, 0.05);
+
+  /* Brand Accent Colors (RedirectWise Blue) */
+  --brand: #2563eb;
+  --brand-hover: #1d4ed8;
+  --brand-tint: rgba(37, 99, 235, 0.08);
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
+  --accent-tint: rgba(37, 99, 235, 0.08);
+  --accent-border: rgba(37, 99, 235, 0.35);
+
+  /* Functional Status Colors */
+  --ok: #16a34a;
+  --warn: #d97706;
+  --err: #dc2626;
+
+  /* Primary Action Buttons */
+  --btn-ink: #09090b;
+  --btn-text: #ffffff;
+
+  /* Status Backgrounds & Borders */
+  --ok-bg: #f0fdf4;
+  --ok-border: #bbf7d0;
+  --warn-bg: #fffbeb;
+  --warn-border: #fde68a;
+  --err-bg: #fef2f2;
+  --err-border: #fecaca;
+
+  /* Theme Mapping */
+  --background: var(--paper);
+  --foreground: var(--ink);
+  --bg-card: var(--paper-card);
+  --bg-subtle: var(--paper-subtle);
+  --border: var(--line);
+}
+
+.dark {
+  /* Dark Surfaces - Pure Deep Tech Obsidian (Zero warm/chocolate tint) */
+  --paper: #09090b;
+  --paper-card: #18181b;
+  --paper-subtle: #27272a;
+  --ink: #fafafa;
+  --stone: #a1a1aa;
+  --text-secondary: #a1a1aa;
+  --muted: #71717a;
+  --line: #27272a;
+  --line-subtle: rgba(250, 250, 250, 0.06);
+
+  /* Dark Brand Accent */
+  --brand: #3b82f6;
+  --brand-hover: #2563eb;
+  --brand-tint: rgba(59, 130, 246, 0.12);
+  --accent: #3b82f6;
+  --accent-hover: #2563eb;
+  --accent-tint: rgba(59, 130, 246, 0.12);
+  --accent-border: rgba(59, 130, 246, 0.4);
+
+  /* Dark Functional Status Colors */
+  --ok: #4ade80;
+  --warn: #fbbf24;
+  --err: #f87171;
+
+  /* Primary Action Buttons in Dark Mode */
+  --btn-ink: #fafafa;
+  --btn-text: #09090b;
+
+  --ok-bg: rgba(22, 101, 52, 0.35);
+  --ok-border: rgba(74, 222, 128, 0.4);
+  --warn-bg: rgba(180, 83, 9, 0.35);
+  --warn-border: rgba(251, 191, 36, 0.4);
+  --err-bg: rgba(185, 28, 28, 0.35);
+  --err-border: rgba(248, 113, 113, 0.4);
+
+  /* Dark Theme Mapping */
+  --background: var(--paper);
+  --foreground: var(--ink);
+  --bg-card: var(--paper-card);
+  --bg-subtle: var(--paper-subtle);
+  --border: var(--line);
+}
+
 @theme {
+  --color-paper: var(--paper);
+  --color-paper-card: var(--paper-card);
+  --color-paper-subtle: var(--paper-subtle);
+  --color-ink: var(--ink);
+  --color-stone: var(--stone);
+  --color-text-secondary: var(--text-secondary);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-line-subtle: var(--line-subtle);
+
+  --color-brand: var(--brand);
+  --color-brand-hover: var(--brand-hover);
+  --color-brand-tint: var(--brand-tint);
+
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-tint: var(--accent-tint);
+  --color-accent-border: var(--accent-border);
+
+  --color-btn-ink: var(--btn-ink);
+  --color-btn-text: var(--btn-text);
+
+  --color-ok: var(--ok);
+  --color-warn: var(--warn);
+  --color-err: var(--err);
+
+  --color-ok-bg: var(--ok-bg);
+  --color-ok-border: var(--ok-border);
+  --color-warn-bg: var(--warn-bg);
+  --color-warn-border: var(--warn-border);
+  --color-err-bg: var(--err-bg);
+  --color-err-border: var(--err-border);
+
+  /* Legacy primary mappings for compatibility */
   --color-primary-50: #eff6ff;
   --color-primary-100: #dbeafe;
   --color-primary-200: #bfdbfe;
   --color-primary-300: #93c5fd;
   --color-primary-400: #60a5fa;
-  --color-primary-500: #3b82f6;
-  --color-primary-600: #2563eb;
-  --color-primary-700: #1d4ed8;
-  --color-primary-800: #1e40af;
-  --color-primary-900: #1e3a8a;
-
-  --color-success-50: #f0fdf4;
-  --color-success-100: #dcfce7;
-  --color-success-500: #22c55e;
-  --color-success-600: #16a34a;
-  --color-success-700: #15803d;
-
-  --color-redirect-50: #fffbeb;
-  --color-redirect-100: #fef3c7;
-  --color-redirect-500: #f59e0b;
-  --color-redirect-600: #d97706;
-  --color-redirect-700: #b45309;
-
-  --color-error-50: #fef2f2;
-  --color-error-100: #fee2e2;
-  --color-error-500: #ef4444;
-  --color-error-600: #dc2626;
-  --color-error-700: #b91c1c;
-
-  --color-surface-light: #f8fafc;
-  --color-surface-dark: #0f172a;
-  --color-border-light: #e2e8f0;
-  --color-border-dark: #334155;
+  --color-primary-500: var(--accent);
+  --color-primary-600: var(--accent);
+  --color-primary-700: var(--accent-hover);
 
   --animate-pulse-live: pulse-live 2s ease-in-out infinite;
   --animate-highlight: highlight 1s ease-out forwards;
@@ -41,10 +146,10 @@
 
 @keyframes highlight {
   0% {
-    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+    box-shadow: 0 0 0 1px var(--accent);
   }
   100% {
-    box-shadow: 0 0 0 0px rgba(59, 130, 246, 0);
+    box-shadow: 0 0 0 0px transparent;
   }
 }
 
@@ -54,12 +159,12 @@
     opacity: 1;
   }
   50% {
-    opacity: 0.5;
+    opacity: 0.35;
   }
 }
 
 /* Dark mode variant */
-@variant dark (&:where(.dark, .dark *));
+@custom-variant dark (&:where(.dark, .dark *));
 
 button {
   cursor: pointer;

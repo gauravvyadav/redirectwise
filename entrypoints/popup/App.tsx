@@ -1,27 +1,40 @@
-import clsx from 'clsx';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, Info, PanelRight } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import CopyButtons from '../../components/CopyButtons';
 import EmptyState from '../../components/EmptyState';
 import Header from '../../components/Header';
 import RedirectPath from '../../components/RedirectPath';
-import {
-  RedirectItem,
-  calculateTotalDuration,
-  generateId,
-} from '../../types/redirect';
-import { exportToPDF } from '../../utils/pdf-export';
+import type { RedirectItem } from '../../types/redirect';
+import { calculateTotalDuration, generateId } from '../../types/redirect';
 import { exportToImage } from '../../utils/image-export';
-import { Settings, getSettings, saveSettings } from '../../utils/storage';
+import { exportToPDF } from '../../utils/pdf-export';
+import type { Settings } from '../../utils/storage';
+import { getSettings, saveSettings } from '../../utils/storage';
+import { t, useI18n } from '../../utils/i18n';
+
+// Popup shows the current tab only: drop inherited opener hops and strip the
+// opener marker so no cross-tab trace (or divider) renders here. The full
+// journey stays visible in the sidepanel and dashboard.
+function forPopupDisplay(items: RedirectItem[]): RedirectItem[] {
+  return items
+    .filter(item => !item.inherited)
+    .map(item => (item.openedFrom ? { ...item, openedFrom: undefined } : item));
+}
+
+function forPopupItem(item: RedirectItem): RedirectItem | null {
+  if (item.inherited) return null;
+  return item.openedFrom ? { ...item, openedFrom: undefined } : item;
+}
 
 export default function App() {
+  useI18n();
   const [redirectPath, setRedirectPath] = useState<RedirectItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [navigationError, setNavigationError] = useState<string | null>(null);
   const [currentUrl, setCurrentUrl] = useState('');
   const [darkMode, setDarkMode] = useState(false);
-  const [settings, setSettings] = useState<Settings | null>(null);
+  const [, setSettings] = useState<Settings | null>(null);
   const currentTabId = useRef<number | null>(null);
 
   useEffect(() => {
@@ -43,9 +56,18 @@ export default function App() {
         message.tabId === currentTabId.current &&
         message.item
       ) {
+        const incoming = forPopupItem(message.item);
+        if (!incoming) return;
         setRedirectPath(prev => {
-          if (prev.some(x => x.id === message.item!.id)) return prev;
-          return [...prev, message.item!];
+          const idx = prev.findIndex(x => x.id === incoming.id);
+          if (idx >= 0) {
+            // Background may re-broadcast a known hop with updated metadata
+            // (e.g. re-chained as client_redirect after a merge) — refresh it.
+            const next = [...prev];
+            next[idx] = incoming;
+            return next;
+          }
+          return [...prev, incoming];
         });
       }
 
@@ -55,13 +77,13 @@ export default function App() {
         message.path
       ) {
         setNavigationError(null);
-        setRedirectPath(message.path);
+        setRedirectPath(forPopupDisplay(message.path));
         setLoading(false);
       }
 
       if (message.name === 'navigationError' && message.tabId === currentTabId.current) {
         if (message.path) {
-          setRedirectPath(message.path);
+          setRedirectPath(forPopupDisplay(message.path));
         }
         setNavigationError(message.error || 'Navigation failed');
         setLoading(false);
@@ -84,8 +106,6 @@ export default function App() {
     }
   }, [darkMode]);
 
-
-
   const loadSettings = async () => {
     const s = await getSettings();
     setSettings(s);
@@ -106,22 +126,22 @@ export default function App() {
         const response = await chrome.runtime.sendMessage({
           name: 'getTabPath',
           tabId: tab.id,
+          includeInherited: false,
         });
 
-        console.log('[RedirectWise] Received path:', response);
         const path = response.path || [];
         setNavigationError(null);
-        setRedirectPath(path);
+        setRedirectPath(forPopupDisplay(path));
 
-        // If no path and page might still be loading, wait a bit and retry
         if (path.length === 0 && tab.status === 'loading') {
           setTimeout(async () => {
             const retryResponse = await chrome.runtime.sendMessage({
               name: 'getTabPath',
               tabId: tab.id,
+              includeInherited: false,
             });
             if (retryResponse.path && retryResponse.path.length > 0) {
-              setRedirectPath(retryResponse.path);
+              setRedirectPath(forPopupDisplay(retryResponse.path));
             }
             setLoading(false);
           }, 500);
@@ -224,13 +244,8 @@ export default function App() {
   }, [redirectPath]);
 
   return (
-    <div
-      className={clsx(
-        'flex flex-col w-full h-[600px] transition-colors',
-        darkMode ? 'bg-slate-900' : 'bg-white'
-      )}
-    >
-      {/* Fixed header section */}
+    <div className="flex flex-col w-full h-150 transition-colors bg-paper text-ink">
+      {/* Fixed architectural header */}
       <div className="shrink-0">
         <Header
           onRefresh={handleRefresh}
@@ -239,8 +254,6 @@ export default function App() {
           onOpenSidepanel={handleOpenSidepanel}
           darkMode={darkMode}
         />
-
-
 
         {redirectPath.length > 0 && (
           <CopyButtons
@@ -253,35 +266,31 @@ export default function App() {
         )}
       </div>
 
-      {/* Scrollable content area */}
-      <main className="flex-1 overflow-y-auto p-3 min-h-0">
+      {/* Content area */}
+      <main className="flex-1 overflow-y-auto p-3.5 min-h-0">
         {loading ? (
-          <div className="flex items-center justify-center h-32">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+          <div className="flex flex-col items-center justify-center h-40 gap-2">
+            <div className="w-6 h-6 border-2 border-accent border-t-transparent animate-spin" />
+            <span className="font-mono text-[9.5px] font-bold uppercase tracking-[0.16em] text-muted">
+              {t('inspectingRedirects')}
+            </span>
           </div>
         ) : navigationError && redirectPath.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-32 text-center px-4">
-            <AlertTriangle className="w-10 h-10 text-red-500 mb-3" />
-            <code
-              className={clsx(
-                'text-xs px-2 py-1 rounded break-all',
-                darkMode ? 'bg-red-950/40 text-red-300' : 'bg-red-50 text-red-600'
-              )}
-            >
+          <div className="flex flex-col items-center justify-center h-40 text-center px-4">
+            <AlertTriangle className="w-8 h-8 text-err mb-2" />
+            <span className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-err mb-1">
+              {t('navigationError')}
+            </span>
+            <code className="font-mono text-[11px] px-2.5 py-1.5 border border-err-border bg-err-bg text-err break-all">
               {navigationError}
             </code>
           </div>
         ) : redirectPath.length > 0 ? (
           <div className="space-y-3">
             {navigationError && (
-              <div
-                className={clsx(
-                  'rounded-lg border px-3 py-2 flex items-center gap-2',
-                  darkMode ? 'bg-red-950/30 border-red-900/60 text-red-300' : 'bg-red-50 border-red-200 text-red-600'
-                )}
-              >
-                <AlertTriangle className="w-4 h-4 shrink-0" />
-                <code className="text-[11px] break-all">{navigationError}</code>
+              <div className="border border-err-border bg-err-bg text-err px-3 py-2 flex items-center gap-2 font-mono text-[10.5px]">
+                <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
+                <code className="break-all">{navigationError}</code>
               </div>
             )}
             <RedirectPath items={redirectPath} darkMode={darkMode} />
@@ -290,6 +299,23 @@ export default function App() {
           <EmptyState currentUrl={currentUrl} darkMode={darkMode} />
         )}
       </main>
+
+      {/* Footer hint: new-tab ad chains (Google / Meta ads) are tracked live
+          in the sidepanel — the popup stays a single-tab view by design. */}
+      <footer className="shrink-0 border-t border-line bg-paper-card px-3 py-2 flex items-center gap-1.5">
+        <Info className="w-3.5 h-3.5 text-brand shrink-0" />
+        <span className="flex-1 min-w-0 font-mono text-[9px] font-bold uppercase tracking-[0.02em] text-muted leading-relaxed whitespace-nowrap truncate">
+          {t('newTabAdNotice')}
+        </span>
+        <button
+          onClick={handleOpenSidepanel}
+          className="shrink-0 h-6 px-2 inline-flex items-center gap-1 font-mono text-[9.5px] font-bold uppercase tracking-[0.12em] border border-line bg-paper-subtle text-ink hover:border-ink transition-colors cursor-pointer"
+          title={t('openSidepanel')}
+        >
+          <PanelRight className="w-3 h-3" />
+          {t('openLabel')}
+        </button>
+      </footer>
     </div>
   );
 }

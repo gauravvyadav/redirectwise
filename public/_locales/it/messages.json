@@ -272,5 +272,65 @@
   },
   "clearLabel": {
     "message": "Cancella"
+  },
+  "newTabFrom": {
+    "message": "Nuova scheda da -"
+  },
+  "openedFromTitle": {
+    "message": "Aperto in una nuova scheda da"
+  },
+  "copyLabel": {
+    "message": "Copia"
+  },
+  "copyHeadersTitle": {
+    "message": "Copia tutte le intestazioni negli appunti"
+  },
+  "stepSingle": {
+    "message": "passaggio"
+  },
+  "timeLabel": {
+    "message": "Tempo"
+  },
+  "gapLabel": {
+    "message": "INTERVALLO"
+  },
+  "gapDurationDesc": {
+    "message": "Tempo trascorso tra le richieste"
+  },
+  "targetLabel": {
+    "message": "Destinazione"
+  },
+  "standbyLabel": {
+    "message": "In attesa"
+  },
+  "inspectingRedirects": {
+    "message": "Ispezione reindirizzamenti..."
+  },
+  "navigationError": {
+    "message": "Errore di navigazione"
+  },
+  "newTabAdNotice": {
+    "message": "Per i reindirizzamenti pubblicitari in nuova scheda (Google/Meta), usa il pannello laterale"
+  },
+  "openSidepanel": {
+    "message": "Apri pannello laterale"
+  },
+  "openLabel": {
+    "message": "Apri"
+  },
+  "languageSettings": {
+    "message": "Impostazioni lingua"
+  },
+  "languageLabel": {
+    "message": "Lingua"
+  },
+  "languageDesc": {
+    "message": "Scegli la lingua di visualizzazione preferita"
+  },
+  "systemDefault": {
+    "message": "Predefinito di sistema (Automatico)"
+  },
+  "configurationPreferences": {
+    "message": "Configurazione // Preferenze"
   }
 }

@@ -3,31 +3,115 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>We're sorry to see you go - RedirectWise</title>
+    <title>RedirectWise — Feedback & Uninstall Notice</title>
     <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png" />
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+    <!-- Early theme initialization -->
+    <script>
+      (function () {
+        try {
+          const stored = localStorage.getItem('theme');
+          if (
+            stored === 'dark' ||
+            (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches)
+          ) {
+            document.documentElement.classList.add('dark');
+          } else {
+            document.documentElement.classList.remove('dark');
+          }
+        } catch (_) {}
+      })();
+    </script>
+
     <style>
-      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-      body {
-        font-family: 'Inter', sans-serif;
+      @import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600;700;800&family=Geist:wght@300;400;500;600;700;800;900&display=swap');
+
+      /* ==========================================================================
+         SWISS MODERNIST COLOR SYSTEM (Single source of truth)
+         ========================================================================== */
+      :root {
+        --paper: #fafafa;
+        --paper-card: #ffffff;
+        --paper-subtle: #f4f4f5;
+        --ink: #09090b;
+        --stone: #52525b;
+        --muted: #71717a;
+        --line: #e4e4e7;
+        --line-subtle: rgba(9, 9, 11, 0.05);
+
+        --brand: #2563eb;
+        --brand-hover: #1d4ed8;
+
+        --btn-ink: #09090b;
+        --btn-text: #ffffff;
       }
+
+      .dark {
+        --paper: #09090b;
+        --paper-card: #18181b;
+        --paper-subtle: #27272a;
+        --ink: #fafafa;
+        --stone: #a1a1aa;
+        --muted: #71717a;
+        --line: #27272a;
+        --line-subtle: rgba(250, 250, 250, 0.06);
+
+        --brand: #3b82f6;
+        --brand-hover: #2563eb;
+
+        --btn-ink: #fafafa;
+        --btn-text: #09090b;
+      }
+
+      body {
+        font-family: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background-color: var(--paper);
+        color: var(--ink);
+        -webkit-font-smoothing: antialiased;
+        transition: background-color 0.2s ease, color 0.2s ease;
+      }
+      .font-mono {
+        font-family: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      }
+
+      .bg-paper { background-color: var(--paper); }
+      .bg-paper-card { background-color: var(--paper-card); }
+      .bg-paper-subtle { background-color: var(--paper-subtle); }
+      .bg-line { background-color: var(--line); }
+      .bg-ink { background-color: var(--ink); }
+      .bg-brand { background-color: var(--brand); }
+      .text-ink { color: var(--ink); }
+      .text-stone { color: var(--stone); }
+      .text-muted { color: var(--muted); }
+      .text-brand { color: var(--brand); }
+      .border-line { border-color: var(--line); }
+      .border-ink { border-color: var(--ink); }
+      .border-brand { border-color: var(--brand); }
+      /* Theme-aware brand lockup (light/dark SVG swap follows .dark toggle) */
+      .logo-dark { display: none; }
+      .dark .logo-light { display: none; }
+      .dark .logo-dark { display: block; }
     </style>
   </head>
-  <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+  <body class="bg-paper text-ink min-h-screen flex flex-col">
     <!-- Header -->
-    <header class="bg-white border-b border-slate-200">
+    <header class="bg-paper-card border-b border-line">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center h-16">
-          <a href="/" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
+          <a href="/" class="flex items-center group" aria-label="RedirectWise Home">
             <img
-              src="assets/logo.svg"
+              src="assets/logo-lockup.svg"
               alt="RedirectWise Logo"
-              class="w-10 h-10 shadow-lg shadow-blue-500/25 rounded-xl"
+              class="h-7 w-auto shrink-0 logo-light"
             />
-            <span class="text-xl font-bold text-slate-900"
-              >Redirect<span class="text-blue-500">Wise</span></span
-            >
+            <img
+              src="assets/logo-lockup-dark.svg"
+              alt=""
+              aria-hidden="true"
+              class="h-7 w-auto shrink-0 logo-dark"
+            />
           </a>
         </div>
       </div>
@@ -35,14 +119,10 @@
 
     <!-- Main Content -->
     <main class="grow flex items-center justify-center p-6">
-      <div
-        class="max-w-2xl w-full bg-white rounded-3xl shadow-xl border border-slate-200 p-8 md:p-12 text-center"
-      >
-        <div
-          class="w-20 h-20 bg-blue-50 text-blue-500 rounded-2xl flex items-center justify-center mx-auto mb-6"
-        >
+      <div class="max-w-2xl w-full bg-paper-card border border-line p-8 md:p-12 text-center">
+        <div class="w-12 h-12 border border-brand/30 bg-primary-50 text-brand flex items-center justify-center mx-auto mb-6">
           <svg
-            class="w-10 h-10"
+            class="w-6 h-6"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -56,22 +136,25 @@
             ></path>
           </svg>
         </div>
-        <h1 class="text-3xl font-extrabold text-slate-900 mb-4">We're sorry to see you go!</h1>
-        <p class="text-lg text-slate-600 mb-6">
-          RedirectWise is a
-          <span class="font-bold text-slate-900">100% free, open-source tool</span> built to help
-          the developer community. There are no premium charges, ever.
+
+        <span class="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-muted block mb-2">
+          [ NOTICE // EXTENSION REMOVED ]
+        </span>
+        <h1 class="text-2xl sm:text-3xl font-black uppercase tracking-tight text-ink mb-3">
+          We're sorry to see you go!
+        </h1>
+        <p class="text-sm sm:text-base text-stone max-w-lg mx-auto mb-4 leading-relaxed">
+          RedirectWise is a 100% free and open-source project created for the web community. We never charge for features and never track personal data.
         </p>
-        <p class="text-slate-600 mb-8 leading-relaxed">
-          Could you take a quick moment to tell us why you uninstalled? Your feedback is the only
-          way we can learn and make the extension better for everyone.
+        <p class="text-xs sm:text-sm text-muted max-w-md mx-auto mb-8 leading-relaxed">
+          Could you take 20 seconds to share what didn't work for you? Your feedback directly helps us improve the tool for other developers.
         </p>
 
         <a
           href="mailto:support@gauravlabs.com?subject=RedirectWise%20Uninstall%20Feedback&body=Hi!%20I%20uninstalled%20RedirectWise%20because..."
-          class="inline-flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-8 py-3.5 rounded-xl font-semibold transition-colors shadow-lg shadow-blue-500/30 w-full sm:w-auto text-lg"
+          class="h-12 px-6 border border-ink bg-ink hover:bg-brand hover:border-brand text-white font-mono text-xs font-bold uppercase tracking-[0.16em] inline-flex items-center justify-center gap-2.5 transition-colors w-full sm:w-auto"
         >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               stroke-linecap="round"
               stroke-linejoin="round"
@@ -79,9 +162,17 @@
               d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
             ></path>
           </svg>
-          Send Feedback Email
+          <span>SEND FEEDBACK EMAIL</span>
         </a>
       </div>
     </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-line py-6 text-center font-mono text-[10px] text-muted">
+      &copy; <span id="year"></span> GAURAVLABS. ALL RIGHTS RESERVED.
+    </footer>
+    <script>
+      document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
   </body>
 </html>

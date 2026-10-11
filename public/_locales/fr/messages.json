@@ -272,5 +272,65 @@
   },
   "clearLabel": {
     "message": "Effacer"
+  },
+  "newTabFrom": {
+    "message": "Nouvel onglet depuis -"
+  },
+  "openedFromTitle": {
+    "message": "Ouvert dans un nouvel onglet depuis"
+  },
+  "copyLabel": {
+    "message": "Copier"
+  },
+  "copyHeadersTitle": {
+    "message": "Copier tous les en-têtes dans le presse-papiers"
+  },
+  "stepSingle": {
+    "message": "étape"
+  },
+  "timeLabel": {
+    "message": "Temps"
+  },
+  "gapLabel": {
+    "message": "ÉCART"
+  },
+  "gapDurationDesc": {
+    "message": "Temps écoulé entre les requêtes"
+  },
+  "targetLabel": {
+    "message": "Cible"
+  },
+  "standbyLabel": {
+    "message": "En attente"
+  },
+  "inspectingRedirects": {
+    "message": "Inspection des redirections..."
+  },
+  "navigationError": {
+    "message": "Erreur de navigation"
+  },
+  "newTabAdNotice": {
+    "message": "Pour les redirections publicitaires en nouvel onglet (Google/Meta), utilisez le panneau latéral"
+  },
+  "openSidepanel": {
+    "message": "Ouvrir le panneau latéral"
+  },
+  "openLabel": {
+    "message": "Ouvrir"
+  },
+  "languageSettings": {
+    "message": "Paramètres de langue"
+  },
+  "languageLabel": {
+    "message": "Langue"
+  },
+  "languageDesc": {
+    "message": "Choisissez votre langue d'affichage préférée"
+  },
+  "systemDefault": {
+    "message": "Système par défaut (Automatique)"
+  },
+  "configurationPreferences": {
+    "message": "Configuration // Préférences"
   }
 }

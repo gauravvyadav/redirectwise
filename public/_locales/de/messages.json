@@ -272,5 +272,65 @@
   },
   "clearLabel": {
     "message": "Löschen"
+  },
+  "newTabFrom": {
+    "message": "Neuer Tab von -"
+  },
+  "openedFromTitle": {
+    "message": "In neuem Tab geöffnet von"
+  },
+  "copyLabel": {
+    "message": "Kopieren"
+  },
+  "copyHeadersTitle": {
+    "message": "Alle Header in die Zwischenablage kopieren"
+  },
+  "stepSingle": {
+    "message": "Schritt"
+  },
+  "timeLabel": {
+    "message": "Zeit"
+  },
+  "gapLabel": {
+    "message": "ABSTAND"
+  },
+  "gapDurationDesc": {
+    "message": "Verstrichene Zeit zwischen Anfragen"
+  },
+  "targetLabel": {
+    "message": "Ziel"
+  },
+  "standbyLabel": {
+    "message": "Bereit"
+  },
+  "inspectingRedirects": {
+    "message": "Weiterleitungen werden geprüft..."
+  },
+  "navigationError": {
+    "message": "Navigationsfehler"
+  },
+  "newTabAdNotice": {
+    "message": "Für Werbe-Weiterleitungen in neuem Tab (Google/Meta) Seitenleiste nutzen"
+  },
+  "openSidepanel": {
+    "message": "Seitenleiste öffnen"
+  },
+  "openLabel": {
+    "message": "Öffnen"
+  },
+  "languageSettings": {
+    "message": "Spracheinstellungen"
+  },
+  "languageLabel": {
+    "message": "Sprache"
+  },
+  "languageDesc": {
+    "message": "Wählen Sie Ihre bevorzugte Anzeigesprache"
+  },
+  "systemDefault": {
+    "message": "Systemstandard (Automatisch)"
+  },
+  "configurationPreferences": {
+    "message": "Konfiguration // Einstellungen"
   }
 }

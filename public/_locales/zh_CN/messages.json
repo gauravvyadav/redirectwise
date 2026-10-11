@@ -272,5 +272,65 @@
   },
   "clearLabel": {
     "message": "清除"
+  },
+  "newTabFrom": {
+    "message": "新标签页来源 -"
+  },
+  "openedFromTitle": {
+    "message": "在新标签页中打开自"
+  },
+  "copyLabel": {
+    "message": "复制"
+  },
+  "copyHeadersTitle": {
+    "message": "复制所有请求头到剪贴板"
+  },
+  "stepSingle": {
+    "message": "步"
+  },
+  "timeLabel": {
+    "message": "耗时"
+  },
+  "gapLabel": {
+    "message": "间隔"
+  },
+  "gapDurationDesc": {
+    "message": "请求之间经过的时间"
+  },
+  "targetLabel": {
+    "message": "目标"
+  },
+  "standbyLabel": {
+    "message": "就绪"
+  },
+  "inspectingRedirects": {
+    "message": "正在检查重定向..."
+  },
+  "navigationError": {
+    "message": "导航错误"
+  },
+  "newTabAdNotice": {
+    "message": "追踪新标签页广告重定向（如 Google/Meta 广告），请使用侧边栏"
+  },
+  "openSidepanel": {
+    "message": "打开侧边栏"
+  },
+  "openLabel": {
+    "message": "打开"
+  },
+  "languageSettings": {
+    "message": "语言设置"
+  },
+  "languageLabel": {
+    "message": "语言"
+  },
+  "languageDesc": {
+    "message": "选择您的首选显示语言"
+  },
+  "systemDefault": {
+    "message": "系统默认（自动）"
+  },
+  "configurationPreferences": {
+    "message": "配置 // 偏好设置"
   }
 }
