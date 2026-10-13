@@ -1,20 +1,32 @@
-# RedirectWise
+<p align="center">
+  <img src="public/icons/logo.svg" width="64" height="64" alt="RedirectWise Logo" />
+</p>
 
-Track redirects, uncover hidden ad/tracking hops, and review the full redirect journey with a popup, live sidepanel, and persistent history dashboard.
+<h1 align="center">RedirectWise</h1>
 
-<p>
-  <a href="https://chromewebstore.google.com/detail/redirectwise/mhahonijegjclaecmoinjomidmhhleln">
-    <img src="website/assets/Google_Chrome.svg" alt="Google Chrome" width="18" align="center" />
-    Chrome Web Store
+<p align="center">
+  <b>Track redirects, uncover hidden ad/tracking hops, and review the full redirect journey with a popup, live sidepanel, and persistent history dashboard.</b>
+</p>
+
+<p align="center">
+  <a href="https://chromewebstore.google.com/detail/redirectwise/mhahonijegjclaecmoinjomidmhhleln" style="text-decoration: none;">
+    <img src="assets/chrome-webstore.png" height="40" alt="Chrome Web Store" />
   </a>
-  &nbsp;&nbsp;&nbsp;
-  <a href="https://microsoftedge.microsoft.com/addons/detail/mdgmnjiooaiahcnkinkgdgibhmjklaid">
-    <img src="website/assets/Microsoft_Edge.svg" alt="Microsoft Edge" width="18" align="center" />
-    Microsoft Edge Add-ons
+  &nbsp;
+  <a href="https://microsoftedge.microsoft.com/addons/detail/mdgmnjiooaiahcnkinkgdgibhmjklaid" style="text-decoration: none;">
+    <img src="assets/English_Get it from Microsoft Edge.png" height="40" alt="Edge Addons" />
   </a>
 </p>
 
-Latest tagged release: `v2.0.0`
+<p align="center">
+  🌐 <b>Web:</b> <a href="https://redirectwise.gauravlabs.com/">https://redirectwise.gauravlabs.com</a>
+</p>
+
+<p align="center">
+  Latest tagged release: <code>v2.0.0</code>
+</p>
+
+---
 
 ## Features
 
