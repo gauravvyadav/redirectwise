@@ -23,7 +23,7 @@
 </p>
 
 <p align="center">
-  Latest tagged release: <code>v2.0.0</code>
+  Latest tagged release: <code>v2.0.1</code>
 </p>
 
 ---
@@ -44,6 +44,8 @@
 
 ## Release Highlights
 
+- `v2.0.1`
+  PDF & image export redesign: crisp vector typography with zero blurriness, modern Swiss timeline cards, protection against long tracking URLs, CSV file downloads with UTF-8 BOM compatibility, and polished header styling.
 - `v2.0.0`
   Complete Swiss Modernist architectural redesign across Extension and Marketing Web surfaces. Flat geometry logo icon with zero shadow, unified design token variables (`--paper`, `--ink`, `--brand`, `--line`), 1px hairline drafting grids, zero-flash dark mode theme system, dual-store availability (Google Chrome & Microsoft Edge), and Gauravlabs design language alignment.
   Tracking hardening: redirect chains survive client-side (ad/JS/meta) redirects, page refreshes, and plain link clicks; new-tab ad flows inherit the opener chain; history merge and cross-tab sidepanel tracing fixed.
