@@ -56,7 +56,10 @@ export async function saveHistoryEntry(path: RedirectItem[]): Promise<HistoryEnt
     const totalTime = calculateTotalDuration(path);
 
     const redirectCount = path.filter(
-      p => p.type === 'server_redirect' || p.type === 'client_redirect'
+      p =>
+        p.type === 'server_redirect' ||
+        p.type === 'client_redirect' ||
+        (p.status_code >= 300 && p.status_code < 400)
     ).length;
 
     // Merge when the existing entry is a prefix of this path (ids are random

@@ -28,8 +28,10 @@ import Logo from '../../components/Logo';
 import RedirectItemCard from '../../components/RedirectItemCard';
 import type { HistoryEntry, RedirectItem } from '../../types/redirect';
 import { calculateGapDuration, formatDuration } from '../../types/redirect';
+import { SUPPORTED_LANGUAGES, setI18nLanguage, t, useI18n } from '../../utils/i18n';
 import { exportToImage } from '../../utils/image-export';
 import { exportHistoryToPDF, exportToPDF } from '../../utils/pdf-export';
+import { exportToCSV } from '../../utils/csv-export';
 import type { Settings as AppSettings } from '../../utils/storage';
 import {
   clearHistory,
@@ -40,7 +42,6 @@ import {
   saveSettings,
   updateHistoryEntry,
 } from '../../utils/storage';
-import { SUPPORTED_LANGUAGES, setI18nLanguage, t, useI18n } from '../../utils/i18n';
 
 interface Stats {
   totalEntries: number;
@@ -243,8 +244,7 @@ export default function Dashboard() {
             {stats && (
               <div className="hidden md:flex items-center gap-3 h-8 px-3 border border-line bg-paper-card font-mono text-[10px] uppercase tracking-[0.14em] text-text-secondary">
                 <span>
-                  <strong className="text-ink">{stats.totalEntries}</strong>{' '}
-                  {t('entriesLabel')}
+                  <strong className="text-ink">{stats.totalEntries}</strong> {t('entriesLabel')}
                 </span>
                 <span className="text-muted">/</span>
                 <span>
@@ -270,11 +270,7 @@ export default function Dashboard() {
                   ? 'bg-ink text-paper border-ink'
                   : 'border-line bg-paper-card text-ink hover:border-ink hover:bg-paper-subtle'
               )}
-              title={
-                currentView === 'history'
-                  ? t('settingsTitle')
-                  : t('backToHistory')
-              }
+              title={currentView === 'history' ? t('settingsTitle') : t('backToHistory')}
             >
               <Settings className="w-4 h-4" />
             </button>
@@ -384,9 +380,7 @@ export default function Dashboard() {
             {/* Entry Count */}
             <div className="shrink-0 px-3 py-1.5 font-mono text-[9px] font-bold uppercase tracking-[0.14em] border-b border-line bg-paper-subtle text-muted">
               {filteredHistory.length}{' '}
-              {filteredHistory.length === 1
-                ? t('entrySingle')
-                : t('entriesLabel')}
+              {filteredHistory.length === 1 ? t('entrySingle') : t('entriesLabel')}
               {searchQuery && ` // MATCHING "${searchQuery}"`}
             </div>
 
@@ -403,9 +397,7 @@ export default function Dashboard() {
                 <div className="flex flex-col items-center justify-center h-32 text-center p-4">
                   <Clock className="w-6 h-6 mb-2 text-muted" />
                   <p className="font-mono text-[10px] uppercase tracking-wider text-muted">
-                    {searchQuery || filter !== 'all'
-                      ? t('noMatches')
-                      : t('noHistoryYet')}
+                    {searchQuery || filter !== 'all' ? t('noMatches') : t('noHistoryYet')}
                   </p>
                 </div>
               ) : (
@@ -456,9 +448,7 @@ export default function Dashboard() {
                 <h3 className="text-sm font-black uppercase tracking-tight mb-1 text-ink">
                   {t('selectAnEntry')}
                 </h3>
-                <p className="text-xs max-w-xs text-text-secondary">
-                  {t('chooseRedirectToView')}
-                </p>
+                <p className="text-xs max-w-xs text-text-secondary">{t('chooseRedirectToView')}</p>
               </div>
             )}
           </main>
@@ -494,9 +484,7 @@ export default function Dashboard() {
             </h3>
 
             <p className="text-xs mb-6 leading-relaxed text-text-secondary">
-              {deleteTarget === 'all'
-                ? t('confirmClearAll')
-                : t('confirmDeleteEntry')}
+              {deleteTarget === 'all' ? t('confirmClearAll') : t('confirmDeleteEntry')}
             </p>
 
             <div className="flex items-center justify-end gap-2 font-mono text-[10px] font-bold uppercase tracking-[0.14em]">
@@ -523,12 +511,7 @@ export default function Dashboard() {
   );
 }
 
-function SettingsViewUI({
-  settings,
-  activeTab,
-  setActiveTab,
-  onLanguageChange,
-}: any) {
+function SettingsViewUI({ settings, activeTab, setActiveTab, onLanguageChange }: any) {
   const selectedLang = settings?.language || 'system';
 
   return (
@@ -578,9 +561,7 @@ function SettingsViewUI({
                 <h3 className="font-bold text-xs uppercase tracking-tight text-ink">
                   {t('darkModeAppearance')}
                 </h3>
-                <p className="text-[11px] mt-1 text-text-secondary">
-                  {t('darkModeDesc')}
-                </p>
+                <p className="text-[11px] mt-1 text-text-secondary">{t('darkModeDesc')}</p>
               </div>
               <span className="px-2.5 py-1 border border-line bg-paper-subtle font-mono text-[9.5px] font-bold uppercase tracking-[0.14em] text-ink">
                 {t('useHeaderButton')}
@@ -592,9 +573,7 @@ function SettingsViewUI({
                 <h3 className="font-bold text-xs uppercase tracking-tight text-ink">
                   {t('languageLabel')}
                 </h3>
-                <p className="text-[11px] mt-1 text-text-secondary">
-                  {t('languageDesc')}
-                </p>
+                <p className="text-[11px] mt-1 text-text-secondary">{t('languageDesc')}</p>
               </div>
               <select
                 value={selectedLang}
@@ -620,9 +599,7 @@ function SettingsViewUI({
             <h2 className="text-xl font-black uppercase tracking-tight mb-2 text-ink">
               {t('languageSettings')}
             </h2>
-            <p className="text-xs text-text-secondary mb-6 font-mono">
-              {t('languageDesc')}
-            </p>
+            <p className="text-xs text-text-secondary mb-6 font-mono">{t('languageDesc')}</p>
 
             <div className="space-y-3">
               <button
@@ -728,12 +705,20 @@ function HistoryListItem({
             {entry.isFavorite && <Star className="w-3 h-3 text-warn fill-current" />}
           </div>
           <div className="flex items-center gap-2 font-mono text-[9.5px]">
-            <span className="px-1.5 py-0.2 border border-line bg-paper-subtle text-text-secondary font-bold uppercase tracking-wider">
-              {entry.redirectCount}{' '}
-              {entry.redirectCount !== 1
-                ? t('hopsPlural')
-                : t('hopSingle')}
-            </span>
+            {(() => {
+              const redirects =
+                entry.path?.filter(
+                  p =>
+                    p.type === 'server_redirect' ||
+                    p.type === 'client_redirect' ||
+                    (p.status_code >= 300 && p.status_code < 400)
+                ).length ?? entry.redirectCount;
+              return (
+                <span className="px-1.5 py-0.2 border border-line bg-paper-subtle text-text-secondary font-bold uppercase tracking-wider">
+                  {redirects} {redirects !== 1 ? t('redirectsPlural') : t('redirectSingle')}
+                </span>
+              );
+            })()}
             <span className="text-muted">
               {formatDistanceToNow(entry.timestamp, { addSuffix: true })}
             </span>
@@ -794,7 +779,7 @@ function DetailPanel({
 }) {
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
   const [copiedText, setCopiedText] = useState(false);
-  const [copiedCsv, setCopiedCsv] = useState(false);
+  const [downloadedCsv, setDownloadedCsv] = useState(false);
 
   const generateTextOutput = (path: RedirectItem[]): string => {
     return path
@@ -816,32 +801,6 @@ function DetailPanel({
       .join('\n');
   };
 
-  const generateCsvOutput = (path: RedirectItem[]): string => {
-    const headers = 'Status Code\tURL\tIP\tPage Type\tRedirect Type\tRedirect URL';
-
-    const rows = path.map(item => {
-      let redirectType = item.redirect_type || '';
-      if (item.status_code === 301 || item.status_code === 308) {
-        redirectType = 'permanent';
-      } else if (item.status_code > 301 && item.status_code < 400) {
-        redirectType = 'temporary';
-      }
-
-      const redirectUrl = item.redirect_url || 'none';
-
-      return [
-        item.status_code,
-        item.url,
-        item.ip || 'Unknown',
-        item.type,
-        redirectType,
-        redirectUrl,
-      ].join('\t');
-    });
-
-    return [headers, ...rows].join('\n');
-  };
-
   const handleCopyText = async () => {
     try {
       const content = generateTextOutput(entry.path);
@@ -853,14 +812,13 @@ function DetailPanel({
     }
   };
 
-  const handleCopyCsv = async () => {
+  const handleDownloadCsv = () => {
     try {
-      const content = generateCsvOutput(entry.path);
-      await navigator.clipboard.writeText(content);
-      setCopiedCsv(true);
-      setTimeout(() => setCopiedCsv(false), 2000);
+      exportToCSV(entry);
+      setDownloadedCsv(true);
+      setTimeout(() => setDownloadedCsv(false), 2000);
     } catch (err) {
-      console.error('Failed to copy CSV:', err);
+      console.error('Failed to download CSV:', err);
     }
   };
 
@@ -916,12 +874,20 @@ function DetailPanel({
               </div>
             )}
             <div className="flex items-center gap-2.5 font-mono text-[10px] flex-wrap">
-              <span className="h-6 flex items-center px-2 border border-line bg-paper text-ink font-bold uppercase tracking-wider">
-                {entry.redirectCount}{' '}
-                {entry.redirectCount !== 1
-                  ? t('redirectsPlural')
-                  : t('redirectSingle')}
-              </span>
+              {(() => {
+                const redirects =
+                  entry.path?.filter(
+                    p =>
+                      p.type === 'server_redirect' ||
+                      p.type === 'client_redirect' ||
+                      (p.status_code >= 300 && p.status_code < 400)
+                  ).length ?? entry.redirectCount;
+                return (
+                  <span className="h-6 flex items-center px-2 border border-line bg-paper text-ink font-bold uppercase tracking-wider">
+                    {redirects} {redirects !== 1 ? t('redirectsPlural') : t('redirectSingle')}
+                  </span>
+                );
+              })()}
               <span className="text-muted">
                 {format(entry.timestamp, "MMM d, yyyy 'at' h:mm a")}
               </span>
@@ -950,11 +916,7 @@ function DetailPanel({
               ) : (
                 <StarOff className="w-3.5 h-3.5" />
               )}
-              <span>
-                {entry.isFavorite
-                  ? t('favoritedLabel')
-                  : t('favoriteLabel')}
-              </span>
+              <span>{entry.isFavorite ? t('favoritedLabel') : t('favoriteLabel')}</span>
             </button>
 
             {/* Copy Text */}
@@ -967,28 +929,30 @@ function DetailPanel({
                   : 'bg-paper-card border-line text-text-secondary hover:border-ink hover:text-ink'
               )}
             >
-              {copiedText ? <Check className="w-3.5 h-3.5 text-ok" /> : <Copy className="w-3.5 h-3.5" />}
-              <span>
-                {copiedText
-                  ? t('copied')
-                  : t('textFormat')}
-              </span>
+              {copiedText ? (
+                <Check className="w-3.5 h-3.5 text-ok" />
+              ) : (
+                <Copy className="w-3.5 h-3.5" />
+              )}
+              <span>{copiedText ? t('copied') : t('textFormat')}</span>
             </button>
 
-            {/* Copy CSV */}
+            {/* Download CSV */}
             <button
-              onClick={handleCopyCsv}
+              onClick={handleDownloadCsv}
               className={clsx(
                 'h-8 flex items-center gap-1.5 px-3 border font-mono text-[10px] font-bold uppercase tracking-[0.12em] transition-colors',
-                copiedCsv
+                downloadedCsv
                   ? 'bg-ok-bg border-ok-border text-ok'
                   : 'bg-paper-card border-line text-text-secondary hover:border-ink hover:text-ink'
               )}
             >
-              {copiedCsv ? <Check className="w-3.5 h-3.5 text-ok" /> : <FileSpreadsheet className="w-3.5 h-3.5" />}
-              <span>
-                {copiedCsv ? t('copied') : t('csvFormat')}
-              </span>
+              {downloadedCsv ? (
+                <Check className="w-3.5 h-3.5 text-ok" />
+              ) : (
+                <FileSpreadsheet className="w-3.5 h-3.5" />
+              )}
+              <span>{t('csvFormat')}</span>
             </button>
 
             {/* Export PDF */}
@@ -1027,8 +991,7 @@ function DetailPanel({
           <div className="flex items-center justify-between mb-3 pb-2 border-b border-line">
             <h3 className="font-mono text-[10px] font-bold uppercase tracking-[0.16em] flex items-center gap-2 text-ink">
               <ArrowRight className="w-3.5 h-3.5 text-accent" />
-              {t('redirectChain')} // {entry.path.length}{' '}
-              {t('stepsLabel')}
+              {t('redirectChain')} // {entry.path.length} {t('stepsLabel')}
             </h3>
             <span className="font-mono text-[9px] uppercase tracking-wider text-muted">
               SESSION // {entry.id.substring(0, 8)}
@@ -1073,8 +1036,8 @@ function DetailPanel({
 
         {/* Timestamp Footer */}
         <div className="font-mono text-[9.5px] uppercase tracking-[0.14em] text-center py-2 text-muted">
-          {t('capturedLabel')}:{' '}
-          {format(entry.timestamp, "MMMM d, yyyy 'at' h:mm:ss a")} // ID: {entry.id.substring(0, 8)}
+          {t('capturedLabel')}: {format(entry.timestamp, "MMMM d, yyyy 'at' h:mm:ss a")} // ID:{' '}
+          {entry.id.substring(0, 8)}
         </div>
       </div>
     </div>

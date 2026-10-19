@@ -2,6 +2,7 @@ import clsx from 'clsx';
 import { Check, Copy, FileDown, FileSpreadsheet, FileImage, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import type { RedirectItem } from '../types/redirect';
+import { exportToCSV } from '../utils/csv-export';
 import { t } from '../utils/i18n';
 
 interface CopyButtonsProps {
@@ -12,15 +13,14 @@ interface CopyButtonsProps {
   onClear?: () => void;
 }
 
-type CopyFormat = 'text' | 'csv';
-
 export default function CopyButtons({
   redirectPath,
   onExportPDF,
   onExportImage,
   onClear,
 }: CopyButtonsProps) {
-  const [copiedFormat, setCopiedFormat] = useState<CopyFormat | null>(null);
+  const [copiedText, setCopiedText] = useState(false);
+  const [downloadedCsv, setDownloadedCsv] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [exportingImage, setExportingImage] = useState(false);
 
@@ -44,44 +44,28 @@ export default function CopyButtons({
       .join('\n');
   };
 
-  const generateCsvOutput = (): string => {
-    const headers = 'Status Code\tURL\tIP\tPage Type\tRedirect Type\tRedirect URL';
-
-    const rows = redirectPath.map(item => {
-      let redirectType = item.redirect_type || '';
-      if (item.status_code === 301 || item.status_code === 308) {
-        redirectType = 'permanent';
-      } else if (item.status_code > 301 && item.status_code < 400) {
-        redirectType = 'temporary';
-      }
-
-      const redirectUrl = item.redirect_url || 'none';
-
-      return [
-        item.status_code,
-        item.url,
-        item.ip || 'Unknown',
-        item.type,
-        redirectType,
-        redirectUrl,
-      ].join('\t');
-    });
-
-    return [headers, ...rows].join('\n');
-  };
-
-  const handleCopy = async (format: CopyFormat) => {
+  const handleCopyText = async () => {
     try {
-      const content = format === 'text' ? generateTextOutput() : generateCsvOutput();
-
+      const content = generateTextOutput();
       await navigator.clipboard.writeText(content);
-      setCopiedFormat(format);
-
+      setCopiedText(true);
       setTimeout(() => {
-        setCopiedFormat(null);
+        setCopiedText(false);
       }, 2000);
     } catch (error) {
-      console.error('Failed to copy:', error);
+      console.error('Failed to copy text:', error);
+    }
+  };
+
+  const handleDownloadCsv = () => {
+    try {
+      exportToCSV({ path: redirectPath });
+      setDownloadedCsv(true);
+      setTimeout(() => {
+        setDownloadedCsv(false);
+      }, 2000);
+    } catch (error) {
+      console.error('Failed to download CSV:', error);
     }
   };
 
@@ -114,15 +98,15 @@ export default function CopyButtons({
   return (
     <div className="w-full border-b border-line bg-line gap-px grid grid-cols-5">
       <button
-        onClick={() => handleCopy('text')}
+        onClick={handleCopyText}
         className={clsx(
           'h-8.5 flex items-center justify-center gap-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.12em] transition-colors',
-          copiedFormat === 'text'
+          copiedText
             ? 'bg-ok-bg text-ok'
             : 'bg-paper-card text-ink hover:bg-paper-subtle'
         )}
       >
-        {copiedFormat === 'text' ? (
+        {copiedText ? (
           <>
             <Check className="w-3.5 h-3.5 text-ok" />
             {t('copied')}
@@ -136,18 +120,18 @@ export default function CopyButtons({
       </button>
 
       <button
-        onClick={() => handleCopy('csv')}
+        onClick={handleDownloadCsv}
         className={clsx(
           'h-8.5 flex items-center justify-center gap-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.12em] transition-colors',
-          copiedFormat === 'csv'
+          downloadedCsv
             ? 'bg-ok-bg text-ok'
             : 'bg-paper-card text-ink hover:bg-paper-subtle'
         )}
       >
-        {copiedFormat === 'csv' ? (
+        {downloadedCsv ? (
           <>
             <Check className="w-3.5 h-3.5 text-ok" />
-            {t('copied')}
+            {t('csvFormat')}
           </>
         ) : (
           <>

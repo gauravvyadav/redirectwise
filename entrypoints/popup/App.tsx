@@ -206,7 +206,10 @@ export default function App() {
 
     const totalTime = calculateTotalDuration(redirectPath);
     const redirectCount = redirectPath.filter(
-      p => p.type === 'server_redirect' || p.type === 'client_redirect'
+      p =>
+        p.type === 'server_redirect' ||
+        p.type === 'client_redirect' ||
+        (p.status_code >= 300 && p.status_code < 400)
     ).length;
 
     const entry = {
@@ -227,7 +230,10 @@ export default function App() {
 
     const totalTime = calculateTotalDuration(redirectPath);
     const redirectCount = redirectPath.filter(
-      p => p.type === 'server_redirect' || p.type === 'client_redirect'
+      p =>
+        p.type === 'server_redirect' ||
+        p.type === 'client_redirect' ||
+        (p.status_code >= 300 && p.status_code < 400)
     ).length;
 
     const entry = {
